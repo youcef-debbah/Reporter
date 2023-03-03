@@ -1,8 +1,8 @@
 # things to do
-- room
-- move more version to Version object
-- test hilt
-- test paging
+- add room
+- add hilt
+- add teller
+- add paging
 - test analytics
 - test config
 - test crashlytics
