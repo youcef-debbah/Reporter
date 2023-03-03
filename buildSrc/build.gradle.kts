@@ -31,9 +31,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("com.android.tools.build:gradle:8.0.0-beta04")
 
-    //implementation("com.google.dagger:hilt-android-gradle-plugin:2.42")
-    //implementation("com.google.gms:google-services:4.3.14")
-    //implementation("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
-    //implementation("com.google.firebase:perf-plugin:1.4.2")
-    //implementation("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
+    implementation("com.google.dagger:hilt-android-gradle-plugin:2.45")
+    implementation("com.google.firebase:firebase-crashlytics-gradle:2.9.4")
+    implementation("com.google.firebase:perf-plugin:1.4.2")
+    implementation("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
 }
