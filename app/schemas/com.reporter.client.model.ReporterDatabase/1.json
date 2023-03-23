@@ -1,0 +1,46 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "20f2e2deddcf0878c9cfccd13bd0355b",
+    "entities": [
+      {
+        "tableName": "logged_event",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`logged_event_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `parameters` TEXT, PRIMARY KEY(`logged_event_id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "logged_event_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parameters",
+            "columnName": "parameters",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "logged_event_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '20f2e2deddcf0878c9cfccd13bd0355b')"
+    ]
+  }
+}
