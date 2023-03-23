@@ -1,3 +1,44 @@
 <resources>
+    <string name="searchbar_placeholder">Search…</string>
+    <string name="icon_xdesc_search_options">Search options</string>
+    <string name="phonetic_search_label">Search also for similar text</string>
+    <string name="default_sort_order">Default order</string>
+    <string name="icon_desc_open_drop_menu">Open the drop menu</string>
+    <string name="icon_desc_close_drop_menu">Close the drop menu</string>
+    <string name="sort_by">Sort by:</string>
+    <string name="icon_xdesc_sort_order">Sort order</string>
+    <string name="loading_placeholder">Loading…</string>
+    <string name="default_sort_by_name_a_z">Name (A to Z)</string>
+    <string name="default_sort_by_name_z_a">Name (Z to A)</string>
+    <string name="default_sort_a_z">Default Order (A to Z)</string>
+    <string name="default_sort_z_z">Default Order (Z to A)</string>
+    <string name="activity_missing_action_dial">Could not open the default phone calls app</string>
+    <string name="activity_missing_action_mailto">Could not open the default email app</string>
+    <string name="default_email_content">Hello there,\n</string>
+    <string name="not_implemented_yet">This feature is not implemented yet!</string>
+    <string name="icon_xdesc_bad_wifi_signal">Bad wifi signal</string>
+    <string name="icon_xdesc_refresh">Refresh</string>
+    <string name="retry">Retry</string>
+    <string name="error_while_loading_content">Content loading failed!</string>
+    <string name="no_result_found">No result found!</string>
+    <string name="icon_xdesc_no_search_result">No search result</string>
+    <string name="back">Back</string>
+    <string name="select_theme">Select a theme:</string>
+    <string name="default_theme">Default Theme</string>
+    <string name="violet_theme_title">Violet Theme</string>
+    <string name="blue_theme_title">Blue Theme</string>
+    <string name="azure_theme_title">Azure Theme</string>
+    <string name="cyan_theme_title">Cyan Theme</string>
+    <string name="spring_green_theme_title">Spring Green Theme</string>
+    <string name="green_theme_title">Green Theme</string>
+    <string name="chartreuse_green_theme_title">Chartreuse Green Theme</string>
+    <string name="yellow_theme_title">Yellow Theme</string>
+    <string name="orange_theme_title">Orange Theme</string>
+    <string name="red_theme_title">Red Theme</string>
+    <string name="rose_theme_title">Rose Theme</string>
+    <string name="magenta_theme_title">Magenta Theme</string>
+
+    <string name="settings">Settings</string>
+
     <string name="app_name">Reporter</string>
 </resources>

@@ -1,11 +1,11 @@
-import com.lippia.gradle.Version
-import com.lippia.gradle.addCommonAndroidTestDependencies
-import com.lippia.gradle.addCommonTestDependencies
-import com.lippia.gradle.addHilt
-import com.lippia.gradle.addLifecycle
-import com.lippia.gradle.addRoomApi
-import com.lippia.gradle.addRoomCompiler
-import com.lippia.gradle.standardAndroidApp
+import com.reporter.gradle.Version
+import com.reporter.gradle.addCommonAndroidTestDependencies
+import com.reporter.gradle.addCommonTestDependencies
+import com.reporter.gradle.addHilt
+import com.reporter.gradle.addLifecycle
+import com.reporter.gradle.addRoomApi
+import com.reporter.gradle.addRoomCompiler
+import com.reporter.gradle.standardAndroidApp
 
 plugins {
     id("com.android.application")
@@ -24,7 +24,7 @@ plugins {
 
 println("app build config...")
 
-standardAndroidApp("com.reporter", 1, "proguard-rules.pro")
+standardAndroidApp("com.reporter.client", 2, "proguard-rules.pro")
 
 dependencies {
     addCommonTestDependencies()
@@ -37,7 +37,6 @@ dependencies {
     addLifecycle()
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("com.lippia:common:${Version.LIPPIA_COMMON}")
 
     implementation(platform("com.google.firebase:firebase-bom:${Version.FIREBASE_BOM}"))
     implementation("com.google.firebase:firebase-analytics-ktx")
@@ -79,4 +78,10 @@ dependencies {
 
     implementation("com.github.alorma:compose-settings-ui-m3:${Version.COMPOSE_SETTINGS}")
     implementation("com.tencent:mmkv:${Version.MMKV}")
+
+    val coroutinesVersion = "1.6.4"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+
+    implementation("commons-codec:commons-codec:1.15")
 }

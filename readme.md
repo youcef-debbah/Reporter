@@ -1,4 +1,7 @@
 # things to do
+- replace temp build config with real configs
+- move firebase config to config file
+
 - add room
 - add hilt
 - add teller
