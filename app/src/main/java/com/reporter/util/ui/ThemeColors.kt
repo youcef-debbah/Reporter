@@ -1,15 +1,12 @@
 package com.reporter.util.ui
 
 import androidx.annotation.StringRes
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import com.reporter.client.R
-
-val defaultThemeColors = ThemeColors.BLUE
-
-fun themeColorsNamed(themeColorsName: String): ThemeColors =
-    if (themeColorsName.isEmpty()) defaultThemeColors else ThemeColors.valueOf(themeColorsName)
 
 @Stable
 enum class ThemeColors(

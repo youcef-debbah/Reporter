@@ -44,7 +44,7 @@ fun NavigationBarScaffold(
     contentColor: Color = contentColorFor(containerColor),
     builder: NavGraphBuilder.(NavHostController) -> Unit,
 ) {
-    DefaultTheme {
+    ApplicationTheme {
         StatelessNavigationBarScaffold(
             screens,
             bottomSheetNavigator,

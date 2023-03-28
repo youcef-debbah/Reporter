@@ -1,7 +1,9 @@
 package com.reporter.util.ui
 
+import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -13,7 +15,9 @@ import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.reporter.util.model.AppConfig
 import com.reporter.util.model.LOCAL_APPLICATION_THEME
-import com.reporter.util.model.REMOTE_DYNAMIC_COLOR_SCHEME_ENABLED
+import com.reporter.util.model.LocalConfig
+import com.reporter.util.model.REMOTE_DYNAMIC_TONAL_PALETTE_ENABLED
+import com.reporter.util.model.Teller
 
 object DefaultColors {
     val md_theme_light_error = Color(0xFFBA1A1A)
@@ -31,53 +35,57 @@ object DefaultColors {
     val md_theme_dark_onBackground = Color(0xFFE5E1E6)
 }
 
-@Composable
-fun DynamicTheme(
-    themeName: String = "",
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    DynamicTheme(
-        themeColors = themeColorsNamed(themeName),
-        darkTheme = darkTheme,
-        content = content,
-    )
-}
-
-@Composable
-fun DynamicTheme(
-    themeColors: ThemeColors = defaultThemeColors,
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    MaterialTheme(
-        colorScheme = themeColors.colorScheme(darkTheme),
-        content = content,
-    )
-}
-
-@Composable
-fun DefaultTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
-) {
-    val currentTheme by AppConfig.stringState(LOCAL_APPLICATION_THEME)
-
-    val colorScheme =
-        if (AppConfig.get(REMOTE_DYNAMIC_COLOR_SCHEME_ENABLED) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        } else {
-            defaultThemeColors.colorScheme(darkTheme)
+fun loadColorScheme(
+    context: Context,
+    useDynamicTonalPalette: Boolean,
+    isDarkTheme: Boolean,
+    themeNameConfig: LocalConfig<String>
+): ColorScheme =
+    if (useDynamicTonalPalette
+        && AppConfig.get(REMOTE_DYNAMIC_TONAL_PALETTE_ENABLED)
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    ) {
+        if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    } else {
+        val currentThemeName by AppConfig.stringState(themeNameConfig)
+        val currentThemeColors = try {
+            ThemeColors.valueOf(currentThemeName)
+        } catch (e: IllegalArgumentException) {
+            val defaultTheme = themeNameConfig.default
+            Teller.warn("Theme not found: $currentThemeName falling back to: $defaultTheme", e)
+            AppConfig.set(themeNameConfig, defaultTheme)
+            ThemeColors.valueOf(defaultTheme)
         }
+        currentThemeColors.colorScheme(isDarkTheme)
+    }
 
+
+@Composable
+fun DynamicTheme(
+    themeNameConfig: LocalConfig<String>,
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
+) {
+    val colorScheme = loadColorScheme(LocalContext.current, false, isDarkTheme, themeNameConfig)
+    MaterialTheme(
+        colorScheme = colorScheme,
+        content = content,
+    )
+}
+
+@Composable
+fun ApplicationTheme(
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
+) {
+    val colorScheme = loadColorScheme(LocalContext.current, true, isDarkTheme, LOCAL_APPLICATION_THEME)
     val systemUiController = rememberSystemUiController()
 
-    DisposableEffect(systemUiController, darkTheme) {
+    DisposableEffect(systemUiController, isDarkTheme) {
 
         systemUiController.setSystemBarsColor(
             color = colorScheme.surface,
-            darkIcons = !darkTheme,
+            darkIcons = !isDarkTheme,
         )
 
         onDispose {}

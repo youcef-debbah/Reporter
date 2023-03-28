@@ -21,25 +21,27 @@ fun SimpleScaffold(
     contentColor: Color = contentColorFor(containerColor),
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Scaffold(
-        modifier = modifier,
-        topBar = topBar,
-        bottomBar = bottomBar,
-        snackbarHost = snackbarHost,
-        floatingActionButton = floatingActionButton,
-        floatingActionButtonPosition = floatingActionButtonPosition,
-        containerColor = containerColor,
-        contentColor = contentColor,
-        content = { paddingValues ->
-            Column(
-                Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize(),
-                Arrangement.Top,
-                Alignment.CenterHorizontally
-            ) {
-                content()
+    ApplicationTheme {
+        Scaffold(
+            modifier = modifier,
+            topBar = topBar,
+            bottomBar = bottomBar,
+            snackbarHost = snackbarHost,
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = floatingActionButtonPosition,
+            containerColor = containerColor,
+            contentColor = contentColor,
+            content = { paddingValues ->
+                Column(
+                    Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize(),
+                    Arrangement.Top,
+                    Alignment.CenterHorizontally
+                ) {
+                    content()
+                }
             }
-        }
-    )
+        )
+    }
 }
