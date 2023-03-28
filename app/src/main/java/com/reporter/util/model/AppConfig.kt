@@ -142,43 +142,59 @@ object AppConfig {
         }
 
     @PublicAPI
-    fun set(localString: LocalConfig<String>, value: String) {
-        try {
+    fun set(localString: LocalConfig<String>, value: String): String {
+        val newValue = try {
             localConfig.putString(localString.key, value)
-            stringStates[localString.key]?.value = value
+            value
         } catch (e: Exception) { // not suspended
-            Teller.warn("failed to set local string config: $localString", e)
+            Teller.warn("failed to set local string config: $localString to: $value", e)
+            get(localString)
         }
+
+        stringStates[localString.key]?.value = newValue
+        return newValue
     }
 
     @PublicAPI
-    fun set(localInt: LocalConfig<Int>, value: Int) {
-        try {
+    fun set(localInt: LocalConfig<Int>, value: Int): Int {
+        val newValue = try {
             localConfig.putInt(localInt.key, value)
-            intStates[localInt.key]?.value = value
+            value
         } catch (e: Exception) { // not suspended
-            Teller.warn("failed to set local int config: $localInt", e)
+            Teller.warn("failed to set local int config: $localInt to: $value", e)
+            get(localInt)
         }
+
+        intStates[localInt.key]?.value = newValue
+        return newValue
     }
 
     @PublicAPI
-    fun set(localLong: LocalConfig<Long>, value: Long) {
-        try {
+    fun set(localLong: LocalConfig<Long>, value: Long): Long {
+        val newValue = try {
             localConfig.putLong(localLong.key, value)
-            longStates[localLong.key]?.value = value
+            value
         } catch (e: Exception) { // not suspended
-            Teller.warn("failed to set local long config: $localLong", e)
+            Teller.warn("failed to set local long config: $localLong to: $value", e)
+            get(localLong)
         }
+
+        longStates[localLong.key]?.value = newValue
+        return newValue
     }
 
     @PublicAPI
-    fun set(localBoolean: LocalConfig<Boolean>, value: Boolean) {
-        try {
+    fun set(localBoolean: LocalConfig<Boolean>, value: Boolean): Boolean {
+        val newValue = try {
             localConfig.putBoolean(localBoolean.key, value)
-            booleanStates[localBoolean.key]?.value = value
+            value
         } catch (e: Exception) { // not suspended
-            Teller.warn("failed to set local boolean config: $localBoolean", e)
+            Teller.warn("failed to set local boolean config: $localBoolean to: $value", e)
+            get(localBoolean)
         }
+
+        booleanStates[localBoolean.key]?.value = newValue
+        return newValue
     }
 
     @PublicAPI
