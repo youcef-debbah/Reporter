@@ -49,43 +49,43 @@ object Theme {
         get() = LocalDimens.current
 }
 
-/**
- * <a href="https://material.io/design/material-theming/overview.html" class="external" target="_blank">Material Theming</a>.
- *
- * Material Theming refers to the customization of your Material Design app to better reflect your
- * product’s brand.
- *
- * Material components such as [Button] and [Checkbox] use values provided here when retrieving
- * default values.
- *
- * It defines colors as specified in the [Material Color theme creation spec](https://material.io/design/color/the-color-system.html#color-theme-creation),
- * typography defined in the [Material Type Scale spec](https://material.io/design/typography/the-type-system.html#type-scale),
- * and shapes defined in the [Shape scheme](https://material.io/design/shape/applying-shape-to-ui.html#shape-scheme).
- *
- * All values may be set by providing this component with the [colors][Colors],
- * [typography][Typography], and [shapes][Shapes] attributes. Use this to configure the overall
- * theme of elements within this MaterialTheme.
- *
- * Any values that are not set will inherit the current value from the theme, falling back to the
- * defaults if there is no parent MaterialTheme. This allows using a MaterialTheme at the top
- * of your application, and then separate MaterialTheme(s) for different screens / parts of your
- * UI, overriding only the parts of the theme definition that need to change.
- *
- * This is only an alias to (Material v2) MaterialTheme with a distinguishable
- * name that allows for a better auto-import support by the IDE
- *
- * @param colors A complete definition of the Material Color theme for this hierarchy
- * @param typography A set of text styles to be used as this hierarchy's typography system
- * @param shapes A set of shapes to be used by the components in this hierarchy
- */
-@Suppress("RemoveRedundantQualifierName")
-@Composable
-fun M2Theme(
-    colors: androidx.compose.material.Colors = androidx.compose.material.MaterialTheme.colors,
-    typography: androidx.compose.material.Typography = androidx.compose.material.MaterialTheme.typography,
-    shapes: androidx.compose.material.Shapes = androidx.compose.material.MaterialTheme.shapes,
-    content: @Composable () -> Unit
-) = androidx.compose.material.MaterialTheme(colors, typography, shapes, content)
+///**
+// * <a href="https://material.io/design/material-theming/overview.html" class="external" target="_blank">Material Theming</a>.
+// *
+// * Material Theming refers to the customization of your Material Design app to better reflect your
+// * product’s brand.
+// *
+// * Material components such as [Button] and [Checkbox] use values provided here when retrieving
+// * default values.
+// *
+// * It defines colors as specified in the [Material Color theme creation spec](https://material.io/design/color/the-color-system.html#color-theme-creation),
+// * typography defined in the [Material Type Scale spec](https://material.io/design/typography/the-type-system.html#type-scale),
+// * and shapes defined in the [Shape scheme](https://material.io/design/shape/applying-shape-to-ui.html#shape-scheme).
+// *
+// * All values may be set by providing this component with the [colors][Colors],
+// * [typography][Typography], and [shapes][Shapes] attributes. Use this to configure the overall
+// * theme of elements within this MaterialTheme.
+// *
+// * Any values that are not set will inherit the current value from the theme, falling back to the
+// * defaults if there is no parent MaterialTheme. This allows using a MaterialTheme at the top
+// * of your application, and then separate MaterialTheme(s) for different screens / parts of your
+// * UI, overriding only the parts of the theme definition that need to change.
+// *
+// * This is only an alias to (Material v2) MaterialTheme with a distinguishable
+// * name that allows for a better auto-import support by the IDE
+// *
+// * @param colors A complete definition of the Material Color theme for this hierarchy
+// * @param typography A set of text styles to be used as this hierarchy's typography system
+// * @param shapes A set of shapes to be used by the components in this hierarchy
+// */
+//@Suppress("RemoveRedundantQualifierName")
+//@Composable
+//fun M2Theme(
+//    colors: androidx.compose.material.Colors = androidx.compose.material.MaterialTheme.colors,
+//    typography: androidx.compose.material.Typography = androidx.compose.material.MaterialTheme.typography,
+//    shapes: androidx.compose.material.Shapes = androidx.compose.material.MaterialTheme.shapes,
+//    content: @Composable () -> Unit
+//) = androidx.compose.material.MaterialTheme(colors, typography, shapes, content)
 
 ///**
 // * Default [Divider], which can be optionally positioned at the bottom of a
@@ -142,67 +142,67 @@ fun M2Theme(
 //        androidx.compose.material3.TabRowDefaults.Divider(modifier)
 //}
 
-/**
- * Default indicator, which will be positioned at the bottom of the [TabRow], on top of the
- * divider.
- *
- * This is only an alias to [androidx.compose.material3.TabRowDefaults.Indicator] with a distinguishable
- * name that allows for a better auto-import support by the IDE
- *
- * @param modifier modifier for the indicator's layout
- * @param height height of the indicator, null defaults PrimaryNavigationTabTokens.ActiveIndicatorHeight
- * @param color color of the indicator, null defaults MaterialTheme.colorScheme.fromToken(PrimaryNavigationTabTokens.ActiveIndicatorColor)
- */
-@Composable
-fun TabIndicator(
-    modifier: Modifier = Modifier,
-    height: Dp? = null,
-    color: Color? = null
-) {
-    if (height != null && color != null)
-        androidx.compose.material3.TabRowDefaults.Indicator(modifier, height, color)
-    else if (height != null)
-        androidx.compose.material3.TabRowDefaults.Indicator(modifier, height = height)
-    else if (color != null)
-        androidx.compose.material3.TabRowDefaults.Indicator(modifier, color = color)
-    else
-        androidx.compose.material3.TabRowDefaults.Indicator(modifier)
-}
-
-/**
- * <a href="https://material.io/components/dividers" class="external" target="_blank">Material Design divider</a>.
- *
- * A divider is a thin line that groups content in lists and layouts.
- *
- * ![Dividers image](https://developer.android.com/images/reference/androidx/compose/material/dividers.png)
- *
- * @param color color of the divider line, null defaults to a transparent variant of onSurface theme color.
- * @param thickness thickness of the divider line, 1 dp is used by default. Using [Dp.Hairline]
- * will produce a single pixel divider regardless of screen density.
- * @param startIndent start offset of this line, no offset by default.
- */
-
-@Composable
-fun M2Divider(
-    modifier: Modifier = Modifier,
-    color: Color? = null,
-    thickness: Dp = 1.dp,
-    startIndent: Dp = 0.dp
-) {
-    if (color != null)
-        androidx.compose.material.Divider(
-            modifier = modifier,
-            color = color,
-            thickness = thickness,
-            startIndent = startIndent
-        )
-    else
-        androidx.compose.material.Divider(
-            modifier = modifier,
-            thickness = thickness,
-            startIndent = startIndent
-        )
-}
+///**
+// * Default indicator, which will be positioned at the bottom of the [TabRow], on top of the
+// * divider.
+// *
+// * This is only an alias to [androidx.compose.material3.TabRowDefaults.Indicator] with a distinguishable
+// * name that allows for a better auto-import support by the IDE
+// *
+// * @param modifier modifier for the indicator's layout
+// * @param height height of the indicator, null defaults PrimaryNavigationTabTokens.ActiveIndicatorHeight
+// * @param color color of the indicator, null defaults MaterialTheme.colorScheme.fromToken(PrimaryNavigationTabTokens.ActiveIndicatorColor)
+// */
+//@Composable
+//fun TabIndicator(
+//    modifier: Modifier = Modifier,
+//    height: Dp? = null,
+//    color: Color? = null
+//) {
+//    if (height != null && color != null)
+//        androidx.compose.material3.TabRowDefaults.Indicator(modifier, height, color)
+//    else if (height != null)
+//        androidx.compose.material3.TabRowDefaults.Indicator(modifier, height = height)
+//    else if (color != null)
+//        androidx.compose.material3.TabRowDefaults.Indicator(modifier, color = color)
+//    else
+//        androidx.compose.material3.TabRowDefaults.Indicator(modifier)
+//}
+//
+///**
+// * <a href="https://material.io/components/dividers" class="external" target="_blank">Material Design divider</a>.
+// *
+// * A divider is a thin line that groups content in lists and layouts.
+// *
+// * ![Dividers image](https://developer.android.com/images/reference/androidx/compose/material/dividers.png)
+// *
+// * @param color color of the divider line, null defaults to a transparent variant of onSurface theme color.
+// * @param thickness thickness of the divider line, 1 dp is used by default. Using [Dp.Hairline]
+// * will produce a single pixel divider regardless of screen density.
+// * @param startIndent start offset of this line, no offset by default.
+// */
+//
+//@Composable
+//fun M2Divider(
+//    modifier: Modifier = Modifier,
+//    color: Color? = null,
+//    thickness: Dp = 1.dp,
+//    startIndent: Dp = 0.dp
+//) {
+//    if (color != null)
+//        androidx.compose.material.Divider(
+//            modifier = modifier,
+//            color = color,
+//            thickness = thickness,
+//            startIndent = startIndent
+//        )
+//    else
+//        androidx.compose.material.Divider(
+//            modifier = modifier,
+//            thickness = thickness,
+//            startIndent = startIndent
+//        )
+//}
 
 /**
  * Adds the [LazyPagingItems] and their content to the scope. The range from 0 (inclusive) to

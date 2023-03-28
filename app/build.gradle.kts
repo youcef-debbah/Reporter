@@ -67,9 +67,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:${Version.Compose.RUNTIME}")
     implementation("androidx.compose.material3:material3:${Version.Compose.MATERIAL3}")
     implementation("androidx.compose.material3:material3-window-size-class:${Version.Compose.MATERIAL3}")
-    implementation("androidx.compose.material:material:${Version.Compose.MATERIAL}")
-    implementation("androidx.compose.material:material-icons-core:${Version.Compose.MATERIAL}")
-    implementation("androidx.compose.material:material-icons-extended:${Version.Compose.MATERIAL}")
+//    implementation("androidx.compose.material:material:${Version.Compose.MATERIAL}")
 
     implementation("com.google.accompanist:accompanist-flowlayout:${Version.COMPOSE_ACCOMPANIST}")
     implementation("com.google.accompanist:accompanist-systemuicontroller:${Version.COMPOSE_ACCOMPANIST}")
