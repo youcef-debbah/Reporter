@@ -64,7 +64,7 @@ object Version {
     const val PAGING_COMPOSE = "1.0.0-alpha18"
 
     // https://developer.android.com/jetpack/androidx/releases/appcompat
-    const val APPCOMPAT = "1.7.0"
+    const val APPCOMPAT = "1.6.1"
 
     // https://developer.android.com/jetpack/androidx/releases/lifecycle
     const val LIFECYCLE = "2.6.1"
