@@ -2,6 +2,8 @@ package com.reporter.client.model
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.reporter.util.model.StandardDatabase
 import dagger.Binds
 import dagger.Module
@@ -25,7 +27,13 @@ abstract class ReporterDataModule {
         fun getDatabase(@ApplicationContext context: Context): ReporterDatabase =
             Room.databaseBuilder(context, ReporterDatabase::class.java, ReporterDatabase.NAME)
                 .fallbackToDestructiveMigration()
+                .addCallback(DatabaseCallback())
                 .build()
+    }
 
+    class DatabaseCallback : RoomDatabase.Callback() {
+        override fun onCreate(db: SupportSQLiteDatabase) {
+            //TODO
+        }
     }
 }
