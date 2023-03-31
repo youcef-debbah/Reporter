@@ -18,7 +18,6 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.BottomSheetNavigator
@@ -31,12 +30,12 @@ import com.reporter.util.model.REMOTE_NAVIGATION_ANIMATION_DURATION
 
 @Composable
 fun NavigationBarScaffold(
-    vararg screens: AbstractDestination,
+    startDestination: AbstractDestination,
     modifier: Modifier = Modifier,
     bottomSheetNavigator: BottomSheetNavigator = rememberBottomSheetNavigator(),
     navController: NavHostController = rememberAnimatedNavController(bottomSheetNavigator),
     topBar: @Composable () -> Unit = {},
-    bottomBar: @Composable () -> Unit = { DefaultNavigationBar(screens, navController) },
+    bottomBar: @Composable () -> Unit = { DefaultNavigationBar(navController) },
     snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
@@ -46,7 +45,7 @@ fun NavigationBarScaffold(
 ) {
     ApplicationTheme {
         StatelessNavigationBarScaffold(
-            screens,
+            startDestination,
             bottomSheetNavigator,
             navController,
             modifier,
@@ -64,12 +63,12 @@ fun NavigationBarScaffold(
 
 @Composable
 private fun StatelessNavigationBarScaffold(
-    screens: Array<out AbstractDestination>,
+    startDestination: AbstractDestination,
     bottomSheetNavigator: BottomSheetNavigator,
     navController: NavHostController,
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
-    bottomBar: @Composable () -> Unit = { DefaultNavigationBar(screens, navController) },
+    bottomBar: @Composable () -> Unit = { DefaultNavigationBar(navController) },
     snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
@@ -88,13 +87,14 @@ private fun StatelessNavigationBarScaffold(
             containerColor = containerColor,
             contentColor = contentColor,
             content = { innerPadding ->
+                val destinations = navController.currentScreen().destinationsOrEmpty()
                 AnimatedNavHost(
                     navController = navController,
-                    startDestination = screens.first().route,
+                    startDestination = startDestination.route,
                     modifier = Modifier.padding(innerPadding),
                     builder = { builder.invoke(this, navController) },
                     enterTransition = {
-                        val diff = screens.iterator().indexDiff(
+                        val diff = destinations.iterator().indexDiff(
                             initialState.destination::isLinkedTo,
                             targetState.destination::isLinkedTo,
                         )
@@ -106,7 +106,7 @@ private fun StatelessNavigationBarScaffold(
                         }
                     },
                     exitTransition = {
-                        val diff = screens.iterator().indexDiff(
+                        val diff = destinations.iterator().indexDiff(
                             initialState.destination::isLinkedTo,
                             targetState.destination::isLinkedTo,
                         )
@@ -118,7 +118,7 @@ private fun StatelessNavigationBarScaffold(
                         }
                     },
                     popEnterTransition = {
-                        val diff = screens.iterator().indexDiff(
+                        val diff = destinations.iterator().indexDiff(
                             initialState.destination::isLinkedTo,
                             targetState.destination::isLinkedTo,
                         )
@@ -130,7 +130,7 @@ private fun StatelessNavigationBarScaffold(
                         }
                     },
                     popExitTransition = {
-                        val diff = screens.iterator().indexDiff(
+                        val diff = destinations.iterator().indexDiff(
                             initialState.destination::isLinkedTo,
                             targetState.destination::isLinkedTo,
                         )
@@ -185,20 +185,16 @@ private fun AnimatedContentScope<NavBackStackEntry>.outTransition(goingDeeper: B
     )
 
 @Composable
-fun DefaultNavigationBar(
-    screens: Array<out AbstractDestination>,
-    navController: NavHostController
-) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-    val selectedScreen = screens.firstOrNull { currentDestination.isLinkedTo(it.route) }
-    AnimatedVisibility(selectedScreen != null) {
+fun DefaultNavigationBar(navController: NavHostController) {
+    val currentScreen = navController.currentScreen()
+    val destinations = currentScreen.destinationsOrEmpty()
+    AnimatedVisibility(destinations.isNotEmpty()) {
         NavigationBar {
-            screens.forEach { screen ->
+            destinations.forEach { screen ->
                 NavigationBarItem(
-                    icon = { VectorIcon(screen.icon, null) },
-                    label = screen.label?.let { { ThemedText(stringRes(it)) } },
-                    selected = screen == selectedScreen,
+                    icon = { InfoIcon(screen.icon, screen.title()) },
+                    label = screen.label()?.let { { ThemedText(it) } },
+                    selected = screen == currentScreen,
                     onClick = {
                         navController.navigate(screen.route) {
                             // Pop up to the start destination of the graph to
