@@ -76,7 +76,7 @@ private fun ThemePreviewIcon(
     themeColorScheme: ColorScheme
 ) {
     val shape = CircleShape
-    VectorIcon(
+    InfoIcon(
         icon = R.drawable.baseline_format_color_text_24,
         desc = null,
         tint = themeColorScheme.onPrimaryContainer,
