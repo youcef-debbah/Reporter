@@ -2,8 +2,86 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "20f2e2deddcf0878c9cfccd13bd0355b",
+    "identityHash": "597e5f609fdc748527dff8cf3a0c9d50",
     "entities": [
+      {
+        "tableName": "report_template",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`report_template_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `content` TEXT NOT NULL, `label_en` TEXT, `label_ar` TEXT, `label_fr` TEXT, `desc_en` TEXT, `desc_ar` TEXT, `desc_fr` TEXT, PRIMARY KEY(`report_template_id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "report_template_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label_en",
+            "columnName": "label_en",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "label_ar",
+            "columnName": "label_ar",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "label_fr",
+            "columnName": "label_fr",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "desc_en",
+            "columnName": "desc_en",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "desc_ar",
+            "columnName": "desc_ar",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "desc_fr",
+            "columnName": "desc_fr",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "report_template_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_report_template_name",
+            "unique": true,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_report_template_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
+        "foreignKeys": []
+      },
       {
         "tableName": "logged_event",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`logged_event_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `parameters` TEXT, PRIMARY KEY(`logged_event_id`))",
@@ -40,7 +118,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '20f2e2deddcf0878c9cfccd13bd0355b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '597e5f609fdc748527dff8cf3a0c9d50')"
     ]
   }
 }
