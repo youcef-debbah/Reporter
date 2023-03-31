@@ -6,12 +6,18 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.*
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.google.accompanist.navigation.animation.composable
 import com.reporter.client.R
 
 @Composable
@@ -35,7 +41,7 @@ fun SimpleAppBar(title: String = AbstractApplication.INSTANCE.config.application
 fun SimpleScreenIcon(@DrawableRes icon: Int?) {
     if (icon != null) {
         IconButton(onClick = {}, enabled = false) {
-            VectorIcon(icon = icon, desc = null)
+            InfoIcon(icon = icon, desc = null)
         }
     }
 }
@@ -69,7 +75,7 @@ fun StandardAppBar(
 @Composable
 fun StandardBackButton(navController: NavController) {
     IconButton(onClick = { navController.popBackStack() }) {
-        VectorIcon(
+        InfoIcon(
             icon = R.drawable.baseline_arrow_back_24,
             desc = R.string.back
         )
@@ -82,7 +88,7 @@ private fun StandardAppBarActions(
 ) {
     var menuExpanded by rememberSaveable { mutableStateOf(false) }
     IconButton(onClick = { menuExpanded = menuExpanded.not() }) {
-        VectorIcon(
+        InfoIcon(
             icon = R.drawable.baseline_more_vert_24,
             desc = R.string.icon_desc_open_drop_menu
         )
@@ -90,8 +96,8 @@ private fun StandardAppBarActions(
     DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
         val destinations = AbstractApplication.INSTANCE.config.standardDestinations
         DropdownMenuItem(
-            leadingIcon = { VectorIcon(icon = destinations.settingsScreen.icon, desc = null) },
-            text = { ThemedText(destinations.settingsScreen.title) },
+            leadingIcon = { DecorativeIcon(destinations.settingsScreen.icon) },
+            text = { ThemedText(destinations.settingsScreen.title()) },
             onClick = {
                 menuExpanded = false
                 navController.navigate(destinations.settingsScreen.route) {
@@ -105,7 +111,5 @@ private fun StandardAppBarActions(
 
 fun NavGraphBuilder.addStandardAppBarScreens(navController: NavController) {
     val destinations = AbstractApplication.INSTANCE.config.standardDestinations
-    composable(destinations.settingsScreen.route) {
-        destinations.SettingsScreenView(navController)
-    }
+    destinations.addSettingsScreen(this, navController)
 }
