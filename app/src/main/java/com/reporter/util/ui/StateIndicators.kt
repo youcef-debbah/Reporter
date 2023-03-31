@@ -21,7 +21,7 @@ fun LoadingErrorCard(onRetry: () -> Unit, modifier: Modifier = Modifier) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
     ) {
         PaddedRow(Modifier.fillMaxWidth()) {
-            VectorIcon(
+            InfoIcon(
                 icon = R.drawable.round_signal_wifi_bad_24,
                 desc = R.string.icon_xdesc_bad_wifi_signal,
                 modifier = Modifier.contentPadding(),
@@ -49,7 +49,7 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .contentPadding(start = zero_padding, end = zero_padding)
     ) {
-        VectorIcon(
+        InfoIcon(
             icon = R.drawable.baseline_search_off_24,
             desc = R.string.icon_xdesc_refresh,
             modifier = Modifier.contentPadding(),
@@ -65,7 +65,7 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
         Button(
             onClick = onRetry,
         ) {
-            VectorIcon(
+            InfoIcon(
                 icon = R.drawable.baseline_refresh_24,
                 desc = R.string.icon_xdesc_no_search_result,
             )
