@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun SimpleScaffold(
     modifier: Modifier = Modifier,
+    columnModifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = { SimpleAppBar() },
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
@@ -33,7 +34,7 @@ fun SimpleScaffold(
             contentColor = contentColor,
             content = { paddingValues ->
                 Column(
-                    Modifier
+                    columnModifier
                         .padding(paddingValues)
                         .fillMaxSize(),
                     Arrangement.Top,
