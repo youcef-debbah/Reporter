@@ -35,3 +35,18 @@ fun <T> Iterator<T>.indexDiff(filter1: (T) -> Boolean, filter2: (T) -> Boolean):
 
     return null
 }
+
+inline fun <T> MutableIterator<T>.removeIf(
+    preRemove: (T) -> Unit = {},
+    postRemove: (T) -> Unit = {},
+    filter: (T) -> Boolean
+) {
+    while (hasNext()) {
+        val next = next()
+        if (filter(next)) {
+            preRemove(next)
+            remove()
+            postRemove(next)
+        }
+    }
+}
