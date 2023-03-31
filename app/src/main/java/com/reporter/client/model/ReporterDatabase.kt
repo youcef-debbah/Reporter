@@ -13,6 +13,7 @@ import com.reporter.util.model.StandardDatabase
 @Database(
     version = 1,
     entities = [
+        ReportTemplate::class,
         LoggedEvent::class,
     ],
 )
