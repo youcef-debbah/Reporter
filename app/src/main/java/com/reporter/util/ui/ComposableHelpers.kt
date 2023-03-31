@@ -23,6 +23,13 @@ fun stringRes(@StringRes id: Int): String = stringResource(id)
 
 @Composable
 @ReadOnlyComposable
+fun stringRes(@StringRes id: Int, vararg formatArgs: Any): String = stringResource(
+    id = id,
+    formatArgs = formatArgs,
+)
+
+@Composable
+@ReadOnlyComposable
 fun dimen(@DimenRes id: Int): Dp = dimensionResource(id)
 
 @Composable
