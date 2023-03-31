@@ -1,31 +1,35 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 
 package com.reporter.client.ui
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
+import com.google.accompanist.navigation.animation.composable
 import com.reporter.client.R
 import com.reporter.util.ui.SimpleScaffold
 import com.reporter.util.ui.StandardAppBar
 import com.reporter.util.ui.PaddedColumn
 import com.reporter.util.ui.ThemedText
-import com.reporter.util.ui.AbstractDestination
+import com.reporter.util.ui.StaticScreenDestination
+import com.reporter.util.ui.activeScreens
 
-object ReporterSettingsScreen : AbstractDestination(
+object ReporterSettingsScreen : StaticScreenDestination(
     route = "settings",
     icon = R.drawable.baseline_settings_24,
-    title = R.string.settings,
+    titleRes = R.string.settings,
 ) {
     fun NavController.toSettingsScreen(navOptions: NavOptions? = null) {
         navigate(this@ReporterSettingsScreen.route, navOptions)
     }
 
     fun NavGraphBuilder.addSettingsScreen(navController: NavController) {
-        composable(this@ReporterSettingsScreen.route) { ReporterSettingsView(navController) }
+        val thisRoute = this@ReporterSettingsScreen.route
+        activeScreens[thisRoute] = this@ReporterSettingsScreen
+        composable(thisRoute) { ReporterSettingsView(navController) }
     }
 
     @Composable
@@ -34,7 +38,7 @@ object ReporterSettingsScreen : AbstractDestination(
             topBar = {
                 StandardAppBar(
                     navController = navController,
-                    title = this@ReporterSettingsScreen.title,
+                    title = this@ReporterSettingsScreen.titleRes,
                     actions = {},
                 )
             },
