@@ -9,7 +9,7 @@ import java.util.*
 
 object Localizer {
 
-    val preferredLanguages: ImmutableList<String> by lazy {
+    private val preferredLanguages: ImmutableList<String> by lazy {
         val result = LinkedList<String>()
         try {
             val configuration = AbstractApplication.INSTANCE.resources.configuration
