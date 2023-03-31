@@ -6,9 +6,33 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
+import com.reporter.common.RoundedCorner
+
+@Composable
+fun ContentCard(
+    modifier: Modifier = Modifier,
+    shape: Shape = RoundedCorner.ExtraLarge,
+    colors: CardColors = CardDefaults.elevatedCardColors(),
+    elevation: CardElevation = CardDefaults.elevatedCardElevation(),
+    content: @Composable ColumnScope.() -> Unit,
+) = ElevatedCard(
+    modifier
+        .padding(Theme.dimens.content_padding * 2)
+        .fillMaxWidth(),
+    shape,
+    colors,
+    elevation,
+    content
+)
 
 @Composable
 inline fun CentredColumn(
@@ -17,7 +41,7 @@ inline fun CentredColumn(
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     content: @Composable ColumnScope.() -> Unit
 ) = Column(
-    modifier = modifier,
+    modifier = modifier.fillMaxWidth(),
     verticalArrangement = verticalArrangement,
     horizontalAlignment = horizontalAlignment,
     content = content
