@@ -1,12 +1,11 @@
 package com.reporter.util.ui
 
-import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
 
 interface StandardDestinations {
 
     val settingsScreen: AbstractDestination
 
-    @Composable
-    fun SettingsScreenView(navController: NavController)
+    fun addSettingsScreen(builder: NavGraphBuilder, navController: NavController)
 }
