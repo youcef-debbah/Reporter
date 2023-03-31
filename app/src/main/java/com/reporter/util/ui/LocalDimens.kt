@@ -47,9 +47,9 @@ data class Dimens(
 val LocalDimens = staticCompositionLocalOf {
     Dimens(
         text_padding = StaticPadding(
-            medium_padding,
+            small_padding,
             zero_padding,
-            medium_padding,
+            small_padding,
             zero_padding
         ),
         button_padding = StaticPadding(
@@ -134,4 +134,46 @@ class StaticPadding(
 
     override fun toString() =
         "PaddingValues.Absolute(start=$start, top=$top, end=$end, bottom=$bottom)"
+
+    @Stable
+    operator fun plus(value: Dp) = StaticPadding(
+        start = start.plus(value),
+        top = top.plus(value),
+        end = end.plus(value),
+        bottom = bottom.plus(value),
+    )
+
+    @Stable
+    operator fun minus(value: Dp) = StaticPadding(
+        start = start.minus(value),
+        top = top.minus(value),
+        end = end.minus(value),
+        bottom = bottom.minus(value),
+    )
+
+    @Stable
+    operator fun unaryMinus() = StaticPadding(
+        start = start.unaryMinus(),
+        top = top.unaryMinus(),
+        end = end.unaryMinus(),
+        bottom = bottom.unaryMinus(),
+    )
+
+    @Stable
+    operator fun div(value: Int): StaticPadding =
+        StaticPadding(
+            start = start.div(value),
+            top = top.div(value),
+            end = end.div(value),
+            bottom = bottom.div(value),
+        )
+
+    @Stable
+    operator fun times(value: Int): StaticPadding =
+        StaticPadding(
+            start = start.times(value),
+            top = top.times(value),
+            end = end.times(value),
+            bottom = bottom.times(value),
+        )
 }
