@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.Color
 fun SimpleScaffold(
     modifier: Modifier = Modifier,
     columnModifier: Modifier = Modifier,
+    columnArrangement: Arrangement.Vertical = Arrangement.Top,
+    columnAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     topBar: @Composable () -> Unit = { SimpleAppBar() },
     bottomBar: @Composable () -> Unit = {},
     snackbarHost: @Composable () -> Unit = {},
@@ -34,11 +36,11 @@ fun SimpleScaffold(
             contentColor = contentColor,
             content = { paddingValues ->
                 Column(
-                    columnModifier
+                    modifier = columnModifier
                         .padding(paddingValues)
                         .fillMaxSize(),
-                    Arrangement.Top,
-                    Alignment.CenterHorizontally
+                    verticalArrangement = columnArrangement,
+                    horizontalAlignment = columnAlignment,
                 ) {
                     content()
                 }
