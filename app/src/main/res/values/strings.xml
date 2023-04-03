@@ -44,6 +44,11 @@
     <string name="add_template_desc">Add new report template</string>
     <string name="templates_list_title">Available Templates</string>
     <string name="templates_list_label">Home</string>
-    <string name="template_tab_preview_title">%s Preview</string>
-    <string name="preview">Preview</string>
+    <string name="template_tab_preview_title">Preview: %s</string>
+    <string name="template_tab_preview_label">Preview</string>
+    <string name="template_tab_loading_title">Loading: %s</string>
+    <string name="template_tab_loading_label">Template</string>
+    <string name="template_tab_loading_desc">Loading…</string>
+    <string name="template_tab_record_title">Table: %s</string>
+    <string name="template_tab_record_label">Table: %s</string>
 </resources>
