@@ -24,7 +24,7 @@ plugins {
 
 println("app build config...")
 
-standardAndroidApp("com.reporter.client", 2, "proguard-rules.pro")
+standardAndroidApp("com.reporter.client", 3, "proguard-rules.pro")
 
 dependencies {
     addCommonTestDependencies()
