@@ -26,6 +26,9 @@ object Texts {
     const val TRUE = "true"
     const val KEY_VALUE_SEPARATOR = "="
 
+    const val MEME_TYPE_TEXT_HTML = "text/html"
+    const val UTF_8 = "UTF-8";
+
     val ZEROS: Array<String> = Array(20) { "0".repeat(it) }
     const val MIN_ABS_INT = "2147483648"
     const val MIN_ABS_LONG = "9223372036854775808"
