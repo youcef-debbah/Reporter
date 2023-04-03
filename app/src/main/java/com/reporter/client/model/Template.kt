@@ -15,7 +15,7 @@ const val REPORT_TEMPLATE_NAME = "name"
     tableName = REPORT_TEMPLATE_TABLE,
     indices = [Index(value = [REPORT_TEMPLATE_NAME], unique = true)]
 )
-data class ReportTemplate(
+data class Template(
     @PrimaryKey
     @ColumnInfo(name = REPORT_TEMPLATE_ID)
     val id: Long,
@@ -38,4 +38,11 @@ data class ReportTemplate(
     val desc by lazy {
         Localizer.inPrimaryLang(desc_en, desc_ar, desc_fr)
     }
+
+    override fun equals(other: Any?) =
+        this === other || (other is Template && this.id == other.id)
+
+    override fun hashCode() = id.hashCode()
+
+    override fun toString() = "ReportTemplate(id=$id, name='$name')"
 }
