@@ -14,6 +14,7 @@ import com.reporter.util.model.StandardDatabase
     version = 1,
     entities = [
         Template::class,
+        Value::class,
         LoggedEvent::class,
     ],
 )
