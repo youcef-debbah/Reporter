@@ -2,21 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "597e5f609fdc748527dff8cf3a0c9d50",
+    "identityHash": "0a8882fc9e15a3dc48d530d8d6e6d3ed",
     "entities": [
       {
-        "tableName": "report_template",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`report_template_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `content` TEXT NOT NULL, `label_en` TEXT, `label_ar` TEXT, `label_fr` TEXT, `desc_en` TEXT, `desc_ar` TEXT, `desc_fr` TEXT, PRIMARY KEY(`report_template_id`))",
+        "tableName": "template",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`template_name` TEXT NOT NULL, `content` TEXT NOT NULL, `label_en` TEXT, `label_ar` TEXT, `label_fr` TEXT, `desc_en` TEXT, `desc_ar` TEXT, `desc_fr` TEXT, `lastUpdate` INTEGER NOT NULL, PRIMARY KEY(`template_name`))",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "report_template_id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "name",
-            "columnName": "name",
+            "columnName": "template_name",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -61,25 +55,54 @@
             "columnName": "desc_fr",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "lastUpdate",
+            "columnName": "lastUpdate",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "report_template_id"
+            "template_name"
           ]
         },
-        "indices": [
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "variable_value",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parent_variable_name` TEXT NOT NULL, `parent_template_name` TEXT NOT NULL, `value` TEXT NOT NULL, PRIMARY KEY(`parent_variable_name`, `parent_template_name`))",
+        "fields": [
           {
-            "name": "index_report_template_name",
-            "unique": true,
-            "columnNames": [
-              "name"
-            ],
-            "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_report_template_name` ON `${TABLE_NAME}` (`name`)"
+            "fieldPath": "variable",
+            "columnName": "parent_variable_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "template",
+            "columnName": "parent_template_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "parent_variable_name",
+            "parent_template_name"
+          ]
+        },
+        "indices": [],
         "foreignKeys": []
       },
       {
@@ -118,7 +141,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '597e5f609fdc748527dff8cf3a0c9d50')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0a8882fc9e15a3dc48d530d8d6e6d3ed')"
     ]
   }
 }
