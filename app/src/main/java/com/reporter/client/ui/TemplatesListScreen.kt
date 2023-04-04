@@ -142,11 +142,10 @@ fun TemplateCard(navController: NavHostController, webView: WebView, template: T
             override fun onPageFinished(view: WebView?, url: String?) {
                 view?.evaluateJavascript("meta") {
                     backgroundLaunch {
-                        delay(1000)
                         val meta = TemplateMeta.from(it)
                         mainLaunch {
                             if (meta.hasErrors()) {
-                                buildAndNavigateToErrorView(navController, template, resources)
+                                buildAndNavigateToErrorView(navController, template, loadingRoute, resources)
                             } else {
                                 buildAndNavigateToTemplateView(
                                     navController,
@@ -205,8 +204,9 @@ private fun buildAndNavigateToLoadingView(
 private fun buildAndNavigateToErrorView(
     navController: NavHostController,
     template: Template,
+    loadingRoute: String,
     resources: Resources,
-): String {
+) {
     val newScreen = TemplateTab(
         template,
         resources.getString(R.string.template_tab_error_title),
@@ -246,8 +246,11 @@ private fun buildAndNavigateToErrorView(
         }
 
     navController.graph.addAll(newGraph)
-    navController.navigate(newScreen.route)
-    return newScreen.route
+    navController.navigate(newScreen.route)  {
+        popUpTo(loadingRoute) {
+            inclusive = true
+        }
+    }
 }
 
 private fun buildAndNavigateToTemplateView(
@@ -313,9 +316,9 @@ private fun buildAndNavigateToTemplateView(
                             DefaultNavigationBar(navController)
                         }) {
                         ContentCard {
-                            ThemedText("record name" + tab.record.name)
-                            ThemedText("record label" + tab.record.label)
-                            ThemedText("record desc" + tab.record.desc)
+                            ThemedText("record name:" + tab.record.name)
+                            ThemedText("record label: " + tab.record.label)
+                            ThemedText("record desc: " + tab.record.desc)
                         }
                     }
                 }
@@ -324,8 +327,8 @@ private fun buildAndNavigateToTemplateView(
 
     navController.graph.addAll(newGraph)
     navController.navigate(previewTab.route) {
-        this.popUpTo(loadingRoute) {
-            this.inclusive = true
+        popUpTo(loadingRoute) {
+            inclusive = true
         }
     }
 }
