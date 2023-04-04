@@ -299,7 +299,7 @@ private fun buildAndNavigateToLoadingView(
         resources.getString(R.string.template_tab_loading_label),
         R.drawable.baseline_downloading_24,
         "loading",
-        )
+    )
 
     val newGraph =
         navController.createGraph(loadingTab.route, TemplateTab.GLOBAL_ROUTE_PREFIX + "_loading") {
@@ -341,7 +341,7 @@ private fun buildAndNavigateToTemplateView(
     tabsBuilder.add(previewTab)
 
     val recordTabs = ArrayList<RecordTab>(meta.records.size)
-    for (record: Record in meta.records) {
+    for (record in meta.records.values) {
         val recordTab = RecordTab(
             record,
             template,
