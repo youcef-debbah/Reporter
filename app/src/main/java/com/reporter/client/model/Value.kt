@@ -13,6 +13,7 @@ class Value(
     val variable: String,
     @ColumnInfo(VALUE_TEMPLATE)
     val template: String,
+    val lastUpdate: Long,
     override val value: String,
 ) : DynamicValue {
     @Ignore
