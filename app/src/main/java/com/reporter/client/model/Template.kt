@@ -1,17 +1,15 @@
 package com.reporter.client.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.reporter.util.model.Localizer
 
-const val REPORT_TEMPLATE_TABLE = "report_template"
-
-@Entity(
-    tableName = REPORT_TEMPLATE_TABLE,
-)
-data class Template(
+@Entity(tableName = "template")
+class Template(
     @PrimaryKey
+    @ColumnInfo(name = "template_name")
     val name: String,
     val content: String,
     val label_en: String?,
