@@ -1,25 +1,17 @@
 package com.reporter.client.model
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.reporter.util.model.Localizer
 
 const val REPORT_TEMPLATE_TABLE = "report_template"
-const val REPORT_TEMPLATE_ID = "report_template_id"
-const val REPORT_TEMPLATE_NAME = "name"
 
 @Entity(
     tableName = REPORT_TEMPLATE_TABLE,
-    indices = [Index(value = [REPORT_TEMPLATE_NAME], unique = true)]
 )
 data class Template(
     @PrimaryKey
-    @ColumnInfo(name = REPORT_TEMPLATE_ID)
-    val id: Long,
-    @ColumnInfo(name = REPORT_TEMPLATE_NAME)
     val name: String,
     val content: String,
     val label_en: String?,
@@ -28,6 +20,7 @@ data class Template(
     val desc_en: String?,
     val desc_ar: String?,
     val desc_fr: String?,
+    val lastUpdate: Long,
 ) {
     @delegate:Ignore
     val label by lazy {
@@ -40,9 +33,9 @@ data class Template(
     }
 
     override fun equals(other: Any?) =
-        this === other || (other is Template && this.id == other.id)
+        this === other || (other is Template && this.name == other.name)
 
-    override fun hashCode() = id.hashCode()
+    override fun hashCode() = name.hashCode()
 
-    override fun toString() = "ReportTemplate(id=$id, name='$name')"
+    override fun toString() = "ReportTemplate(name='$name',label=$label)"
 }

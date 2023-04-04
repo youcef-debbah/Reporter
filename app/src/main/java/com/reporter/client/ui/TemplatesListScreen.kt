@@ -187,7 +187,6 @@ object TemplatesListScreen : StaticScreenDestination(
 
         val templates = listOf(
             Template(
-                1,
                 "temp_1",
                 htmlContent,
                 "Wood bill",
@@ -195,10 +194,10 @@ object TemplatesListScreen : StaticScreenDestination(
                 "Facture de bois",
                 "Standard wood bill for small clients",
                 "فاتورة خشب قياسية للعملاء الصغار",
-                "Facture de bois standard pour les petits clients"
+                "Facture de bois standard pour les petits clients",
+                System.currentTimeMillis(),
             ),
             Template(
-                2,
                 "temp_2",
                 "<p>This is my Water bill</p>",
                 "Water bill",
@@ -206,7 +205,8 @@ object TemplatesListScreen : StaticScreenDestination(
                 "Facture de l'eau",
                 "Standard water bill for small clients",
                 "فاتورة ماء قياسية للعملاء الصغار",
-                "Facture de l'eau standard pour les petits clients"
+                "Facture de l'eau standard pour les petits clients",
+                System.currentTimeMillis(),
             )
         )
 
