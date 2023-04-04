@@ -8,7 +8,7 @@ const val VALUE_VARIABLE = "parent_variable_name"
 const val VALUE_TEMPLATE = "parent_template_name"
 
 @Entity(tableName = "variable_value", primaryKeys = [VALUE_VARIABLE, VALUE_TEMPLATE])
-data class Value(
+class Value(
     @ColumnInfo(VALUE_VARIABLE)
     val variable: String,
     @ColumnInfo(VALUE_TEMPLATE)
@@ -17,4 +17,11 @@ data class Value(
 ) : DynamicValue {
     @Ignore
     override val name: String = "${template}_${variable}"
+
+    override fun equals(other: Any?) =
+        this === other || (other is Value && this.name == other.name)
+
+    override fun hashCode() = name.hashCode()
+
+    override fun toString() = "Value(name='$name', value='$value')"
 }
