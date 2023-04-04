@@ -1,9 +1,11 @@
 package com.reporter.client.model
 
+import android.webkit.WebView
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.reporter.common.Texts
 import com.reporter.util.model.Localizer
 
 @Entity(tableName = "template")
@@ -36,4 +38,18 @@ class Template(
     override fun hashCode() = name.hashCode()
 
     override fun toString() = "Template(name='$name',label=$label)"
+
+    fun loadContent(webView: WebView) {
+        if (content.startsWith(Texts.ASSETS_URL_PREFIX)) {
+            webView.loadUrl(content)
+        } else {
+            webView.loadDataWithBaseURL(
+                null,
+                content,
+                Texts.MEME_TYPE_TEXT_HTML,
+                Texts.UTF_8,
+                null
+            )
+        }
+    }
 }

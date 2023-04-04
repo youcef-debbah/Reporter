@@ -12,6 +12,7 @@ import kotlin.math.log10
 
 object Texts {
 
+    const val ASSETS_URL_PREFIX: String = "file:///android_asset/"
     val NEW_LINE: String = System.getProperty("line.separator")
 
     const val NB_SPACE_CHAR: Char = '\u00A0'

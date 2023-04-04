@@ -66,131 +66,10 @@ object TemplatesListScreen : StaticScreenDestination(
         val thisRoute = this@TemplatesListScreen.route
         activeScreens[thisRoute] = this@TemplatesListScreen
 
-        val htmlContent =
-            """<!DOCTYPE html>
-<html>
-  <head>
-    <title>My Page</title>
-<script>var meta = {
-  "variables": [
-    {
-      "name": "var1",
-      "type": "string",
-      "icon": "icon1",
-      "min": 1,
-      "max": 10,
-      "prefix": "pre",
-      "suffix": "suf",
-      "default": "default",
-      "label_ar": "label_ar",
-      "label_fr": "label_fr",
-      "label_en": "label_en",
-      "desc_ar": "desc_ar",
-      "desc_fr": "desc_fr",
-      "desc_en": "desc_en"
-    },
-    {
-      "name": "var2",
-      "type": "integer",
-      "icon": "icon2",
-      "min": 0,
-      "max": 100,
-      "prefix": "",
-      "suffix": "",
-      "default": "50",
-      "label_ar": "label_ar",
-      "label_fr": "label_fr",
-      "label_en": "label_en",
-      "desc_ar": "desc_ar",
-      "desc_fr": "desc_fr",
-      "desc_en": "desc_en"
-    }
-  ],
-  "records": [
-    {
-      "name": "record1",
-      "icon": "icon1",
-      "label_ar": "label_ar",
-      "label_fr": "label_fr",
-      "label_en": "label_en",
-      "desc_ar": "desc_ar",
-      "desc_fr": "desc_fr",
-      "desc_en": "desc_en",
-      "fields": [
-        {
-          "name": "field1",
-          "type": "string",
-          "icon": "icon1",
-          "min": 1,
-          "max": 10,
-          "prefix": "pre",
-          "suffix": "suf",
-          "default": "default",
-          "label_ar": "label_ar",
-          "label_fr": "label_fr",
-          "label_en": "label_en",
-          "desc_ar": "desc_ar",
-          "desc_fr": "desc_fr",
-          "desc_en": "desc_en"
-        },
-        {
-          "name": "field2",
-          "type": "integer",
-          "icon": "icon2",
-          "min": 0,
-          "max": 100,
-          "prefix": "",
-          "suffix": "",
-          "default": "50",
-          "label_ar": "label_ar",
-          "label_fr": "label_fr",
-          "label_en": "label_en",
-          "desc_ar": "desc_ar",
-          "desc_fr": "desc_fr",
-          "desc_en": "desc_en"
-        }
-      ]
-    },
-    {
-      "name": "record2",
-      "icon": "icon2",
-      "label_ar": "label_ar",
-      "label_fr": "label_fr",
-      "label_en": "label_en",
-      "desc_ar": "desc_ar",
-      "desc_fr": "desc_fr",
-      "desc_en": "desc_en",
-      "fields": [
-        {
-          "name": "field3",
-          "type": "string",
-          "icon": "icon1",
-          "min": 1,
-          "max": 10,
-          "prefix": "pre",
-          "suffix": "suf",
-          "default": "default",
-          "label_ar": "label_ar",
-          "label_fr": "label_fr",
-          "label_en": "label_en",
-          "desc_ar": "desc_ar",
-          "desc_fr": "desc_fr",
-          "desc_en": "desc_en"
-        }
-      ]
-    }
-  ]
-};</script>
-  </head>
-  <body>
-    <h1>Hello, world!</h1>
-  </body>
-</html>"""
-
         val templates = listOf(
             Template(
                 "temp_1",
-                htmlContent,
+                "${Texts.ASSETS_URL_PREFIX}wood_bill.html",
                 "Wood bill",
                 "فاتورة الحطب",
                 "Facture de bois",
@@ -283,13 +162,8 @@ fun TemplateCard(navController: NavHostController, webView: WebView, template: T
                 }
             }
         }
-        webView.loadDataWithBaseURL(
-            null,
-            template.content,
-            Texts.MEME_TYPE_TEXT_HTML,
-            Texts.UTF_8,
-            null
-        )
+
+        template.loadContent(webView)
     }) {
         ThemedText(template.label)
     }
