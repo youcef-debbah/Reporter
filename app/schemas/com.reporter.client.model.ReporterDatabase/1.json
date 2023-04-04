@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0a8882fc9e15a3dc48d530d8d6e6d3ed",
+    "identityHash": "1e1d0081c6959f58b243a8a9ee972bd7",
     "entities": [
       {
         "tableName": "template",
@@ -74,7 +74,7 @@
       },
       {
         "tableName": "variable_value",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parent_variable_name` TEXT NOT NULL, `parent_template_name` TEXT NOT NULL, `value` TEXT NOT NULL, PRIMARY KEY(`parent_variable_name`, `parent_template_name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parent_variable_name` TEXT NOT NULL, `parent_template_name` TEXT NOT NULL, `lastUpdate` INTEGER NOT NULL, `value` TEXT NOT NULL, PRIMARY KEY(`parent_variable_name`, `parent_template_name`))",
         "fields": [
           {
             "fieldPath": "variable",
@@ -86,6 +86,12 @@
             "fieldPath": "template",
             "columnName": "parent_template_name",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdate",
+            "columnName": "lastUpdate",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -141,7 +147,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0a8882fc9e15a3dc48d530d8d6e6d3ed')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1e1d0081c6959f58b243a8a9ee972bd7')"
     ]
   }
 }
