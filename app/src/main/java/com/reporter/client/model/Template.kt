@@ -35,5 +35,5 @@ class Template(
 
     override fun hashCode() = name.hashCode()
 
-    override fun toString() = "ReportTemplate(name='$name',label=$label)"
+    override fun toString() = "Template(name='$name',label=$label)"
 }
