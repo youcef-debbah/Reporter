@@ -51,4 +51,6 @@
     <string name="template_tab_loading_desc">Loading…</string>
     <string name="template_tab_record_title">Table: %s</string>
     <string name="template_tab_record_label">Table: %s</string>
+    <string name="template_tab_error_title">Loading Failed!</string>
+    <string name="template_tab_error_desc">Loading failed for the template:%n%s</string>
 </resources>

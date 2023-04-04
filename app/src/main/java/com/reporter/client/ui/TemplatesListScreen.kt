@@ -39,7 +39,9 @@ import com.reporter.common.removeIf
 import com.reporter.util.ui.AbstractApplication
 import com.reporter.util.ui.AbstractDestination
 import com.reporter.util.ui.ContentCard
+import com.reporter.util.ui.DecorativeIcon
 import com.reporter.util.ui.DefaultNavigationBar
+import com.reporter.util.ui.ErrorTheme
 import com.reporter.util.ui.InfoIcon
 import com.reporter.util.ui.SimpleAppBar
 import com.reporter.util.ui.SimpleScaffold
@@ -249,6 +251,12 @@ object TemplatesListScreen : StaticScreenDestination(
 fun TemplateCard(navController: NavHostController, webView: WebView, template: Template) {
     Card(onClick = {
         val resources = AbstractApplication.INSTANCE.resources
+
+        // remove old screens
+        navController.graph.iterator().removeIf(postRemove = { activeScreens.remove(it.route) }) {
+            it.route?.startsWith(TemplateTab.GLOBAL_ROUTE_PREFIX) ?: false
+        }
+
         val loadingRoute = buildAndNavigateToLoadingView(navController, template, resources)
 
         webView.webViewClient = object : WebViewClient() {
@@ -258,14 +266,18 @@ fun TemplateCard(navController: NavHostController, webView: WebView, template: T
                         delay(1000)
                         val meta = TemplateMeta.from(it)
                         mainLaunch {
-                            buildAndNavigateToTemplateView(
-                                navController,
-                                webView,
-                                template,
-                                meta,
-                                loadingRoute,
-                                resources,
-                            )
+                            if (meta.hasErrors()) {
+                                buildAndNavigateToErrorView(navController, template, resources)
+                            } else {
+                                buildAndNavigateToTemplateView(
+                                    navController,
+                                    webView,
+                                    template,
+                                    meta,
+                                    loadingRoute,
+                                    resources,
+                                )
+                            }
                         }
                     }
                 }
@@ -288,12 +300,7 @@ private fun buildAndNavigateToLoadingView(
     template: Template,
     resources: Resources,
 ): String {
-    val graph = navController.graph
-    graph.iterator().removeIf(postRemove = { activeScreens.remove(it.route) }) {
-        it.route?.startsWith(TemplateTab.GLOBAL_ROUTE_PREFIX) ?: false
-    }
-
-    val loadingTab = TemplateTab(
+    val newScreen = TemplateTab(
         template,
         resources.getString(R.string.template_tab_loading_title, template.label),
         resources.getString(R.string.template_tab_loading_label),
@@ -302,9 +309,9 @@ private fun buildAndNavigateToLoadingView(
     )
 
     val newGraph =
-        navController.createGraph(loadingTab.route, TemplateTab.GLOBAL_ROUTE_PREFIX + "_loading") {
-            activeScreens[loadingTab.route] = loadingTab
-            composable(loadingTab.route) {
+        navController.createGraph(newScreen.route, TemplateTab.GLOBAL_ROUTE_PREFIX + "_loading") {
+            activeScreens[newScreen.route] = newScreen
+            composable(newScreen.route) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.SpaceEvenly,
@@ -316,9 +323,57 @@ private fun buildAndNavigateToLoadingView(
             }
         }
 
-    graph.addAll(newGraph)
-    navController.navigate(loadingTab.route)
-    return loadingTab.route
+    navController.graph.addAll(newGraph)
+    navController.navigate(newScreen.route)
+    return newScreen.route
+}
+
+private fun buildAndNavigateToErrorView(
+    navController: NavHostController,
+    template: Template,
+    resources: Resources,
+): String {
+    val newScreen = TemplateTab(
+        template,
+        resources.getString(R.string.template_tab_error_title),
+        null,
+        R.drawable.baseline_error_24,
+        "error",
+    )
+
+    val newGraph =
+        navController.createGraph(newScreen.route, TemplateTab.GLOBAL_ROUTE_PREFIX + "_error") {
+            activeScreens[newScreen.route] = newScreen
+            composable(newScreen.route) {
+                ErrorTheme {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Card {
+                            Column(
+                                modifier = Modifier.contentPadding(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                DecorativeIcon(icon = R.drawable.baseline_error_24)
+                                ThemedText(
+                                    resources.getString(
+                                        R.string.template_tab_error_desc,
+                                        template.label
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    navController.graph.addAll(newGraph)
+    navController.navigate(newScreen.route)
+    return newScreen.route
 }
 
 private fun buildAndNavigateToTemplateView(

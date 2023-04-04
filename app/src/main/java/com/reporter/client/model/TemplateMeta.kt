@@ -12,6 +12,8 @@ class TemplateMeta private constructor(
     val variables: ImmutableMap<String, Variable> = ImmutableMap.of(),
     val records: ImmutableMap<String, Record> = ImmutableMap.of(),
 ) {
+    fun hasErrors() = errors != 0
+
     private val hash by lazy { records.hashCode() + 31 * variables.hashCode() }
 
     override fun hashCode(): Int = hash
