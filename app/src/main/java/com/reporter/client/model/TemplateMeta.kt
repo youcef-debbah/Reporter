@@ -1,17 +1,16 @@
 package com.reporter.client.model
 
 import androidx.compose.runtime.Immutable
-import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableMap
 import com.reporter.util.model.Localizer
 import com.reporter.util.model.Teller
-import org.json.JSONException
 import org.json.JSONObject
 
 @Immutable
 class TemplateMeta private constructor(
     val errors: Int,
-    val variables: ImmutableList<Variable> = ImmutableList.of(),
-    val records: ImmutableList<Record> = ImmutableList.of(),
+    val variables: ImmutableMap<String, Variable> = ImmutableMap.of(),
+    val records: ImmutableMap<String, Record> = ImmutableMap.of(),
 ) {
     private val hash by lazy { records.hashCode() + 31 * variables.hashCode() }
 
@@ -29,27 +28,27 @@ class TemplateMeta private constructor(
         return true
     }
 
-    override fun toString(): String {
-        return "TemplateMeta(variables=$variables, records=$records)"
-    }
+    override fun toString() = "TemplateMeta(variables=$variables, records=$records)"
 
     companion object {
 
-        val empty = TemplateMeta(0, ImmutableList.of(), ImmutableList.of());
+        val empty = TemplateMeta(0, ImmutableMap.of(), ImmutableMap.of());
 
         fun from(json: String): TemplateMeta {
             var errors = 0
             try {
                 val jsonObject = JSONObject(json)
-                val variablesBuilder = ImmutableList.builder<Variable>()
+                val variablesBuilder = ImmutableMap.builder<String, Variable>()
                 try {
                     val variablesJsonArray = jsonObject.getJSONArray("variables")
                     for (i in 0 until variablesJsonArray.length()) {
                         try {
                             val variableJsonObject = variablesJsonArray.getJSONObject(i)
-                            variablesBuilder.add(
+                            val name = variableJsonObject.getString("name")
+                            variablesBuilder.put(
+                                name,
                                 Variable(
-                                    variableJsonObject.getString("name"),
+                                    name,
                                     variableJsonObject.getString("type"),
                                     variableJsonObject.getString("icon"),
                                     variableJsonObject.getInt("min"),
@@ -65,29 +64,31 @@ class TemplateMeta private constructor(
                                     variableJsonObject.getString("desc_en"),
                                 )
                             )
-                        } catch (e: JSONException) {
+                        } catch (e: Exception) {
                             Teller.warn("invalid template variable#$i: $json", e)
                             errors++
                         }
                     }
-                } catch (e: JSONException) {
+                } catch (e: Exception) {
                     Teller.warn("invalid template variables: $json", e)
                     errors -= Int.MAX_VALUE
                 }
 
-                val recordsBuilder = ImmutableList.builder<Record>()
+                val recordsBuilder = ImmutableMap.builder<String, Record>()
                 try {
                     val recordsJsonArray = jsonObject.getJSONArray("records")
                     for (i in 0 until recordsJsonArray.length()) {
                         try {
                             val recordJsonObject = recordsJsonArray.getJSONObject(i)
                             val fieldsJsonArray = recordJsonObject.getJSONArray("fields")
-                            val fieldsBuilder = ImmutableList.builder<Variable>()
+                            val fieldsBuilder = ImmutableMap.builder<String, Variable>()
                             for (j in 0 until fieldsJsonArray.length()) {
                                 val fieldJsonObject = fieldsJsonArray.getJSONObject(j)
-                                fieldsBuilder.add(
+                                val name = fieldJsonObject.getString("name")
+                                fieldsBuilder.put(
+                                    name,
                                     Variable(
-                                        fieldJsonObject.getString("name"),
+                                        name,
                                         fieldJsonObject.getString("type"),
                                         fieldJsonObject.getString("icon"),
                                         fieldJsonObject.getInt("min"),
@@ -105,9 +106,11 @@ class TemplateMeta private constructor(
                                 )
                             }
 
-                            recordsBuilder.add(
+                            val name = recordJsonObject.getString("name")
+                            recordsBuilder.put(
+                                name,
                                 Record(
-                                    recordJsonObject.getString("name"),
+                                    name,
                                     recordJsonObject.getString("icon"),
                                     recordJsonObject.getString("label_ar"),
                                     recordJsonObject.getString("label_fr"),
@@ -118,12 +121,12 @@ class TemplateMeta private constructor(
                                     fieldsBuilder.build(),
                                 )
                             )
-                        } catch (e: JSONException) {
+                        } catch (e: Exception) {
                             Teller.warn("invalid template record#$i: $json", e)
                             errors++
                         }
                     }
-                } catch (e: JSONException) {
+                } catch (e: Exception) {
                     Teller.warn("invalid template records: $json", e)
                     errors -= Int.MAX_VALUE / 2
                 }
@@ -133,7 +136,7 @@ class TemplateMeta private constructor(
                     variablesBuilder.build(),
                     recordsBuilder.build(),
                 )
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 Teller.warn("invalid template meta: $json", e)
                 return TemplateMeta(-1)
             }
@@ -151,7 +154,7 @@ class Record internal constructor(
     val desc_ar: String,
     val desc_fr: String,
     val desc_en: String,
-    val fields: ImmutableList<Variable>,
+    val fields: ImmutableMap<String, Variable>,
 ) {
     val label by lazy {
         Localizer.inPrimaryLang(label_en, label_ar, label_fr)
@@ -195,9 +198,10 @@ class Record internal constructor(
         return true
     }
 
-    override fun toString(): String {
-        return "Record(name='$name', label='$label', desc='$desc, fields=$fields')"
-    }
+    override fun toString() = "Record(name='$name', label='$label', fields=$fields')"
+
+    fun debug() =
+        "Record(name='$name', icon='$icon', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', fields=$fields, label='$label', desc='$desc')"
 }
 
 @Immutable
@@ -269,7 +273,9 @@ class Variable internal constructor(
         return true
     }
 
-    override fun toString(): String {
-        return "Variable(name='$name', type='$type', max=$max, prefix='$prefix', suffix='$suffix', default='$default', label='$label', desc='$desc')"
-    }
+    override fun toString() =
+        "Variable(name='$name', type='$type', label='$label', default='$default')"
+
+    fun debug() =
+        "Variable(name='$name', type='$type', icon='$icon', min=$min, max=$max, prefix='$prefix', suffix='$suffix', default='$default', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', label='$label', desc='$desc')"
 }
