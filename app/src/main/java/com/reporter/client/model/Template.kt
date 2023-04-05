@@ -8,18 +8,37 @@ import androidx.room.PrimaryKey
 import com.reporter.common.Texts
 import com.reporter.util.model.Localizer
 
-@Entity(tableName = "template")
+const val TEMPLATE_TABLE = "template"
+const val COLUMN_TEMPLATE_NAME = "template_name"
+const val COLUMN_CONTENT = "content"
+const val COLUMN_LABEL_EN = "label_en"
+const val COLUMN_LABEL_AR = "label_ar"
+const val COLUMN_LABEL_FR = "label_fr"
+const val COLUMN_DESC_EN = "desc_en"
+const val COLUMN_DESC_AR = "desc_ar"
+const val COLUMN_DESC_FR = "desc_fr"
+const val COLUMN_LAST_UPDATE = "last_update"
+
+@Entity(tableName = TEMPLATE_TABLE)
 class Template(
     @PrimaryKey
-    @ColumnInfo(name = "template_name")
+    @ColumnInfo(name = COLUMN_TEMPLATE_NAME)
     val name: String,
+    @ColumnInfo(name = COLUMN_CONTENT)
     val content: String,
+    @ColumnInfo(name = COLUMN_LABEL_EN)
     val label_en: String?,
+    @ColumnInfo(name = COLUMN_LABEL_AR)
     val label_ar: String?,
+    @ColumnInfo(name = COLUMN_LABEL_FR)
     val label_fr: String?,
+    @ColumnInfo(name = COLUMN_DESC_EN)
     val desc_en: String?,
+    @ColumnInfo(name = COLUMN_DESC_AR)
     val desc_ar: String?,
+    @ColumnInfo(name = COLUMN_DESC_FR)
     val desc_fr: String?,
+    @ColumnInfo(name = COLUMN_LAST_UPDATE)
     val lastUpdate: Long,
 ) {
     @delegate:Ignore
