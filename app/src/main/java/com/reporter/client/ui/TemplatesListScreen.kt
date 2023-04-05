@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,11 +29,11 @@ import androidx.navigation.createGraph
 import com.google.accompanist.navigation.animation.composable
 import com.google.common.collect.ImmutableList
 import com.reporter.client.R
+import com.reporter.client.model.MainViewModel
 import com.reporter.client.model.Record
 import com.reporter.client.model.Template
 import com.reporter.client.model.TemplateMeta
 import com.reporter.common.RoundedCorner
-import com.reporter.common.Texts
 import com.reporter.common.backgroundLaunch
 import com.reporter.common.mainLaunch
 import com.reporter.common.removeIf
@@ -43,13 +44,14 @@ import com.reporter.util.ui.DecorativeIcon
 import com.reporter.util.ui.DefaultNavigationBar
 import com.reporter.util.ui.ErrorTheme
 import com.reporter.util.ui.InfoIcon
+import com.reporter.util.ui.PaddedColumn
 import com.reporter.util.ui.SimpleAppBar
 import com.reporter.util.ui.SimpleScaffold
 import com.reporter.util.ui.StaticScreenDestination
 import com.reporter.util.ui.ThemedText
 import com.reporter.util.ui.activeScreens
+import com.reporter.util.ui.collectWithLifecycleAsState
 import com.reporter.util.ui.contentPadding
-import kotlinx.coroutines.delay
 
 object TemplatesListScreen : StaticScreenDestination(
     route = "templates_list",
@@ -62,44 +64,24 @@ object TemplatesListScreen : StaticScreenDestination(
         navigate(this@TemplatesListScreen.route, navOptions)
     }
 
-    fun NavGraphBuilder.addTemplatesListScreen(navController: NavHostController, webView: WebView) {
+    fun NavGraphBuilder.addTemplatesListScreen(
+        navController: NavHostController,
+        webView: WebView,
+        viewModel: MainViewModel,
+    ) {
         val thisRoute = this@TemplatesListScreen.route
         activeScreens[thisRoute] = this@TemplatesListScreen
-
-        val templates = listOf(
-            Template(
-                "temp_1",
-                "${Texts.ASSETS_URL_PREFIX}wood_bill.html",
-                "Wood bill",
-                "فاتورة الحطب",
-                "Facture de bois",
-                "Standard wood bill for small clients",
-                "فاتورة خشب قياسية للعملاء الصغار",
-                "Facture de bois standard pour les petits clients",
-                System.currentTimeMillis(),
-            ),
-            Template(
-                "temp_2",
-                "<p>This is my Water bill</p>",
-                "Water bill",
-                "فاتورة ماء",
-                "Facture de l'eau",
-                "Standard water bill for small clients",
-                "فاتورة ماء قياسية للعملاء الصغار",
-                "Facture de l'eau standard pour les petits clients",
-                System.currentTimeMillis(),
-            )
-        )
-
-        composable(thisRoute) { TemplatesListView(navController, templates, webView) }
+        composable(thisRoute) { TemplatesListView(navController, webView, viewModel) }
     }
 
     @Composable
     private fun TemplatesListView(
         navController: NavHostController,
-        templates: List<Template>,
-        webView: WebView
+        webView: WebView,
+        viewModel: MainViewModel,
     ) {
+        val templateState = viewModel.templatesRepository.templates.collectWithLifecycleAsState()
+        val templates = templateState.value
         SimpleScaffold(
             topBar = {
                 SimpleAppBar(
@@ -116,9 +98,15 @@ object TemplatesListScreen : StaticScreenDestination(
             }
         ) {
             ContentCard(shape = RoundedCorner.Medium) {
-                for (template in templates) {
-                    key(template.name) {
-                        TemplateCard(navController, webView, template)
+                PaddedColumn {
+                    if (templates == null) {
+                        ThemedText(R.string.loading_templates_list_desc)
+                    } else {
+                        templates.forEach { item ->
+                            key(item.name) {
+                                TemplateCard(navController, webView, item)
+                            }
+                        }
                     }
                 }
             }
@@ -145,7 +133,12 @@ fun TemplateCard(navController: NavHostController, webView: WebView, template: T
                         val meta = TemplateMeta.from(it)
                         mainLaunch {
                             if (meta.hasErrors()) {
-                                buildAndNavigateToErrorView(navController, template, loadingRoute, resources)
+                                buildAndNavigateToErrorView(
+                                    navController,
+                                    template,
+                                    loadingRoute,
+                                    resources
+                                )
                             } else {
                                 buildAndNavigateToTemplateView(
                                     navController,
@@ -246,7 +239,7 @@ private fun buildAndNavigateToErrorView(
         }
 
     navController.graph.addAll(newGraph)
-    navController.navigate(newScreen.route)  {
+    navController.navigate(newScreen.route) {
         popUpTo(loadingRoute) {
             inclusive = true
         }

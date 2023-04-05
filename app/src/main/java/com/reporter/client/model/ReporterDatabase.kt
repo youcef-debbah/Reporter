@@ -26,4 +26,8 @@ abstract class ReporterDatabase : RoomDatabase(), StandardDatabase {
     }
 
     abstract override fun logDAO(): LogDAO
+
+    abstract fun templateDAO(): TemplateDAO
+
+    abstract fun valueDAO(): ValueDAO
 }
