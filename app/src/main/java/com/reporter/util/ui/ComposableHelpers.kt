@@ -13,7 +13,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.reporter.util.model.Teller
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -31,6 +33,13 @@ fun stringRes(@StringRes id: Int, vararg formatArgs: Any): String = stringResour
 @Composable
 @ReadOnlyComposable
 fun dimen(@DimenRes id: Int): Dp = dimensionResource(id)
+
+@Composable
+fun <T> StateFlow<T?>.collectWithLifecycleAsState(
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    context: EmptyCoroutineContext = EmptyCoroutineContext,
+): State<T?> = collectWithLifecycleAsState(null, lifecycleOwner, minActiveState, context)
 
 @Composable
 fun <T> Flow<T>.collectWithLifecycleAsState(
