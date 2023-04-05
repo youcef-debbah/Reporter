@@ -298,8 +298,15 @@ private fun buildAndNavigateToTemplateView(
                         DefaultNavigationBar(navController)
                     }) {
                     ContentCard {
-                        ThemedText(previewTab.template.desc)
-                        AndroidView(factory = { webView }, modifier = Modifier.fillMaxSize())
+                        PaddedColumn {
+                            ThemedText(previewTab.template.desc)
+                            AndroidView(
+                                factory = { webView },
+                                modifier = Modifier
+                                    .contentPadding()
+                                    .fillMaxSize()
+                            )
+                        }
                     }
                 }
             }
@@ -315,9 +322,11 @@ private fun buildAndNavigateToTemplateView(
                             DefaultNavigationBar(navController)
                         }) {
                         ContentCard {
-                            ThemedText("record name:" + tab.record.name)
-                            ThemedText("record label: " + tab.record.label)
-                            ThemedText("record desc: " + tab.record.desc)
+                            PaddedColumn {
+                                ThemedText("Record name:" + tab.record.name)
+                                ThemedText("Record label: " + tab.record.label)
+                                ThemedText("Record desc: " + tab.record.desc)
+                            }
                         }
                     }
                 }
