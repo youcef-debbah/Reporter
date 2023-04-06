@@ -16,9 +16,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.key
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -35,10 +37,13 @@ import com.reporter.client.model.MainViewModel
 import com.reporter.client.model.Record
 import com.reporter.client.model.Template
 import com.reporter.client.model.TemplateMeta
+import com.reporter.common.AsyncConfig
 import com.reporter.common.RoundedCorner
-import com.reporter.common.backgroundLaunch
-import com.reporter.common.mainLaunch
+import com.reporter.common.backgroundScope
+import com.reporter.common.ioScope
+import com.reporter.common.mainScope
 import com.reporter.common.removeIf
+import com.reporter.common.withMain
 import com.reporter.util.ui.AbstractApplication
 import com.reporter.util.ui.AbstractDestination
 import com.reporter.util.ui.ContentCard
@@ -54,6 +59,10 @@ import com.reporter.util.ui.ThemedText
 import com.reporter.util.ui.activeScreens
 import com.reporter.util.ui.collectWithLifecycleAsState
 import com.reporter.util.ui.contentPadding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 
 object TemplatesListScreen : StaticScreenDestination(
     route = "templates_list",
@@ -130,19 +139,19 @@ fun TemplateCard(navController: NavHostController, webView: WebView, template: T
             it.route?.startsWith(TemplateTab.GLOBAL_ROUTE_PREFIX) ?: false
         }
 
-        val loadingRoute = buildAndNavigateToLoadingView(navController, template, resources)
+        val loadingScope = buildAndNavigateToLoadingView(navController, template, resources)
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 view?.evaluateJavascript("meta") {
-                    backgroundLaunch {
+                    loadingScope.background().launch {
                         val meta = TemplateMeta.from(it)
-                        mainLaunch {
+                        withMain {
                             if (meta.hasErrors()) {
                                 buildAndNavigateToErrorView(
                                     navController,
                                     template,
-                                    loadingRoute,
+                                    loadingScope.route,
                                     resources
                                 )
                             } else {
@@ -151,7 +160,7 @@ fun TemplateCard(navController: NavHostController, webView: WebView, template: T
                                     webView,
                                     template,
                                     meta,
-                                    loadingRoute,
+                                    loadingScope.route,
                                     resources,
                                 )
                             }
@@ -171,7 +180,7 @@ private fun buildAndNavigateToLoadingView(
     navController: NavHostController,
     template: Template,
     resources: Resources,
-): String {
+): ScreenScope {
     val newScreen = TemplateTab(
         template,
         resources.getString(R.string.template_tab_loading_title, template.label),
@@ -180,10 +189,12 @@ private fun buildAndNavigateToLoadingView(
         "loading",
     )
 
+    val result = ScreenScope(newScreen.route)
     val newGraph =
         navController.createGraph(newScreen.route, TemplateTab.GLOBAL_ROUTE_PREFIX + "_loading") {
             activeScreens[newScreen.route] = newScreen
             composable(newScreen.route) {
+                result.scope = rememberCoroutineScope()
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.SpaceEvenly,
@@ -197,7 +208,21 @@ private fun buildAndNavigateToLoadingView(
 
     navController.graph.addAll(newGraph)
     navController.navigate(newScreen.route)
-    return newScreen.route
+    return result
+}
+
+class ScreenScope(
+    val route: String,
+    @Volatile var scope: CoroutineScope? = null,
+) {
+    fun main(): CoroutineScope = scope?.plus(AsyncConfig.mainDispatcher) ?: mainScope()
+
+    fun background(): CoroutineScope =
+        scope?.plus(AsyncConfig.backgroundDispatcher) ?: backgroundScope()
+
+    fun io(): CoroutineScope = scope?.plus(AsyncConfig.ioDispatcher) ?: ioScope()
+
+    override fun toString() = "ScreenScope(route='$route')"
 }
 
 private fun buildAndNavigateToErrorView(
@@ -323,6 +348,7 @@ private fun buildAndNavigateToTemplateView(
                         }) {
                         ContentCard {
                             PaddedColumn {
+                                TextField(value = "", onValueChange = {})
                                 ThemedText("Record name:" + tab.record.name)
                                 ThemedText("Record label: " + tab.record.label)
                                 ThemedText("Record desc: " + tab.record.desc)
