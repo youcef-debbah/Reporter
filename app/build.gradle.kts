@@ -24,7 +24,7 @@ plugins {
 
 println("app build config...")
 
-standardAndroidApp("com.reporter.client", 3, "proguard-rules.pro")
+standardAndroidApp("com.reporter.client", 4, "proguard-rules.pro")
 
 dependencies {
     addCommonTestDependencies()
@@ -81,5 +81,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
 
-    implementation("commons-codec:commons-codec:1.15")
+    implementation("io.pebbletemplates:pebble:3.2.0")
 }
