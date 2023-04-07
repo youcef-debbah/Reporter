@@ -1,28 +1,35 @@
 package com.reporter.client.model
 
+import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 
-const val VALUE_VARIABLE = "parent_variable_name"
-const val VALUE_TEMPLATE = "parent_template_name"
+const val VALUE_TABLE = "value"
+const val VALUE_COLUMN_NAMESPACE = "value_namespace"
+const val VALUE_COLUMN_NAME = "value_name"
+const val VALUE_COLUMN_LAST_UPDATE = "last_update"
+const val VALUE_COLUMN_CONTENT = "content"
 
-@Entity(tableName = "variable_value", primaryKeys = [VALUE_VARIABLE, VALUE_TEMPLATE])
+@Immutable
+@Entity(tableName = VALUE_TABLE, primaryKeys = [VALUE_COLUMN_NAMESPACE, VALUE_COLUMN_NAME])
 class Value(
-    @ColumnInfo(VALUE_VARIABLE)
-    val variable: String,
-    @ColumnInfo(VALUE_TEMPLATE)
-    val template: String,
+    @ColumnInfo(VALUE_COLUMN_NAMESPACE)
+    val namespace: String,
+    @ColumnInfo(VALUE_COLUMN_NAME)
+    val name: String,
+    @ColumnInfo(VALUE_COLUMN_LAST_UPDATE)
     val lastUpdate: Long,
-    override val value: String,
-) : DynamicValue {
+    @ColumnInfo(VALUE_COLUMN_CONTENT)
+    val content: String,
+) {
     @Ignore
-    override val name: String = "${template}_${variable}"
+    val key: String = Variable.key(namespace, name)
 
     override fun equals(other: Any?) =
-        this === other || (other is Value && this.name == other.name)
+        this === other || (other is Value && this.key == other.key)
 
-    override fun hashCode() = name.hashCode()
+    override fun hashCode() = key.hashCode()
 
-    override fun toString() = "Value(name='$name', value='$value')"
+    override fun toString() = "Value(name='$key', content='$content')"
 }

@@ -1,6 +1,7 @@
 package com.reporter.client.model
 
 import android.webkit.WebView
+import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
@@ -9,36 +10,37 @@ import com.reporter.common.Texts
 import com.reporter.util.model.Localizer
 
 const val TEMPLATE_TABLE = "template"
-const val COLUMN_TEMPLATE_NAME = "template_name"
-const val COLUMN_CONTENT = "content"
-const val COLUMN_LABEL_EN = "label_en"
-const val COLUMN_LABEL_AR = "label_ar"
-const val COLUMN_LABEL_FR = "label_fr"
-const val COLUMN_DESC_EN = "desc_en"
-const val COLUMN_DESC_AR = "desc_ar"
-const val COLUMN_DESC_FR = "desc_fr"
-const val COLUMN_LAST_UPDATE = "last_update"
+const val TEMPLATE_COLUMN_NAME = "template_name"
+const val TEMPLATE_COLUMN_CONTENT = "content"
+const val TEMPLATE_COLUMN_LABEL_EN = "label_en"
+const val TEMPLATE_COLUMN_LABEL_AR = "label_ar"
+const val TEMPLATE_COLUMN_LABEL_FR = "label_fr"
+const val TEMPLATE_COLUMN_DESC_EN = "desc_en"
+const val TEMPLATE_COLUMN_DESC_AR = "desc_ar"
+const val TEMPLATE_COLUMN_DESC_FR = "desc_fr"
+const val TEMPLATE_COLUMN_LAST_UPDATE = "last_update"
 
+@Immutable
 @Entity(tableName = TEMPLATE_TABLE)
 class Template(
     @PrimaryKey
-    @ColumnInfo(name = COLUMN_TEMPLATE_NAME)
+    @ColumnInfo(name = TEMPLATE_COLUMN_NAME)
     val name: String,
-    @ColumnInfo(name = COLUMN_CONTENT)
+    @ColumnInfo(name = TEMPLATE_COLUMN_CONTENT)
     val content: String,
-    @ColumnInfo(name = COLUMN_LABEL_EN)
+    @ColumnInfo(name = TEMPLATE_COLUMN_LABEL_EN)
     val label_en: String?,
-    @ColumnInfo(name = COLUMN_LABEL_AR)
+    @ColumnInfo(name = TEMPLATE_COLUMN_LABEL_AR)
     val label_ar: String?,
-    @ColumnInfo(name = COLUMN_LABEL_FR)
+    @ColumnInfo(name = TEMPLATE_COLUMN_LABEL_FR)
     val label_fr: String?,
-    @ColumnInfo(name = COLUMN_DESC_EN)
+    @ColumnInfo(name = TEMPLATE_COLUMN_DESC_EN)
     val desc_en: String?,
-    @ColumnInfo(name = COLUMN_DESC_AR)
+    @ColumnInfo(name = TEMPLATE_COLUMN_DESC_AR)
     val desc_ar: String?,
-    @ColumnInfo(name = COLUMN_DESC_FR)
+    @ColumnInfo(name = TEMPLATE_COLUMN_DESC_FR)
     val desc_fr: String?,
-    @ColumnInfo(name = COLUMN_LAST_UPDATE)
+    @ColumnInfo(name = TEMPLATE_COLUMN_LAST_UPDATE)
     val lastUpdate: Long,
 ) {
     @delegate:Ignore

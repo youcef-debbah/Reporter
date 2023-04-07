@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9ebab166cc5842f3b85a8e58a58ef9b4",
+    "identityHash": "e5a87f53f09dba8de2bebc6914082faa",
     "entities": [
       {
         "tableName": "template",
@@ -73,30 +73,30 @@
         "foreignKeys": []
       },
       {
-        "tableName": "variable_value",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`parent_variable_name` TEXT NOT NULL, `parent_template_name` TEXT NOT NULL, `lastUpdate` INTEGER NOT NULL, `value` TEXT NOT NULL, PRIMARY KEY(`parent_variable_name`, `parent_template_name`))",
+        "tableName": "value",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`value_namespace` TEXT NOT NULL, `value_name` TEXT NOT NULL, `last_update` INTEGER NOT NULL, `content` TEXT NOT NULL, PRIMARY KEY(`value_namespace`, `value_name`))",
         "fields": [
           {
-            "fieldPath": "variable",
-            "columnName": "parent_variable_name",
+            "fieldPath": "namespace",
+            "columnName": "value_namespace",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "template",
-            "columnName": "parent_template_name",
+            "fieldPath": "name",
+            "columnName": "value_name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "lastUpdate",
-            "columnName": "lastUpdate",
+            "columnName": "last_update",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "value",
-            "columnName": "value",
+            "fieldPath": "content",
+            "columnName": "content",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -104,8 +104,8 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "parent_variable_name",
-            "parent_template_name"
+            "value_namespace",
+            "value_name"
           ]
         },
         "indices": [],
@@ -147,7 +147,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ebab166cc5842f3b85a8e58a58ef9b4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e5a87f53f09dba8de2bebc6914082faa')"
     ]
   }
 }

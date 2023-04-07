@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -34,9 +36,12 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.common.collect.ImmutableList
 import com.reporter.client.R
 import com.reporter.client.model.MainViewModel
-import com.reporter.client.model.Record
+import com.reporter.client.model.RecordState
+import com.reporter.client.model.SectionState
 import com.reporter.client.model.Template
+import com.reporter.client.model.TemplateCache
 import com.reporter.client.model.TemplateMeta
+import com.reporter.client.model.VariableState
 import com.reporter.common.AsyncConfig
 import com.reporter.common.RoundedCorner
 import com.reporter.common.backgroundScope
@@ -60,7 +65,6 @@ import com.reporter.util.ui.activeScreens
 import com.reporter.util.ui.collectWithLifecycleAsState
 import com.reporter.util.ui.contentPadding
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
@@ -119,7 +123,7 @@ object TemplatesListScreen : StaticScreenDestination(
                     PaddedColumn {
                         templates?.forEach { item ->
                             key(item.name) {
-                                TemplateCard(navController, webView, item)
+                                TemplateCard(navController, webView, item, viewModel)
                             }
                         }
                     }
@@ -130,7 +134,12 @@ object TemplatesListScreen : StaticScreenDestination(
 }
 
 @Composable
-fun TemplateCard(navController: NavHostController, webView: WebView, template: Template) {
+fun TemplateCard(
+    navController: NavHostController,
+    webView: WebView,
+    template: Template,
+    viewModel: MainViewModel,
+) {
     Card(onClick = {
         val resources = AbstractApplication.INSTANCE.resources
 
@@ -145,21 +154,25 @@ fun TemplateCard(navController: NavHostController, webView: WebView, template: T
             override fun onPageFinished(view: WebView?, url: String?) {
                 view?.evaluateJavascript("meta") {
                     loadingScope.background().launch {
-                        val meta = TemplateMeta.from(it)
-                        withMain {
-                            if (meta.hasErrors()) {
+                        val meta = TemplateMeta.from(template.name, it)
+                        if (meta.hasErrors()) {
+                            withMain {
                                 buildAndNavigateToErrorView(
                                     navController,
                                     template,
                                     loadingScope.route,
                                     resources
                                 )
-                            } else {
+                            }
+                        } else {
+                            val cache = viewModel.newTemplateCache(template.name, meta)
+                            withMain {
                                 buildAndNavigateToTemplateView(
                                     navController,
                                     webView,
                                     template,
                                     meta,
+                                    cache,
                                     loadingScope.route,
                                     resources,
                                 )
@@ -282,6 +295,7 @@ private fun buildAndNavigateToTemplateView(
     webView: WebView,
     template: Template,
     meta: TemplateMeta,
+    cache: TemplateCache,
     loadingRoute: String,
     resources: Resources,
 ) {
@@ -296,10 +310,25 @@ private fun buildAndNavigateToTemplateView(
     )
     tabsBuilder.add(previewTab)
 
-    val recordTabs = ArrayList<RecordTab>(meta.records.size)
-    for (record in meta.records.values) {
-        val recordTab = RecordTab(
-            record,
+    val sectionTabs = ArrayList<Pair<TemplateTab, SectionState>>(meta.sections.size)
+    for ((i, sectionState) in cache.sectionStates.withIndex()) {
+        val section = sectionState.section
+        val tab = TemplateTab(
+            template,
+            section.label,
+            section.label,
+            R.drawable.baseline_table_rows_24,
+            "section_$i",
+            tabsBuilder,
+        )
+        tabsBuilder.add(tab)
+        sectionTabs.add(Pair(tab, sectionState))
+    }
+
+    val recordsTabs = ArrayList<Pair<TemplateTab, RecordState>>(meta.records.size)
+    for (recordState in cache.recordsStates.values) {
+        val record = recordState.record
+        val tab = TemplateTab(
             template,
             record.label,
             record.label,
@@ -307,8 +336,8 @@ private fun buildAndNavigateToTemplateView(
             "record_" + record.name,
             tabsBuilder,
         )
-        tabsBuilder.add(recordTab)
-        recordTabs.add(recordTab)
+        tabsBuilder.add(tab)
+        recordsTabs.add(Pair(tab, recordState))
     }
 
     val newGraph =
@@ -336,7 +365,10 @@ private fun buildAndNavigateToTemplateView(
                 }
             }
 
-            for (tab in recordTabs) {
+            for (pair in sectionTabs) {
+                val tab = pair.first
+                val sectionState = pair.second
+                val section = sectionState.section
                 activeScreens[tab.route] = tab
                 composable(tab.route) {
                     SimpleScaffold(
@@ -348,10 +380,38 @@ private fun buildAndNavigateToTemplateView(
                         }) {
                         ContentCard {
                             PaddedColumn {
-                                TextField(value = "", onValueChange = {})
-                                ThemedText("Record name:" + tab.record.name)
-                                ThemedText("Record label: " + tab.record.label)
-                                ThemedText("Record desc: " + tab.record.desc)
+                                ThemedText("Section label: " + section.label)
+                                ThemedText("Section desc: " + section.desc)
+                                for (variable in sectionState.variables.values) {
+                                    VariableInput(variable)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (pair in recordsTabs) {
+                val tab = pair.first
+                val recordState = pair.second
+                val record = recordState.record
+                activeScreens[tab.route] = tab
+                composable(tab.route) {
+                    SimpleScaffold(
+                        topBar = {
+                            SimpleAppBar(tab.title())
+                        },
+                        bottomBar = {
+                            DefaultNavigationBar(navController)
+                        }) {
+                        ContentCard {
+                            PaddedColumn {
+                                ThemedText("Record name:" + record.name)
+                                ThemedText("Record label: " + record.label)
+                                ThemedText("Record desc: " + record.desc)
+                                for (variable in recordState.variables.values) {
+                                    VariableInput(variable)
+                                }
                             }
                         }
                     }
@@ -364,6 +424,16 @@ private fun buildAndNavigateToTemplateView(
         popUpTo(loadingRoute) {
             inclusive = true
         }
+    }
+}
+
+@Composable
+fun VariableInput(variableState: VariableState) {
+    val value by variableState.state
+    PaddedColumn {
+        Divider()
+        ThemedText(variableState.variable.label)
+        TextField(value = value, onValueChange = variableState.setter)
     }
 }
 
@@ -394,14 +464,3 @@ private open class TemplateTab(
         const val GLOBAL_ROUTE_PREFIX = "template_"
     }
 }
-
-@Immutable
-private class RecordTab(
-    val record: Record,
-    template: Template,
-    title: String,
-    label: String?,
-    @DrawableRes tabIcon: Int,
-    tabName: String,
-    tabsBuilder: ImmutableList.Builder<AbstractDestination> = ImmutableList.builder(),
-) : TemplateTab(template, title, label, tabIcon, tabName, tabsBuilder)

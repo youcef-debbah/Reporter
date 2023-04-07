@@ -2,116 +2,181 @@
 <html>
 <head>
     <title>My Page</title>
-    <script>var meta = {
-  "variables": [
+    <script>
+var meta = {
+"templateName": "Test Template",
+  "sections": [
     {
-      "name": "file_var1",
-      "type": "string",
-      "icon": "icon1",
-      "min": 1,
-      "max": 10,
-      "prefix": "pre",
-      "suffix": "suf",
-      "default": "default",
-      "label_ar": "label_ar",
-      "label_fr": "label_fr",
-      "label_en": "label_en",
-      "desc_ar": "desc_ar",
-      "desc_fr": "desc_fr",
-      "desc_en": "desc_en"
+      "icon": "section1_icon",
+      "label_ar": "القسم 1",
+      "label_fr": "Section 1",
+      "label_en": "Section 1",
+      "desc_ar": "وصف القسم 1",
+      "desc_fr": "Description of section 1",
+      "desc_en": "Description of section 1",
+      "variables": [
+        {
+          "name": "var1",
+          "required": true,
+          "type": "text",
+          "icon": "var1_icon",
+          "min": 1,
+          "max": 10,
+          "prefix": "prefix1",
+          "suffix": "suffix1",
+          "default": "default1",
+          "label_ar": "المتغير 1",
+          "label_fr": "Variable 1",
+          "label_en": "Variable 1",
+          "desc_ar": "وصف المتغير 1",
+          "desc_fr": "Description of variable 1",
+          "desc_en": "Description of variable 1"
+        },
+        {
+          "name": "var2",
+          "required": false,
+          "type": "number",
+          "icon": "var2_icon",
+          "min": 0,
+          "max": 100,
+          "prefix": "prefix2",
+          "suffix": "suffix2",
+          "default": "default2",
+          "label_ar": "المتغير 2",
+          "label_fr": "Variable 2",
+          "label_en": "Variable 2",
+          "desc_ar": "وصف المتغير 2",
+          "desc_fr": "Description of variable 2",
+          "desc_en": "Description of variable 2"
+        }
+      ]
     },
     {
-      "name": "file_var2",
-      "type": "integer",
-      "icon": "icon2",
-      "min": 0,
-      "max": 100,
-      "prefix": "",
-      "suffix": "",
-      "default": "50",
-      "label_ar": "label_ar",
-      "label_fr": "label_fr",
-      "label_en": "label_en",
-      "desc_ar": "desc_ar",
-      "desc_fr": "desc_fr",
-      "desc_en": "desc_en"
+      "icon": "section2_icon",
+      "label_ar": "القسم 2",
+      "label_fr": "Section 2",
+      "label_en": "Section 2",
+      "desc_ar": "وصف القسم 2",
+      "desc_fr": "Description of section 2",
+      "desc_en": "Description of section 2",
+      "variables": [
+        {
+          "name": "var3",
+          "required": true,
+          "type": "date",
+          "icon": "var3_icon",
+          "min": 01,
+          "max": 31,
+          "prefix": "prefix3",
+          "suffix": "suffix3",
+          "default": "2023-04-07",
+          "label_ar": "المتغير 3",
+          "label_fr": "Variable 3",
+          "label_en": "Variable 3",
+          "desc_ar": "وصف المتغير 3",
+          "desc_fr": "Description of variable 3",
+          "desc_en": "Description of variable 3"
+        }
+      ]
     }
   ],
   "records": [
     {
-      "name": "file_record1",
-      "icon": "icon1",
-      "label_ar": "label_ar",
-      "label_fr": "label_fr",
-      "label_en": "label_en",
-      "desc_ar": "desc_ar",
-      "desc_fr": "desc_fr",
-      "desc_en": "desc_en",
-      "fields": [
+      "name": "Record1",
+      "icon": "icon1.png",
+      "label_ar": "Label AR 1",
+      "label_fr": "Label FR 1",
+      "label_en": "Label EN 1",
+      "desc_ar": "Description AR 1",
+      "desc_fr": "Description FR 1",
+      "desc_en": "Description EN 1",
+      "variables": [
         {
-          "name": "field1",
+          "name": "Var1",
+          "required": true,
           "type": "string",
-          "icon": "icon1",
-          "min": 1,
-          "max": 10,
-          "prefix": "pre",
-          "suffix": "suf",
-          "default": "default",
-          "label_ar": "label_ar",
-          "label_fr": "label_fr",
-          "label_en": "label_en",
-          "desc_ar": "desc_ar",
-          "desc_fr": "desc_fr",
-          "desc_en": "desc_en"
-        },
-        {
-          "name": "field2",
-          "type": "integer",
-          "icon": "icon2",
+          "icon": "icon1.png",
           "min": 0,
-          "max": 100,
+          "max": 10,
           "prefix": "",
           "suffix": "",
-          "default": "50",
-          "label_ar": "label_ar",
-          "label_fr": "label_fr",
-          "label_en": "label_en",
-          "desc_ar": "desc_ar",
-          "desc_fr": "desc_fr",
-          "desc_en": "desc_en"
+          "default": "",
+          "label_ar": "Var1 Label AR",
+          "label_fr": "Var1 Label FR",
+          "label_en": "Var1 Label EN",
+          "desc_ar": "Var1 Description AR",
+          "desc_fr": "Var1 Description FR",
+          "desc_en": "Var1 Description EN"
+        },
+        {
+          "name": "Var2",
+          "required": false,
+          "type": "number",
+          "icon": "icon2.png",
+          "min": 0,
+          "max": 100,
+          "prefix": "$",
+          "suffix": "",
+          "default": "",
+          "label_ar": "Var2 Label AR",
+          "label_fr": "Var2 Label FR",
+          "label_en": "Var2 Label EN",
+          "desc_ar": "Var2 Description AR",
+          "desc_fr": "Var2 Description FR",
+          "desc_en": "Var2 Description EN"
         }
       ]
     },
     {
-      "name": "file_record2",
-      "icon": "icon2",
-      "label_ar": "label_ar",
-      "label_fr": "label_fr",
-      "label_en": "label_en",
-      "desc_ar": "desc_ar",
-      "desc_fr": "desc_fr",
-      "desc_en": "desc_en",
-      "fields": [
+      "name": "Record2",
+      "icon": "icon2.png",
+      "label_ar": "Label AR 2",
+      "label_fr": "Label FR 2",
+      "label_en": "Label EN 2",
+      "desc_ar": "Description AR 2",
+      "desc_fr": "Description FR 2",
+      "desc_en": "Description EN 2",
+      "variables": [
         {
-          "name": "field3",
+          "name": "Var3",
+          "required": true,
+          "type": "boolean",
+          "icon": "icon3.png",
+          "min": 0,
+          "max": 1,
+          "prefix": "",
+          "suffix": "",
+          "default": "true",
+          "label_ar": "Var3 Label AR",
+          "label_fr": "Var3 Label FR",
+          "label_en": "Var3 Label EN",
+          "desc_ar": "Var3 Description AR",
+          "desc_fr": "Var3 Description FR",
+          "desc_en": "Var3 Description EN"
+        },
+        {
+          "name": "Var4",
+          "required": false,
           "type": "string",
-          "icon": "icon1",
-          "min": 1,
-          "max": 10,
-          "prefix": "pre",
-          "suffix": "suf",
-          "default": "default",
-          "label_ar": "label_ar",
-          "label_fr": "label_fr",
-          "label_en": "label_en",
-          "desc_ar": "desc_ar",
-          "desc_fr": "desc_fr",
-          "desc_en": "desc_en"
+          "icon": "icon4.png",
+          "min": 0,
+          "max": 50,
+          "prefix": "",
+          "suffix": "",
+          "default": "",
+          "label_ar": "Var4 Label AR",
+          "label_fr": "Var4 Label FR",
+          "label_en": "Var4 Label EN",
+          "desc_ar": "Var4 Description AR",
+          "desc_fr": "Var4 Description FR",
+          "desc_en": "Var4 Description EN"
         }
       ]
     }
   ]
-};</script>
+};
+
+    </script>
 </head>
 <body>
 <h1>Hello, world!</h1>

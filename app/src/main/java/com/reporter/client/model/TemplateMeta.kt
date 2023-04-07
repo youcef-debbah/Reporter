@@ -1,22 +1,31 @@
 package com.reporter.client.model
 
 import androidx.compose.runtime.Immutable
+import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
+import com.reporter.common.IntCounter
 import com.reporter.util.model.Localizer
 import com.reporter.util.model.Teller
 import org.json.JSONObject
 
 @Immutable
 class TemplateMeta private constructor(
-    val errors: Int,
-    val variables: ImmutableMap<String, Variable> = ImmutableMap.of(),
+    val template: String,
+    val errorCode: Int,
+    val sectionsVariables: ImmutableMap<String, Variable> = ImmutableMap.of(),
+    val sections: ImmutableList<Section> = ImmutableList.of(),
     val records: ImmutableMap<String, Record> = ImmutableMap.of(),
 ) {
-    fun hasErrors() = errors != 0
+    fun hasErrors() = errorCode != 0
 
-    private val hash by lazy { records.hashCode() + 31 * variables.hashCode() }
+    private val hash by lazy {
+        var result = template.hashCode()
+        result = 31 * result + sections.hashCode()
+        result = 31 * result + records.hashCode()
+        return@lazy result
+    }
 
-    override fun hashCode(): Int = hash
+    override fun hashCode() = hash
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -24,95 +33,155 @@ class TemplateMeta private constructor(
 
         other as TemplateMeta
 
-        if (variables != other.variables) return false
+        if (template != other.template) return false
+        if (sections != other.sections) return false
         if (records != other.records) return false
 
         return true
     }
 
-    override fun toString() = "TemplateMeta(variables=$variables, records=$records)"
+    override fun toString() =
+        "TemplateMeta(template=$template, sections=$sections, records=$records)"
 
     companion object {
-
-        val empty = TemplateMeta(0, ImmutableMap.of(), ImmutableMap.of());
-
-        fun from(json: String): TemplateMeta {
-            var errors = 0
+        fun from(templateName: String, json: String): TemplateMeta {
             try {
                 val jsonObject = JSONObject(json)
-                val variablesBuilder = ImmutableMap.builder<String, Variable>()
-                try {
-                    val variablesJsonArray = jsonObject.getJSONArray("variables")
-                    for (i in 0 until variablesJsonArray.length()) {
-                        try {
-                            val variableJsonObject = variablesJsonArray.getJSONObject(i)
-                            val name = variableJsonObject.getString("name")
-                            variablesBuilder.put(
-                                name,
-                                Variable(
-                                    name,
-                                    variableJsonObject.getString("type"),
-                                    variableJsonObject.optString("icon"),
-                                    variableJsonObject.optInt("min"),
-                                    variableJsonObject.getInt("max"),
-                                    variableJsonObject.optString("prefix"),
-                                    variableJsonObject.optString("suffix"),
-                                    variableJsonObject.optString("default"),
-                                    variableJsonObject.getString("label_ar"),
-                                    variableJsonObject.getString("label_fr"),
-                                    variableJsonObject.getString("label_en"),
-                                    variableJsonObject.getString("desc_ar"),
-                                    variableJsonObject.getString("desc_fr"),
-                                    variableJsonObject.getString("desc_en"),
-                                )
-                            )
-                        } catch (e: Exception) {
-                            Teller.warn("invalid template variable#$i: $json", e)
-                            errors++
-                        }
-                    }
-                } catch (e: Exception) {
-                    Teller.warn("invalid template variables: $json", e)
-                    errors -= Int.MAX_VALUE
-                }
+                val errorCode = IntCounter()
+                val sections = buildSections(templateName, json, jsonObject, errorCode)
+                val records = buildRecords(templateName, json, jsonObject, errorCode)
+                return TemplateMeta(
+                    templateName,
+                    errorCode.value,
+                    sections.first,
+                    sections.second,
+                    records,
+                )
+            } catch (e: Exception) {
+                Teller.warn("invalid template meta for '$templateName': $json", e)
+                return TemplateMeta(template = templateName, errorCode = -1)
+            }
+        }
 
-                val recordsBuilder = ImmutableMap.builder<String, Record>()
-                try {
-                    val recordsJsonArray = jsonObject.getJSONArray("records")
+        private fun buildSections(
+            templateName: String,
+            json: String,
+            jsonObject: JSONObject,
+            errorCode: IntCounter,
+        ): Pair<ImmutableMap<String, Variable>, ImmutableList<Section>> {
+            try {
+                val sectionsJsonArray = jsonObject.getJSONArray("sections")
+                val sectionsBuilder = ImmutableList.builder<Section>()
+                val sectionsVariablesBuilder = ImmutableMap.builder<String, Variable>()
+                for (i in 0 until sectionsJsonArray.length()) {
+                    try {
+                        val sectionJsonObject = sectionsJsonArray.getJSONObject(i)
+                        val variablesJsonArray = sectionJsonObject.getJSONArray("variables")
+                        val variablesBuilder = ImmutableMap.builder<String, Variable>()
+
+                        for (j in 0 until variablesJsonArray.length()) {
+                            val variableJsonObject = variablesJsonArray.getJSONObject(j)
+                            val name = variableJsonObject.getString("name")
+                            val variable = Variable(
+                                templateName,
+                                name,
+                                variableJsonObject.optBoolean("required"),
+                                variableJsonObject.getString("type"),
+                                variableJsonObject.optString("icon"),
+                                variableJsonObject.optInt("min"),
+                                variableJsonObject.getInt("max"),
+                                variableJsonObject.optString("prefix"),
+                                variableJsonObject.optString("suffix"),
+                                variableJsonObject.optString("default"),
+                                variableJsonObject.getString("label_ar"),
+                                variableJsonObject.getString("label_fr"),
+                                variableJsonObject.getString("label_en"),
+                                variableJsonObject.getString("desc_ar"),
+                                variableJsonObject.getString("desc_fr"),
+                                variableJsonObject.getString("desc_en"),
+                            )
+
+                            variablesBuilder.put(name, variable)
+                            sectionsVariablesBuilder.put(name, variable)
+                        }
+
+                        sectionsBuilder.add(
+                            Section(
+                                templateName,
+                                sectionJsonObject.optString("icon"),
+                                sectionJsonObject.getString("label_ar"),
+                                sectionJsonObject.getString("label_fr"),
+                                sectionJsonObject.getString("label_en"),
+                                sectionJsonObject.getString("desc_ar"),
+                                sectionJsonObject.getString("desc_fr"),
+                                sectionJsonObject.getString("desc_en"),
+                                variablesBuilder.build(),
+                            )
+                        )
+                    } catch (e: Exception) {
+                        Teller.warn("invalid template section#$i for '$templateName': $json", e)
+                        errorCode.inc()
+                        errorCode.addFlag(1)
+                    }
+                }
+                return Pair(sectionsVariablesBuilder.build(), sectionsBuilder.build())
+            } catch (e: Exception) {
+                Teller.warn("invalid template sections for '$templateName': $json", e)
+                errorCode.addFlag(1)
+                return Pair(ImmutableMap.of(), ImmutableList.of())
+            }
+        }
+
+        private fun buildRecords(
+            templateName: String,
+            json: String,
+            jsonObject: JSONObject,
+            errorCode: IntCounter,
+        ): ImmutableMap<String, Record> {
+            try {
+                val recordsJsonArray = jsonObject.optJSONArray("records")
+                if (recordsJsonArray != null) {
+                    val recordsBuilder = ImmutableMap.builder<String, Record>()
                     for (i in 0 until recordsJsonArray.length()) {
                         try {
                             val recordJsonObject = recordsJsonArray.getJSONObject(i)
-                            val fieldsJsonArray = recordJsonObject.getJSONArray("fields")
-                            val fieldsBuilder = ImmutableMap.builder<String, Variable>()
-                            for (j in 0 until fieldsJsonArray.length()) {
-                                val fieldJsonObject = fieldsJsonArray.getJSONObject(j)
-                                val name = fieldJsonObject.getString("name")
-                                fieldsBuilder.put(
+                            val variablesJsonArray = recordJsonObject.getJSONArray("variables")
+                            val variablesBuilder = ImmutableMap.builder<String, Variable>()
+
+                            val recordName = recordJsonObject.getString("name")
+                            val recordNamespace = Record.namespace(templateName, recordName)
+
+                            for (j in 0 until variablesJsonArray.length()) {
+                                val variableJsonObject = variablesJsonArray.getJSONObject(j)
+                                val name = variableJsonObject.getString("name")
+                                variablesBuilder.put(
                                     name,
                                     Variable(
+                                        recordNamespace,
                                         name,
-                                        fieldJsonObject.getString("type"),
-                                        fieldJsonObject.optString("icon"),
-                                        fieldJsonObject.optInt("min"),
-                                        fieldJsonObject.getInt("max"),
-                                        fieldJsonObject.optString("prefix"),
-                                        fieldJsonObject.optString("suffix"),
-                                        fieldJsonObject.optString("default"),
-                                        fieldJsonObject.getString("label_ar"),
-                                        fieldJsonObject.getString("label_fr"),
-                                        fieldJsonObject.getString("label_en"),
-                                        fieldJsonObject.getString("desc_ar"),
-                                        fieldJsonObject.getString("desc_fr"),
-                                        fieldJsonObject.getString("desc_en"),
+                                        variableJsonObject.optBoolean("required"),
+                                        variableJsonObject.getString("type"),
+                                        variableJsonObject.optString("icon"),
+                                        variableJsonObject.optInt("min"),
+                                        variableJsonObject.getInt("max"),
+                                        variableJsonObject.optString("prefix"),
+                                        variableJsonObject.optString("suffix"),
+                                        variableJsonObject.optString("default"),
+                                        variableJsonObject.getString("label_ar"),
+                                        variableJsonObject.getString("label_fr"),
+                                        variableJsonObject.getString("label_en"),
+                                        variableJsonObject.getString("desc_ar"),
+                                        variableJsonObject.getString("desc_fr"),
+                                        variableJsonObject.getString("desc_en"),
                                     )
                                 )
                             }
 
-                            val name = recordJsonObject.getString("name")
                             recordsBuilder.put(
-                                name,
+                                recordNamespace,
                                 Record(
-                                    name,
+                                    recordNamespace,
+                                    recordName,
                                     recordJsonObject.optString("icon"),
                                     recordJsonObject.getString("label_ar"),
                                     recordJsonObject.getString("label_fr"),
@@ -120,35 +189,30 @@ class TemplateMeta private constructor(
                                     recordJsonObject.getString("desc_ar"),
                                     recordJsonObject.getString("desc_fr"),
                                     recordJsonObject.getString("desc_en"),
-                                    fieldsBuilder.build(),
+                                    variablesBuilder.build(),
                                 )
                             )
                         } catch (e: Exception) {
-                            Teller.warn("invalid template record#$i: $json", e)
-                            errors++
+                            Teller.warn("invalid template record#$i for '$templateName': $json", e)
+                            errorCode.inc()
+                            errorCode.addFlag(2)
                         }
                     }
-                } catch (e: Exception) {
-                    Teller.warn("invalid template records: $json", e)
-                    errors -= Int.MAX_VALUE / 2
+                    return recordsBuilder.build()
                 }
-
-                return TemplateMeta(
-                    errors,
-                    variablesBuilder.build(),
-                    recordsBuilder.build(),
-                )
             } catch (e: Exception) {
-                Teller.warn("invalid template meta: $json", e)
-                return TemplateMeta(-1)
+                Teller.warn("invalid template records for '$templateName': $json", e)
+                errorCode.addFlag(2)
             }
+
+            return ImmutableMap.of()
         }
     }
 }
 
 @Immutable
-class Record internal constructor(
-    val name: String,
+abstract class Form(
+    val namespace: String,
     val icon: String,
     val label_ar: String,
     val label_fr: String,
@@ -156,8 +220,11 @@ class Record internal constructor(
     val desc_ar: String,
     val desc_fr: String,
     val desc_en: String,
-    val fields: ImmutableMap<String, Variable>,
+    val variables: ImmutableMap<String, Variable>,
 ) {
+
+    val className: String = this.javaClass.simpleName
+
     val label by lazy {
         Localizer.inPrimaryLang(label_en, label_ar, label_fr)
     }
@@ -167,7 +234,7 @@ class Record internal constructor(
     }
 
     private val hash: Int by lazy {
-        var result = name.hashCode()
+        var result = namespace.hashCode()
         result = 31 * result + icon.hashCode()
         result = 31 * result + label_ar.hashCode()
         result = 31 * result + label_fr.hashCode()
@@ -175,19 +242,19 @@ class Record internal constructor(
         result = 31 * result + desc_ar.hashCode()
         result = 31 * result + desc_fr.hashCode()
         result = 31 * result + desc_en.hashCode()
-        result = 31 * result + fields.hashCode()
+        result = 31 * result + variables.hashCode()
         return@lazy result
     }
 
-    override fun hashCode(): Int = hash
+    final override fun hashCode(): Int = hash
 
-    override fun equals(other: Any?): Boolean {
+    final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
         other as Record
 
-        if (name != other.name) return false
+        if (namespace != other.namespace) return false
         if (icon != other.icon) return false
         if (label_ar != other.label_ar) return false
         if (label_fr != other.label_fr) return false
@@ -195,20 +262,54 @@ class Record internal constructor(
         if (desc_ar != other.desc_ar) return false
         if (desc_fr != other.desc_fr) return false
         if (desc_en != other.desc_en) return false
-        if (fields != other.fields) return false
+        if (variables != other.variables) return false
 
         return true
     }
 
-    override fun toString() = "Record(name='$name', label='$label', fields=$fields')"
+    override fun toString() = "$className(namespace='$namespace', label='$label', variables=$variables')"
 
-    fun debug() =
-        "Record(name='$name', icon='$icon', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', fields=$fields, label='$label', desc='$desc')"
+    @Suppress("unused")
+    open fun debug() =
+        "$className(namespace='$namespace', icon='$icon', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', variables=$variables)"
 }
 
 @Immutable
-class Variable internal constructor(
+class Record(
+    namespace: String,
     val name: String,
+    icon: String,
+    label_ar: String,
+    label_fr: String,
+    label_en: String,
+    desc_ar: String,
+    desc_fr: String,
+    desc_en: String,
+    variables: ImmutableMap<String, Variable>,
+) : Form(namespace, icon, label_ar, label_fr, label_en, desc_ar, desc_fr, desc_en, variables) {
+    companion object {
+        fun namespace(template: String, recordName: String) = "$template@$recordName"
+    }
+}
+
+@Immutable
+class Section(
+    namespace: String,
+    icon: String,
+    label_ar: String,
+    label_fr: String,
+    label_en: String,
+    desc_ar: String,
+    desc_fr: String,
+    desc_en: String,
+    variables: ImmutableMap<String, Variable>,
+) : Form(namespace, icon, label_ar, label_fr, label_en, desc_ar, desc_fr, desc_en, variables)
+
+@Immutable
+class Variable internal constructor(
+    val namespace: String,
+    val name: String,
+    val required: Boolean,
     val type: String,
     val icon: String,
     val min: Int,
@@ -223,6 +324,8 @@ class Variable internal constructor(
     val desc_fr: String,
     val desc_en: String,
 ) {
+    val key = key(namespace, name)
+
     val label by lazy {
         Localizer.inPrimaryLang(label_en, label_ar, label_fr)
     }
@@ -232,7 +335,8 @@ class Variable internal constructor(
     }
 
     private val hash by lazy {
-        var result = name.hashCode()
+        var result = key.hashCode()
+        result = 31 * result + required.hashCode()
         result = 31 * result + type.hashCode()
         result = 31 * result + icon.hashCode()
         result = 31 * result + min
@@ -257,7 +361,8 @@ class Variable internal constructor(
 
         other as Variable
 
-        if (name != other.name) return false
+        if (key != other.key) return false
+        if (required != other.required) return false
         if (type != other.type) return false
         if (icon != other.icon) return false
         if (min != other.min) return false
@@ -276,8 +381,13 @@ class Variable internal constructor(
     }
 
     override fun toString() =
-        "Variable(name='$name', type='$type', label='$label', default='$default')"
+        "Variable(key='$key', type='$type', label='$label', default='$default')"
 
+    @Suppress("unused")
     fun debug() =
-        "Variable(name='$name', type='$type', icon='$icon', min=$min, max=$max, prefix='$prefix', suffix='$suffix', default='$default', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', label='$label', desc='$desc')"
+        "Variable(key='$key', required=$required, type='$type', icon='$icon', min=$min, max=$max, prefix='$prefix', suffix='$suffix', default='$default', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', label='$label', desc='$desc')"
+
+    companion object {
+        fun key(namespace: String, name: String) = "${namespace}.$name"
+    }
 }
