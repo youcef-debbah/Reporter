@@ -2,21 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "e5a87f53f09dba8de2bebc6914082faa",
+    "identityHash": "6b74c1aacfa2f5840d083db2de1d3b2c",
     "entities": [
       {
         "tableName": "template",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`template_name` TEXT NOT NULL, `content` TEXT NOT NULL, `label_en` TEXT, `label_ar` TEXT, `label_fr` TEXT, `desc_en` TEXT, `desc_ar` TEXT, `desc_fr` TEXT, `last_update` INTEGER NOT NULL, PRIMARY KEY(`template_name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`template_name` TEXT NOT NULL, `label_en` TEXT, `label_ar` TEXT, `label_fr` TEXT, `desc_en` TEXT, `desc_ar` TEXT, `desc_fr` TEXT, `last_update` INTEGER NOT NULL, PRIMARY KEY(`template_name`))",
         "fields": [
           {
             "fieldPath": "name",
             "columnName": "template_name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "content",
-            "columnName": "content",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -147,7 +141,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e5a87f53f09dba8de2bebc6914082faa')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6b74c1aacfa2f5840d083db2de1d3b2c')"
     ]
   }
 }

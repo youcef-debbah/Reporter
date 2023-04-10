@@ -1,17 +1,14 @@
 package com.reporter.client.model
 
-import android.webkit.WebView
 import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.reporter.common.Texts
 import com.reporter.util.model.Localizer
 
 const val TEMPLATE_TABLE = "template"
 const val TEMPLATE_COLUMN_NAME = "template_name"
-const val TEMPLATE_COLUMN_CONTENT = "content"
 const val TEMPLATE_COLUMN_LABEL_EN = "label_en"
 const val TEMPLATE_COLUMN_LABEL_AR = "label_ar"
 const val TEMPLATE_COLUMN_LABEL_FR = "label_fr"
@@ -26,8 +23,6 @@ class Template(
     @PrimaryKey
     @ColumnInfo(name = TEMPLATE_COLUMN_NAME)
     val name: String,
-    @ColumnInfo(name = TEMPLATE_COLUMN_CONTENT)
-    val content: String,
     @ColumnInfo(name = TEMPLATE_COLUMN_LABEL_EN)
     val label_en: String?,
     @ColumnInfo(name = TEMPLATE_COLUMN_LABEL_AR)
@@ -59,18 +54,4 @@ class Template(
     override fun hashCode() = name.hashCode()
 
     override fun toString() = "Template(name='$name',label=$label)"
-
-    fun loadContent(webView: WebView) {
-        if (content.startsWith(Texts.ASSETS_URL_PREFIX)) {
-            webView.loadUrl(content)
-        } else {
-            webView.loadDataWithBaseURL(
-                null,
-                content,
-                Texts.MEME_TYPE_TEXT_HTML,
-                Texts.UTF_8,
-                null
-            )
-        }
-    }
 }
