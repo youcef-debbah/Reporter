@@ -14,6 +14,7 @@ class TemplateMeta private constructor(
     val errorCode: Int,
     val sectionsVariables: ImmutableMap<String, Variable> = ImmutableMap.of(),
     val sections: ImmutableList<Section> = ImmutableList.of(),
+    val recordsVariables: ImmutableMap<String, Variable> = ImmutableMap.of(),
     val records: ImmutableMap<String, Record> = ImmutableMap.of(),
 ) {
     fun hasErrors() = errorCode != 0
@@ -45,6 +46,9 @@ class TemplateMeta private constructor(
 
     companion object {
         fun from(templateName: String, json: String): TemplateMeta {
+            if (json.isEmpty())
+                return TemplateMeta(template = templateName, errorCode = 404)
+
             try {
                 val jsonObject = JSONObject(json)
                 val errorCode = IntCounter()
@@ -55,11 +59,12 @@ class TemplateMeta private constructor(
                     errorCode.value,
                     sections.first,
                     sections.second,
-                    records,
+                    records.first,
+                    records.second,
                 )
             } catch (e: Exception) {
                 Teller.warn("invalid template meta for '$templateName': $json", e)
-                return TemplateMeta(template = templateName, errorCode = -1)
+                return TemplateMeta(template = templateName, errorCode = 400)
             }
         }
 
@@ -120,7 +125,7 @@ class TemplateMeta private constructor(
                         )
                     } catch (e: Exception) {
                         Teller.warn("invalid template section#$i for '$templateName': $json", e)
-                        errorCode.inc()
+                        errorCode.dec()
                         errorCode.addFlag(1)
                     }
                 }
@@ -137,10 +142,11 @@ class TemplateMeta private constructor(
             json: String,
             jsonObject: JSONObject,
             errorCode: IntCounter,
-        ): ImmutableMap<String, Record> {
+        ): Pair<ImmutableMap<String, Variable>, ImmutableMap<String, Record>> {
             try {
                 val recordsJsonArray = jsonObject.optJSONArray("records")
                 if (recordsJsonArray != null) {
+                    val recordsVariablesBuilder = ImmutableMap.builder<String, Variable>()
                     val recordsBuilder = ImmutableMap.builder<String, Record>()
                     for (i in 0 until recordsJsonArray.length()) {
                         try {
@@ -154,27 +160,26 @@ class TemplateMeta private constructor(
                             for (j in 0 until variablesJsonArray.length()) {
                                 val variableJsonObject = variablesJsonArray.getJSONObject(j)
                                 val name = variableJsonObject.getString("name")
-                                variablesBuilder.put(
+                                val variable = Variable(
+                                    recordNamespace,
                                     name,
-                                    Variable(
-                                        recordNamespace,
-                                        name,
-                                        variableJsonObject.optBoolean("required"),
-                                        variableJsonObject.getString("type"),
-                                        variableJsonObject.optString("icon"),
-                                        variableJsonObject.optInt("min"),
-                                        variableJsonObject.getInt("max"),
-                                        variableJsonObject.optString("prefix"),
-                                        variableJsonObject.optString("suffix"),
-                                        variableJsonObject.optString("default"),
-                                        variableJsonObject.getString("label_ar"),
-                                        variableJsonObject.getString("label_fr"),
-                                        variableJsonObject.getString("label_en"),
-                                        variableJsonObject.getString("desc_ar"),
-                                        variableJsonObject.getString("desc_fr"),
-                                        variableJsonObject.getString("desc_en"),
-                                    )
+                                    variableJsonObject.optBoolean("required"),
+                                    variableJsonObject.getString("type"),
+                                    variableJsonObject.optString("icon"),
+                                    variableJsonObject.optInt("min"),
+                                    variableJsonObject.getInt("max"),
+                                    variableJsonObject.optString("prefix"),
+                                    variableJsonObject.optString("suffix"),
+                                    variableJsonObject.optString("default"),
+                                    variableJsonObject.getString("label_ar"),
+                                    variableJsonObject.getString("label_fr"),
+                                    variableJsonObject.getString("label_en"),
+                                    variableJsonObject.getString("desc_ar"),
+                                    variableJsonObject.getString("desc_fr"),
+                                    variableJsonObject.getString("desc_en"),
                                 )
+                                variablesBuilder.put(name, variable)
+                                recordsVariablesBuilder.put("$recordName.$name", variable)
                             }
 
                             recordsBuilder.put(
@@ -194,18 +199,18 @@ class TemplateMeta private constructor(
                             )
                         } catch (e: Exception) {
                             Teller.warn("invalid template record#$i for '$templateName': $json", e)
-                            errorCode.inc()
+                            errorCode.dec()
                             errorCode.addFlag(2)
                         }
                     }
-                    return recordsBuilder.build()
+                    return Pair(recordsVariablesBuilder.build(), recordsBuilder.build())
                 }
             } catch (e: Exception) {
                 Teller.warn("invalid template records for '$templateName': $json", e)
                 errorCode.addFlag(2)
             }
 
-            return ImmutableMap.of()
+            return Pair(ImmutableMap.of(), ImmutableMap.of())
         }
     }
 }
@@ -267,7 +272,8 @@ abstract class Form(
         return true
     }
 
-    override fun toString() = "$className(namespace='$namespace', label='$label', variables=$variables')"
+    override fun toString() =
+        "$className(namespace='$namespace', label='$label', variables=$variables')"
 
     @Suppress("unused")
     open fun debug() =

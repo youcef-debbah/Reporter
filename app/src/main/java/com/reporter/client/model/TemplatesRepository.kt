@@ -1,15 +1,71 @@
 package com.reporter.client.model
 
+import android.content.Context
+import com.google.common.collect.ImmutableMap
 import com.reporter.common.ioLaunch
+import com.reporter.util.model.Teller
+import com.reporter.util.ui.AbstractApplication
 import dagger.Lazy
+import io.pebbletemplates.pebble.PebbleEngine
+import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.io.IOException
+import java.io.InputStream
+import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 
 class TemplatesRepository @Inject constructor(private val templateDao: Lazy<TemplateDAO>) {
-    val templates = MutableStateFlow<List<Template>?>(null).apply {
+
+    val context: Context = AbstractApplication.INSTANCE
+
+    @Volatile
+    private var lastLoadedTemplates: ImmutableMap<String, Template>? = null
+
+    private val firstLoadingLatch = CountDownLatch(1)
+
+    val templates = MutableStateFlow<Map<String, Template>?>(null).apply {
         ioLaunch {
-            value = templateDao.get().loadTemplates()
+            val builder: ImmutableMap.Builder<String, Template> = ImmutableMap.builder()
+            for (template in templateDao.get().loadTemplates()) {
+                builder.put(template.name, template)
+            }
+            val result = builder.build()
+            value = result
+            lastLoadedTemplates = result
+            firstLoadingLatch.countDown()
         }
     }.asStateFlow()
+
+    val pebbleEngine: PebbleEngine = PebbleEngine.Builder()
+        .loader(TemplateLoader(this))
+        .build()
+
+    fun loadedTemplates(): ImmutableMap<String, Template> =
+        lastLoadedTemplates ?: run {
+            firstLoadingLatch.await()
+            lastLoadedTemplates!!
+        }
+
+    fun templateExists(templateName: String): Boolean =
+        loadedTemplates().containsKey(templateName)
+
+    fun loadTemplateContent(templateName: String): InputStream? =
+        loadTemplateFile(templateName, "html")
+
+    fun loadTemplateMeta(templateName: String): InputStream? =
+        loadTemplateFile(templateName, "json")
+
+    private fun loadTemplateFile(templateName: String, fileFormat: String): InputStream? {
+        val file = "templates/$templateName.$fileFormat"
+        try {
+            return context.assets.open(file)
+        } catch (e: IOException) {
+            Teller.error("could not find template file: $file", e)
+            return null
+        }
+    }
+
+    fun compileTemplate(templateName: String): PebbleTemplate =
+        pebbleEngine.getTemplate(templateName)
 }

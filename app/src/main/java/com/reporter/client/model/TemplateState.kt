@@ -5,17 +5,35 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
+import com.reporter.common.AsyncConfig
 import com.reporter.common.ioLaunch
+import com.reporter.common.withIO
 import dagger.Lazy
+import io.pebbletemplates.pebble.template.PebbleTemplate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import java.io.StringWriter
 
 @Stable
-class TemplateCache private constructor(
+class TemplateState private constructor(
     val template: String,
+    val meta: TemplateMeta,
     val variablesStates: ImmutableMap<String, VariableState>,
     val sectionStates: ImmutableList<SectionState>,
     val recordsStates: ImmutableMap<String, RecordState>,
+    val environment: ImmutableMap<String, Any>,
+    val templateUpdates: MutableSharedFlow<ValueUpdate>,
 ) {
+
+    val scope = CoroutineScope(SupervisorJob() + AsyncConfig.backgroundDispatcher)
+
+    fun close() {// TODO call this
+        scope.cancel()
+    }
 
     operator fun get(key: String): MutableState<String> = variablesStates[key]!!.state
 
@@ -34,20 +52,20 @@ class TemplateCache private constructor(
     operator fun set(key: String, newContent: String?) {
         val variableState = variablesStates[key]
         if (variableState != null) {
-            setState(variableState.variable, variableState.state, newContent)
+            setState(variableState.variable, variableState.state, newContent, templateUpdates)
         }
     }
 
     operator fun set(variableState: VariableState, newContent: String?) {
-        setState(variableState.variable, variableState.state, newContent)
+        setState(variableState.variable, variableState.state, newContent, templateUpdates)
     }
 
     override fun equals(other: Any?) =
-        this === other || (other is TemplateCache && other.template == this.template)
+        this === other || (other is TemplateState && other.template == this.template)
 
     override fun hashCode() = template.hashCode()
 
-    override fun toString() = "TemplateCache(template='$template')"
+    override fun toString() = "TemplateState(template='$template')"
 
     companion object {
 
@@ -61,7 +79,8 @@ class TemplateCache private constructor(
                 val dao = globalValueDAO!!
                 dao.execute(firstUpdate)
                 while (true) {
-                    dao.execute(pendingUpdates.receive())
+                    val update = pendingUpdates.receive()
+                    dao.execute(update)
                 }
             }
         }
@@ -70,43 +89,65 @@ class TemplateCache private constructor(
             templateName: String,
             meta: TemplateMeta,
             valueDAO: Lazy<ValueDAO>
-        ): TemplateCache {
+        ): TemplateState {
+            val environmentBuilder: ImmutableMap.Builder<String, Any> = ImmutableMap.builder()
             val variablesBuilder: ImmutableMap.Builder<String, VariableState> =
                 ImmutableMap.builder()
             val sectionsBuilder: ImmutableList.Builder<SectionState> = ImmutableList.builder()
             val recordsBuilder: ImmutableMap.Builder<String, RecordState> = ImmutableMap.builder()
-            buildEmptyCache(meta, variablesBuilder, sectionsBuilder, recordsBuilder)
+            val templateUpdates = MutableSharedFlow<ValueUpdate>(
+                replay = 1,
+                extraBufferCapacity = 0,
+                onBufferOverflow = BufferOverflow.DROP_OLDEST
+            )
+            templateUpdates.tryEmit(ValueUpdate(templateName, "", null))
+
+            buildEmptyState(
+                meta,
+                variablesBuilder,
+                sectionsBuilder,
+                recordsBuilder,
+                environmentBuilder,
+                templateUpdates
+            )
             val variablesStates = variablesBuilder.build()
 
-            val dao: ValueDAO = valueDAO.get()
-            val loadedValues: List<Value> = dao.findValuesPrefixedBy(templateName)
-            val toDelete: ArrayList<Value> = ArrayList(loadedValues.size)
+            withIO {
+                val dao: ValueDAO = valueDAO.get()
+                val loadedValues: List<Value> = dao.findValuesPrefixedBy(templateName)
+                val toDelete: ArrayList<Value> = ArrayList(loadedValues.size)
 
-            for (loadedValue in loadedValues) {
-                val variableState = variablesStates[loadedValue.key]
-                if (variableState != null) {
-                    variableState.state.value = loadedValue.content
-                } else {
-                    toDelete.add(loadedValue)
+                for (loadedValue in loadedValues) {
+                    val variableState = variablesStates[loadedValue.key]
+                    if (variableState != null) {
+                        variableState.state.value = loadedValue.content
+                    } else {
+                        toDelete.add(loadedValue)
+                    }
                 }
+
+                dao.deleteAll(toDelete)
+                globalValueDAO = dao
             }
 
-            dao.deleteAll(toDelete)
-            globalValueDAO = dao
-
-            return TemplateCache(
+            return TemplateState(
                 templateName,
+                meta,
                 variablesStates,
                 sectionsBuilder.build(),
-                recordsBuilder.build()
+                recordsBuilder.build(),
+                environmentBuilder.build(),
+                templateUpdates
             )
         }
 
-        private fun buildEmptyCache(
+        private fun buildEmptyState(
             meta: TemplateMeta,
             variablesBuilder: ImmutableMap.Builder<String, VariableState>,
             sectionsBuilder: ImmutableList.Builder<SectionState>,
             recordsBuilder: ImmutableMap.Builder<String, RecordState>,
+            environmentBuilder: ImmutableMap.Builder<String, Any>,
+            templateUpdates: MutableSharedFlow<ValueUpdate>,
         ) {
             val declaredSections: ImmutableList<Section> = meta.sections
             val declaredRecords: ImmutableMap<String, Record> = meta.records
@@ -115,7 +156,9 @@ class TemplateCache private constructor(
                 val varsBuilder: ImmutableMap.Builder<String, VariableState> =
                     ImmutableMap.builder()
                 for (variable in section.variables.values) {
-                    varsBuilder.put(variable.key, addVariableState(variablesBuilder, variable))
+                    val variableState = addVariableState(variablesBuilder, variable, templateUpdates)
+                    varsBuilder.put(variable.key, variableState)
+                    environmentBuilder.put(variable.name, variableState)
                 }
                 sectionsBuilder.add(SectionState(section, varsBuilder.build()))
             }
@@ -123,20 +166,25 @@ class TemplateCache private constructor(
             for (record in declaredRecords.values) {
                 val varsBuilder: ImmutableMap.Builder<String, VariableState> =
                     ImmutableMap.builder()
+                val recordEnvironment = ImmutableMap.builder<String, VariableState>()
                 for (variable in record.variables.values) {
-                    varsBuilder.put(variable.key, addVariableState(variablesBuilder, variable))
+                    val variableState = addVariableState(variablesBuilder, variable, templateUpdates)
+                    varsBuilder.put(variable.key, variableState)
+                    recordEnvironment.put(variable.name, variableState)
                 }
                 recordsBuilder.put(record.name, RecordState(record, varsBuilder.build()))
+                environmentBuilder.put(record.name, recordEnvironment)
             }
         }
 
         private fun addVariableState(
             builder: ImmutableMap.Builder<String, VariableState>,
-            variable: Variable
+            variable: Variable,
+            templateUpdates: MutableSharedFlow<ValueUpdate>
         ): VariableState {
             val state: MutableState<String> = mutableStateOf(variable.default)
             val variableState = VariableState(variable, state) {
-                setState(variable, state, it)
+                setState(variable, state, it, templateUpdates)
             }
             builder.put(variable.key, variableState)
             return variableState
@@ -146,24 +194,29 @@ class TemplateCache private constructor(
             variable: Variable,
             state: MutableState<String>,
             newContent: String?,
+            templateUpdates: MutableSharedFlow<ValueUpdate>,
         ) {
             val currentContent = state.value
             if (newContent != currentContent) {
                 val namespace = variable.namespace
                 val name = variable.name
-                if (newContent != null) {
+                val update: ValueUpdate = if (newContent != null) {
                     val newValue = Value(
                         namespace = namespace,
                         name = name,
                         lastUpdate = System.currentTimeMillis(),
                         content = newContent,
                     )
-                    pendingUpdates.trySend(ValueUpdate(namespace, name, newValue))
                     state.value = newContent
+                    ValueUpdate(namespace, name, newValue)
+
                 } else {
-                    pendingUpdates.trySend(ValueUpdate(namespace, name, null))
                     state.value = variable.default
+                    ValueUpdate(namespace, name, null)
                 }
+
+                pendingUpdates.trySend(update)
+                templateUpdates.tryEmit(update)
             }
         }
     }
@@ -185,7 +238,7 @@ class VariableState(
     val setter: (String) -> Unit,
 ) {
     override fun toString(): String {
-        return "VariableState(variable=$variable)"
+        return state.value
     }
 }
 
@@ -205,4 +258,12 @@ class SectionState(
     override fun toString(): String {
         return "SectionState(section=$section)"
     }
+}
+
+fun PebbleTemplate.evaluateState(
+    templateState: TemplateState
+): String {
+    val writer = StringWriter()
+    evaluate(writer, templateState.environment)
+    return writer.toString()
 }
