@@ -78,4 +78,6 @@ class IntCounter(var value: Int = 0): Comparable<IntCounter> {
     override operator fun compareTo(other: IntCounter): Int {
         return value.compareTo(other.value)
     }
+
+    override fun toString() = value.toString()
 }
