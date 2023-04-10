@@ -25,7 +25,7 @@ object ExternalLink {
                 "could not open an activity to handle: " +
                         "$ACTION_DIAL with '$PROTOCOL_TEL' protocol", e
             )
-            longToast(R.string.activity_missing_action_dial)
+            Toasts.long(R.string.activity_missing_action_dial)
         }
     }
 
@@ -37,7 +37,7 @@ object ExternalLink {
             intent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.default_email_content))
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            longToast(R.string.activity_missing_action_mailto)
+            Toasts.long(R.string.activity_missing_action_mailto)
             Teller.error(
                 "could not open an activity to handle action: " +
                         "$ACTION_MAILTO with '$PROTOCOL_MAILTO' protocol", e
