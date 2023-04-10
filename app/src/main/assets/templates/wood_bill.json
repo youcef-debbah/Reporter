@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Page</title>
-    <script>
-var meta = {
-"templateName": "Test Template",
+{
+  "templateName": "Test Template",
   "sections": [
     {
       "icon": "section1_icon",
@@ -65,7 +60,7 @@ var meta = {
           "required": true,
           "type": "date",
           "icon": "var3_icon",
-          "min": 01,
+          "min": 1,
           "max": 31,
           "prefix": "prefix3",
           "suffix": "suffix3",
@@ -84,9 +79,9 @@ var meta = {
     {
       "name": "Record1",
       "icon": "icon1.png",
-      "label_ar": "Label AR 1",
-      "label_fr": "Label FR 1",
-      "label_en": "Label EN 1",
+      "label_ar": "السجل 1",
+      "label_fr": "Record 1",
+      "label_en": "Record 1",
       "desc_ar": "Description AR 1",
       "desc_fr": "Description FR 1",
       "desc_en": "Description EN 1",
@@ -130,9 +125,9 @@ var meta = {
     {
       "name": "Record2",
       "icon": "icon2.png",
-      "label_ar": "Label AR 2",
-      "label_fr": "Label FR 2",
-      "label_en": "Label EN 2",
+      "label_ar": "السجل 2",
+      "label_fr": "Record 2",
+      "label_en": "Record 2",
       "desc_ar": "Description AR 2",
       "desc_fr": "Description FR 2",
       "desc_en": "Description EN 2",
@@ -174,11 +169,4 @@ var meta = {
       ]
     }
   ]
-};
-
-    </script>
-</head>
-<body>
-<h1>Hello, world!</h1>
-</body>
-</html>
+}
