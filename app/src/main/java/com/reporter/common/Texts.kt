@@ -4,7 +4,10 @@ import com.google.common.collect.ImmutableCollection
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
+import java.io.InputStream
+import java.io.InputStreamReader
 import java.lang.Integer.max
+import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
@@ -34,11 +37,14 @@ object Texts {
     const val MIN_ABS_INT = "2147483648"
     const val MIN_ABS_LONG = "9223372036854775808"
 
-    private const val ARABIC_CHARS = "\u0623\u0625\u0622\u0626\u0630\u0621\u0624\u0631\u0649\u0629" +
-            "\u0648\u0632\u0638\u062F\u0634\u0633\u064A\u0628\u0644\u0627\u062A\u0646\u0645\u0643" +
-            "\u0637\u0636\u0635\u062B\u0642\u0641\u063A\u0639\u0647\u062E\u062D\u062C"
-    private const val ARABIC_NUMBERS_CHARS = "\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669\u0660"
-    private const val ARABIC_EXTRA_CHARS = "\u060C\u060C\u061F\u0651\u064D\u0650\u0652\u064C\u064F\u064B\u064E"
+    private const val ARABIC_CHARS =
+        "\u0623\u0625\u0622\u0626\u0630\u0621\u0624\u0631\u0649\u0629" +
+                "\u0648\u0632\u0638\u062F\u0634\u0633\u064A\u0628\u0644\u0627\u062A\u0646\u0645\u0643" +
+                "\u0637\u0636\u0635\u062B\u0642\u0641\u063A\u0639\u0647\u062E\u062D\u062C"
+    private const val ARABIC_NUMBERS_CHARS =
+        "\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669\u0660"
+    private const val ARABIC_EXTRA_CHARS =
+        "\u060C\u060C\u061F\u0651\u064D\u0650\u0652\u064C\u064F\u064B\u064E"
 
     private const val FRENCH_ACCENTS_CHARS = "\u00E7\u00E9\u00E2\u00EA\u00EE\u00F4\u00FB\u00E0" +
             "\u00E8\u00F9\u00EB\u00EF\u00FC\u00C7\u00C9\u00C2\u00CA\u00CE\u00D4\u00DB\u00C0\u00C8" +
@@ -64,21 +70,55 @@ object Texts {
         .put('9', '0')
         .build()
 
-    val ALPHABET: ImmutableList<Char> = ImmutableList.Builder<Char>().addAll(ALPHABET_ARRAY.iterator()).build()
+    val ALPHABET: ImmutableList<Char> =
+        ImmutableList.Builder<Char>().addAll(ALPHABET_ARRAY.iterator()).build()
 
     val MAIN_VOWELS: ImmutableList<Char> = ImmutableList.of('a', 'e', 'i', 'o', 'u')
 
     val ARABIC_CONSONANTS: ImmutableList<Char> = ImmutableList.of(
-        '\u0636', '\u0635', '\u062B', '\u0642', '\u0641', '\u063A', '\u0639', '\u0647', '\u062E', '\u062D',
-        '\u062C', '\u0634', '\u0633', '\u0628', '\u0644', '\u062A', '\u0646', '\u0645', '\u0643', '\u0637',
-        '\u0630', '\u0631', '\u0632', '\u0638', '\u062F'
+        '\u0636',
+        '\u0635',
+        '\u062B',
+        '\u0642',
+        '\u0641',
+        '\u063A',
+        '\u0639',
+        '\u0647',
+        '\u062E',
+        '\u062D',
+        '\u062C',
+        '\u0634',
+        '\u0633',
+        '\u0628',
+        '\u0644',
+        '\u062A',
+        '\u0646',
+        '\u0645',
+        '\u0643',
+        '\u0637',
+        '\u0630',
+        '\u0631',
+        '\u0632',
+        '\u0638',
+        '\u062F'
     )
     val ARABIC_VOWELS: ImmutableList<Char> = ImmutableList.of('\u0627', '\u0648', '\u064A')
     val ARABIC_DIACRITICS: ImmutableList<Char> =
-        ImmutableList.of('\u0651', '\u064E', '\u064B', '\u064F', '\u064C', '\u0650', '\u064D', '\u0652')
+        ImmutableList.of(
+            '\u0651',
+            '\u064E',
+            '\u064B',
+            '\u064F',
+            '\u064C',
+            '\u0650',
+            '\u064D',
+            '\u0652'
+        )
 
-    val EXTRA_ALEPH_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u0622', '\u0623', '\u0625', '\u0649')
-    val NON_ALEPH_HAMZA_LETTERS: ImmutableList<Char> = ImmutableList.of('\u0626', '\u0621', '\u0624')
+    val EXTRA_ALEPH_LETTER_FORMS: ImmutableList<Char> =
+        ImmutableList.of('\u0622', '\u0623', '\u0625', '\u0649')
+    val NON_ALEPH_HAMZA_LETTERS: ImmutableList<Char> =
+        ImmutableList.of('\u0626', '\u0621', '\u0624')
     const val TAH_MARBOOTAH = '\u0629'
     const val ARABIC_UNDERSCORE = '\u0640'
 
@@ -101,40 +141,63 @@ object Texts {
         '\u0117', '\u0119', '\u011B', '\u0115', '\u0259'
     )
     val EXTRA_R_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u0155', '\u0159')
-    val EXTRA_T_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u00FE', '\u0165', '\u021B', '\u0163')
+    val EXTRA_T_LETTER_FORMS: ImmutableList<Char> =
+        ImmutableList.of('\u00FE', '\u0165', '\u021B', '\u0163')
     val EXTRA_Y_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u00FD')
     val EXTRA_U_LETTER_FORMS: ImmutableList<Char> =
-        ImmutableList.of('\u00FB', '\u00F9', '\u00FA', '\u00FC', '\u016B', '\u016F', '\u0171', '\u0173')
+        ImmutableList.of(
+            '\u00FB',
+            '\u00F9',
+            '\u00FA',
+            '\u00FC',
+            '\u016B',
+            '\u016F',
+            '\u0171',
+            '\u0173'
+        )
     val EXTRA_I_LETTER_FORMS: ImmutableList<Char> =
         ImmutableList.of('\u00EE', '\u00EF', '\u00EC', '\u00ED', '\u012B', '\u012F', '\u0131')
     val EXTRA_O_LETTER_FORMS: ImmutableList<Char> =
-        ImmutableList.of('\u00F3', '\u00F4', '\u0153', '\u00F2', '\u00F5', '\u00F6', '\u00F8', '\u0151')
-    val EXTRA_S_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u00DF', '\u00A7', '\u015B', '\u0161', '\u015F')
+        ImmutableList.of(
+            '\u00F3',
+            '\u00F4',
+            '\u0153',
+            '\u00F2',
+            '\u00F5',
+            '\u00F6',
+            '\u00F8',
+            '\u0151'
+        )
+    val EXTRA_S_LETTER_FORMS: ImmutableList<Char> =
+        ImmutableList.of('\u00DF', '\u00A7', '\u015B', '\u0161', '\u015F')
     val EXTRA_D_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u010F', '\u0111')
     val EXTRA_G_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u0123', '\u011F')
     val EXTRA_K_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u0137')
-    val EXTRA_L_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u013A', '\u013C', '\u013E', '\u0142')
+    val EXTRA_L_LETTER_FORMS: ImmutableList<Char> =
+        ImmutableList.of('\u013A', '\u013C', '\u013E', '\u0142')
     val EXTRA_C_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u00E7', '\u0107', '\u010D')
-    val EXTRA_N_LETTER_FORMS: ImmutableList<Char> = ImmutableList.of('\u00F1', '\u0144', '\u0146', '\u0148')
+    val EXTRA_N_LETTER_FORMS: ImmutableList<Char> =
+        ImmutableList.of('\u00F1', '\u0144', '\u0146', '\u0148')
 
-    val EXTRA_LATIN_LETTERS_FORMS: ImmutableMap<Char, List<Char>> = ImmutableMap.builder<Char, List<Char>>()
-        .put('a', EXTRA_A_LETTER_FORMS)
-        .put('z', EXTRA_Z_LETTER_FORMS)
-        .put('e', EXTRA_E_LETTER_FORMS)
-        .put('r', EXTRA_R_LETTER_FORMS)
-        .put('t', EXTRA_T_LETTER_FORMS)
-        .put('y', EXTRA_Y_LETTER_FORMS)
-        .put('u', EXTRA_U_LETTER_FORMS)
-        .put('i', EXTRA_I_LETTER_FORMS)
-        .put('o', EXTRA_O_LETTER_FORMS)
-        .put('s', EXTRA_S_LETTER_FORMS)
-        .put('d', EXTRA_D_LETTER_FORMS)
-        .put('g', EXTRA_G_LETTER_FORMS)
-        .put('k', EXTRA_K_LETTER_FORMS)
-        .put('l', EXTRA_L_LETTER_FORMS)
-        .put('c', EXTRA_C_LETTER_FORMS)
-        .put('n', EXTRA_N_LETTER_FORMS)
-        .build()
+    val EXTRA_LATIN_LETTERS_FORMS: ImmutableMap<Char, List<Char>> =
+        ImmutableMap.builder<Char, List<Char>>()
+            .put('a', EXTRA_A_LETTER_FORMS)
+            .put('z', EXTRA_Z_LETTER_FORMS)
+            .put('e', EXTRA_E_LETTER_FORMS)
+            .put('r', EXTRA_R_LETTER_FORMS)
+            .put('t', EXTRA_T_LETTER_FORMS)
+            .put('y', EXTRA_Y_LETTER_FORMS)
+            .put('u', EXTRA_U_LETTER_FORMS)
+            .put('i', EXTRA_I_LETTER_FORMS)
+            .put('o', EXTRA_O_LETTER_FORMS)
+            .put('s', EXTRA_S_LETTER_FORMS)
+            .put('d', EXTRA_D_LETTER_FORMS)
+            .put('g', EXTRA_G_LETTER_FORMS)
+            .put('k', EXTRA_K_LETTER_FORMS)
+            .put('l', EXTRA_L_LETTER_FORMS)
+            .put('c', EXTRA_C_LETTER_FORMS)
+            .put('n', EXTRA_N_LETTER_FORMS)
+            .build()
 
     const val FRENCH_LETTER_REGEX_GROUP_CONTENT = "a-zA-Z$FRENCH_ACCENTS_CHARS"
     const val ARABIC_LETTER_REGEX_GROUP_CONTENT = ARABIC_CHARS
@@ -262,7 +325,8 @@ fun Int.lexicalFormat(): String {
     } else {
         val digitsCount = this.digitsCount()
         if (this > 0) {
-            return StringBuilder(digitsCount + 1).append(Texts.ALPHABET_ARRAY[digitsCount]).append(this).toString()
+            return StringBuilder(digitsCount + 1).append(Texts.ALPHABET_ARRAY[digitsCount])
+                .append(this).toString()
         } else if (this == Int.MIN_VALUE) {
             return "!p" + Texts.MIN_ABS_INT
         } else {
@@ -364,4 +428,18 @@ fun String.joinWith(another: String, separator: Char = Texts.SPACE_CHAR): String
     } else {
         return this + separator + another
     }
+}
+
+fun InputStream.readAsString(bufferSize: Int = 1024): String {
+    val buffer = CharArray(bufferSize)
+    val result = StringBuilder(bufferSize)
+    InputStreamReader(this, StandardCharsets.UTF_8).use { reader ->
+        var bytesRead: Int
+        while (reader.read(buffer, 0, bufferSize).also { bytesRead = it } != -1) {
+            result.append(buffer, 0, bytesRead)
+        }
+
+        reader.close()
+    }
+    return result.toString()
 }
