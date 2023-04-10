@@ -2,7 +2,6 @@ package com.reporter.client.model
 
 import android.content.Context
 import com.google.firebase.FirebaseApp
-import com.google.firebase.FirebaseOptions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,6 +15,6 @@ object ReporterMainModule {
 
     @Provides
     @Singleton
-    fun getFirebaseApp(@ApplicationContext context: Context) : FirebaseApp =
+    fun getFirebaseApp(@ApplicationContext context: Context): FirebaseApp =
         FirebaseApp.initializeApp(context)!!
 }

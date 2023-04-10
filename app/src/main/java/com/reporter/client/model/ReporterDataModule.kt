@@ -3,10 +3,15 @@ package com.reporter.client.model
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import androidx.annotation.WorkerThread
+import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.reporter.common.Texts
+import com.reporter.util.model.EmbeddedListConverter
+import com.reporter.util.model.LogDAO
+import com.reporter.util.model.LoggedEvent
 import com.reporter.util.model.StandardDatabase
 import com.reporter.util.model.Teller
 import dagger.Binds
@@ -45,8 +50,7 @@ abstract class ReporterDataModule {
         override fun onCreate(db: SupportSQLiteDatabase) {
             db.runTransaction {
                 db.insert(TEMPLATE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
-                    put(TEMPLATE_COLUMN_NAME, "temp_1")
-                    put(TEMPLATE_COLUMN_CONTENT, "${Texts.ASSETS_URL_PREFIX}wood_bill.html")
+                    put(TEMPLATE_COLUMN_NAME, "wood_bill")
                     put(TEMPLATE_COLUMN_LABEL_EN, "Wood bill")
                     put(TEMPLATE_COLUMN_LABEL_AR, "فاتورة الحطب")
                     put(TEMPLATE_COLUMN_LABEL_FR, "Facture de bois")
@@ -57,8 +61,7 @@ abstract class ReporterDataModule {
                 })
             }
             db.insert(TEMPLATE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
-                put(TEMPLATE_COLUMN_NAME, "temp_2")
-                put(TEMPLATE_COLUMN_CONTENT, "<p>This is my Water bill</p>")
+                put(TEMPLATE_COLUMN_NAME, "water_bill")
                 put(TEMPLATE_COLUMN_LABEL_EN, "Water bill")
                 put(TEMPLATE_COLUMN_LABEL_AR, "فاتورة ماء")
                 put(TEMPLATE_COLUMN_LABEL_FR, "Facture de l'eau")
@@ -81,4 +84,27 @@ private fun SupportSQLiteDatabase.runTransaction(transaction: SupportSQLiteDatab
     } finally {
         endTransaction()
     }
+}
+
+@WorkerThread
+@Database(
+    version = 1,
+    entities = [
+        Template::class,
+        Value::class,
+        LoggedEvent::class,
+    ],
+)
+@TypeConverters(EmbeddedListConverter::class)
+abstract class ReporterDatabase : RoomDatabase(), StandardDatabase {
+
+    companion object {
+        const val NAME = "reporter_db"
+    }
+
+    abstract override fun logDAO(): LogDAO
+
+    abstract fun templateDAO(): TemplateDAO
+
+    abstract fun valueDAO(): ValueDAO
 }
