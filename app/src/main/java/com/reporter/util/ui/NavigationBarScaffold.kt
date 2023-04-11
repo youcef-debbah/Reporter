@@ -24,6 +24,7 @@ import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import com.reporter.client.model.CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import com.reporter.common.indexDiff
 import com.reporter.util.model.AppConfig
 import com.reporter.util.model.REMOTE_NAVIGATION_ANIMATION_DURATION
@@ -94,51 +95,67 @@ private fun StatelessNavigationBarScaffold(
                     modifier = Modifier.padding(innerPadding),
                     builder = { builder.invoke(this, navController) },
                     enterTransition = {
-                        val diff = destinations.iterator().indexDiff(
-                            initialState.destination::isLinkedTo,
-                            targetState.destination::isLinkedTo,
-                        )
+                        if (AppConfig.get(CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                            val diff = destinations.iterator().indexDiff(
+                                initialState.destination::isLinkedTo,
+                                targetState.destination::isLinkedTo,
+                            )
 
-                        if (diff == null || diff == 0) {
-                            defaultInTransition(false)
+                            if (diff == null || diff == 0) {
+                                defaultInTransition(false)
+                            } else {
+                                inTransition(diff > 0)
+                            }
                         } else {
-                            inTransition(diff > 0)
+                            EnterTransition.None
                         }
                     },
                     exitTransition = {
-                        val diff = destinations.iterator().indexDiff(
-                            initialState.destination::isLinkedTo,
-                            targetState.destination::isLinkedTo,
-                        )
+                        if (AppConfig.get(CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                            val diff = destinations.iterator().indexDiff(
+                                initialState.destination::isLinkedTo,
+                                targetState.destination::isLinkedTo,
+                            )
 
-                        if (diff == null || diff == 0) {
-                            defaultOutTransition(false)
+                            if (diff == null || diff == 0) {
+                                defaultOutTransition(false)
+                            } else {
+                                outTransition(diff < 0)
+                            }
                         } else {
-                            outTransition(diff < 0)
+                            ExitTransition.None
                         }
                     },
                     popEnterTransition = {
-                        val diff = destinations.iterator().indexDiff(
-                            initialState.destination::isLinkedTo,
-                            targetState.destination::isLinkedTo,
-                        )
+                        if (AppConfig.get(CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                            val diff = destinations.iterator().indexDiff(
+                                initialState.destination::isLinkedTo,
+                                targetState.destination::isLinkedTo,
+                            )
 
-                        if (diff == null || diff == 0) {
-                            defaultInTransition(true)
+                            if (diff == null || diff == 0) {
+                                defaultInTransition(true)
+                            } else {
+                                inTransition(diff > 0)
+                            }
                         } else {
-                            inTransition(diff > 0)
+                            EnterTransition.None
                         }
                     },
                     popExitTransition = {
-                        val diff = destinations.iterator().indexDiff(
-                            initialState.destination::isLinkedTo,
-                            targetState.destination::isLinkedTo,
-                        )
+                        if (AppConfig.get(CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                            val diff = destinations.iterator().indexDiff(
+                                initialState.destination::isLinkedTo,
+                                targetState.destination::isLinkedTo,
+                            )
 
-                        if (diff == null || diff == 0) {
-                            defaultOutTransition(true)
+                            if (diff == null || diff == 0) {
+                                defaultOutTransition(true)
+                            } else {
+                                outTransition(diff < 0)
+                            }
                         } else {
-                            outTransition(diff < 0)
+                            ExitTransition.None
                         }
                     },
                 )
