@@ -55,4 +55,7 @@
     <string name="template_tab_error_desc">Loading failed for the template:%n%s</string>
     <string name="content_loading_desc">Loading…</string>
     <string name="error_code">Error code: %d</string>
+    <string name="pdf_exporting_succeed">PDF exported successfully!</string>
+    <string name="pdf_exporting_internal_failure">PDF exporting failed due to an internal error!</string>
+    <string name="pdf_exporting_system_failure">PDF exporting failed deu to a system error!</string>
 </resources>

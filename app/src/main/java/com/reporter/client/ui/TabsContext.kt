@@ -3,11 +3,16 @@
 package com.reporter.client.ui
 
 import android.content.res.Resources
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -19,6 +24,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
@@ -35,7 +41,7 @@ import com.reporter.client.model.VariableState
 import com.reporter.client.model.evaluateState
 import com.reporter.common.AsyncConfig
 import com.reporter.common.backgroundLaunch
-import com.reporter.common.createDynamicWebView
+import com.reporter.common.newDynamicWebView
 import com.reporter.common.removeIf
 import com.reporter.common.withMain
 import com.reporter.util.ui.AbstractApplication
@@ -56,6 +62,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import java.util.concurrent.atomic.AtomicBoolean
+
 
 class TabsContext(val template: Template) {
 
@@ -261,13 +268,21 @@ class TabsContext(val template: Template) {
             recordsTabs.add(Pair(tab, recordState))
         }
 
-        val webView = createDynamicWebView(context)
+        val webView = newDynamicWebView(context) {
+            this.useWideViewPort = false
+            this.loadWithOverviewMode = true
+        }
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                webView.setInitialScale(1)
+            }
+        }
         val templateOutput = TemplateOutput.from(
+            this,
             templateState,
             compiledTemplate,
             initialContent,
             webView,
-            tabsScope
         )
 
         val newGraph =
@@ -277,14 +292,40 @@ class TabsContext(val template: Template) {
             ) {
                 activeScreens[previewTab.route] = previewTab
                 composable(previewTab.route) {
-                    TabScaffold(tab = previewTab, navController = navController) {
-                        ThemedText(previewTab.template.desc)
-                        AndroidView(
-                            factory = { webView },
-                            modifier = Modifier
-                                .contentPadding()
-                                .fillMaxSize()
-                        )
+                    val openDocumentLauncher = rememberLauncherForActivityResult(
+                        ActivityResultContracts.StartActivityForResult()
+                    ) { result ->
+                        result.data?.data?.let { uri ->
+                            templateOutput.exportTemplateAsPDF(uri)
+                        }
+                    }
+
+                    SimpleScaffold(
+                        topBar = {
+                            Column {
+                                SimpleAppBar(previewTab.title())
+                                DefaultNavigationBar(navController)
+                            }
+                        },
+                        bottomBar = {
+                        }) {
+                        ContentCard {
+                            PaddedColumn {
+                                ThemedText(previewTab.template.desc)
+                                Button({
+                                    openDocumentLauncher.launch(templateOutput.newExportPdfIntent())
+                                }) {
+                                    ThemedText("export PDF")
+                                }
+                            }
+                        }
+
+                        ContentCard(shape = RectangleShape) {
+                            AndroidView(
+                                factory = { webView },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
 
@@ -374,7 +415,6 @@ private fun TabScaffold(
             }
         },
         bottomBar = {
-
         }) {
         ContentCard {
             PaddedColumn {

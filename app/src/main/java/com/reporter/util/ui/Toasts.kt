@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import com.reporter.common.PublicAPI
 import com.reporter.client.R
+import com.reporter.common.withMain
 
 object Toasts {
     @PublicAPI
@@ -28,7 +29,19 @@ object Toasts {
     }
 
     @PublicAPI
-    fun notImplemented() {
-        short(R.string.not_implemented_yet)
+    fun notImplemented(context: Context = AbstractApplication.INSTANCE) {
+        short(R.string.not_implemented_yet, context)
+    }
+
+    suspend fun launchShort(msg: Int, context: Context = AbstractApplication.INSTANCE) {
+        withMain {
+            short(context.getString(msg), context)
+        }
+    }
+
+    suspend fun launchLong(msg: Int, context: Context = AbstractApplication.INSTANCE) {
+        withMain {
+            long(context.getString(msg), context)
+        }
     }
 }

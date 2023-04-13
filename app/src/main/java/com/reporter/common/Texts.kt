@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableCollection
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.lang.Integer.max
@@ -30,7 +31,12 @@ object Texts {
     const val TRUE = "true"
     const val KEY_VALUE_SEPARATOR = "="
 
+    const val ASSETS_PREFIX = "/android_asset/"
+    const val FILE_PROTOCOL_ASSETS_PREFIX = "file://${ASSETS_PREFIX}"
+
     const val MEME_TYPE_TEXT_HTML = "text/html"
+    const val MEME_TYPE_APPLICATION_PDF = "application/pdf"
+
     const val UTF_8 = "UTF-8";
 
     val ZEROS: Array<String> = Array(20) { "0".repeat(it) }
@@ -430,7 +436,7 @@ fun String.joinWith(another: String, separator: Char = Texts.SPACE_CHAR): String
     }
 }
 
-fun InputStream.readAsString(bufferSize: Int = 1024): String {
+fun InputStream.readAsString(bufferSize: Int = DEFAULT_BUFFER_SIZE): String {
     val buffer = CharArray(bufferSize)
     val result = StringBuilder(bufferSize)
     InputStreamReader(this, StandardCharsets.UTF_8).use { reader ->
@@ -442,4 +448,14 @@ fun InputStream.readAsString(bufferSize: Int = 1024): String {
         reader.close()
     }
     return result.toString()
+}
+
+fun InputStream.readAsBytes(bufferSize: Int = DEFAULT_BUFFER_SIZE): ByteArray {
+    val buffer = ByteArray(bufferSize)
+    val output = ByteArrayOutputStream()
+    var bytesRead: Int
+    while (this.read(buffer).also { bytesRead = it } != -1) {
+        output.write(buffer, 0, bytesRead)
+    }
+    return output.toByteArray()
 }
