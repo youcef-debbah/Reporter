@@ -25,7 +25,6 @@ import com.reporter.util.ui.Toasts
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.flow.debounce
 
-
 class TemplateOutput(
     private val context: Context,
     private val templateName: String,
