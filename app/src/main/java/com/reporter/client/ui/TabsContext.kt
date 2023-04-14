@@ -3,8 +3,6 @@
 package com.reporter.client.ui
 
 import android.content.res.Resources
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -41,6 +39,7 @@ import com.reporter.client.model.VariableState
 import com.reporter.client.model.evaluateState
 import com.reporter.common.AsyncConfig
 import com.reporter.common.backgroundLaunch
+import com.reporter.common.loadContent
 import com.reporter.common.newDynamicWebView
 import com.reporter.common.removeIf
 import com.reporter.common.withMain
@@ -50,7 +49,9 @@ import com.reporter.util.ui.ContentCard
 import com.reporter.util.ui.DecorativeIcon
 import com.reporter.util.ui.DefaultNavigationBar
 import com.reporter.util.ui.ErrorTheme
+import com.reporter.util.ui.InfoIcon
 import com.reporter.util.ui.PaddedColumn
+import com.reporter.util.ui.PaddedRow
 import com.reporter.util.ui.SimpleAppBar
 import com.reporter.util.ui.SimpleScaffold
 import com.reporter.util.ui.ThemedText
@@ -268,22 +269,16 @@ class TabsContext(val template: Template) {
             recordsTabs.add(Pair(tab, recordState))
         }
 
-        val webView = newDynamicWebView(context) {
-            this.useWideViewPort = false
-            this.loadWithOverviewMode = true
-        }
-        webView.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView?, url: String?) {
-                webView.setInitialScale(1)
-            }
-        }
         val templateOutput = TemplateOutput.from(
             this,
             templateState,
             compiledTemplate,
             initialContent,
-            webView,
         )
+
+        val webView = newDynamicWebView(context) {
+            loadWithOverviewMode = true
+        }
 
         val newGraph =
             navController.createGraph(
@@ -300,6 +295,8 @@ class TabsContext(val template: Template) {
                         }
                     }
 
+                    val html by templateOutput.htmlContent
+
                     SimpleScaffold(
                         topBar = {
                             Column {
@@ -312,10 +309,28 @@ class TabsContext(val template: Template) {
                         ContentCard {
                             PaddedColumn {
                                 ThemedText(previewTab.template.desc)
-                                Button({
-                                    openDocumentLauncher.launch(templateOutput.newExportPdfIntent())
-                                }) {
-                                    ThemedText("export PDF")
+                                PaddedRow {
+                                    Button({
+                                        openDocumentLauncher.launch(templateOutput.newExportPdfIntent())
+                                    }) {
+                                        ThemedText("export PDF")
+                                    }
+                                    Button({
+                                        webView.setInitialScale(0)
+                                    }) {
+                                        InfoIcon(
+                                            icon = R.drawable.baseline_zoom_in_24,
+                                            desc = R.string.zoom_in_preview_desc
+                                        )
+                                    }
+                                    Button({
+                                        webView.setInitialScale(1)
+                                    }) {
+                                        InfoIcon(
+                                            icon = R.drawable.baseline_zoom_out_24,
+                                            desc = R.string.zoom_out_preview_desc
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -323,6 +338,7 @@ class TabsContext(val template: Template) {
                         ContentCard(shape = RectangleShape) {
                             AndroidView(
                                 factory = { webView },
+                                update = { view -> view.loadContent(html) },
                                 modifier = Modifier.fillMaxSize()
                             )
                         }

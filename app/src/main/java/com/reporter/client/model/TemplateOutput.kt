@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
-import android.webkit.WebView
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.itextpdf.html2pdf.ConverterProperties
 import com.itextpdf.html2pdf.HtmlConverter
@@ -18,21 +18,18 @@ import com.reporter.client.ui.TabsContext
 import com.reporter.common.Texts
 import com.reporter.common.backgroundLaunch
 import com.reporter.common.ioLaunch
-import com.reporter.common.loadContent
-import com.reporter.common.withMain
 import com.reporter.util.model.AppConfig
 import com.reporter.util.model.AssetsResourceRetriever
 import com.reporter.util.model.Teller
 import com.reporter.util.ui.Toasts
 import io.pebbletemplates.pebble.template.PebbleTemplate
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 
 
 class TemplateOutput(
     private val context: Context,
     private val templateName: String,
-    private val htmlContent: MutableStateFlow<String>
+    val htmlContent: MutableState<String>
 ) {
 
     private val latestUri = mutableStateOf<Uri>(Uri.EMPTY)
@@ -54,7 +51,7 @@ class TemplateOutput(
 
                     PdfDocument(pdfWriter).apply {
                         defaultPageSize = PageSize.A4
-                    }.use {pdfDocument ->
+                    }.use { pdfDocument ->
                         Teller.test("pages count before: " + pdfDocument.numberOfPages)
                         val document = HtmlConverter.convertToDocument(
                             htmlContent.value,
@@ -62,7 +59,7 @@ class TemplateOutput(
                             properties
                         )
                         Teller.test("pages count after: " + pdfDocument.numberOfPages)
-                        document.setMargins(0f,0f,0f,0f)
+                        document.setMargins(0f, 0f, 0f, 0f)
                         document.relayout()
                         document.flush()
                     }
@@ -95,21 +92,21 @@ class TemplateOutput(
             templateState: TemplateState,
             compiledTemplate: PebbleTemplate,
             initialContent: String,
-            webView: WebView,
         ): TemplateOutput {
-            val htmlContent = MutableStateFlow(initialContent)
+            val htmlContent = mutableStateOf(initialContent)
             tabsContext.tabsScope.backgroundLaunch {
                 templateState.templateUpdates
                     .debounce(AppConfig.get(CONFIG_TEMPLATE_PREVIEW_DEBOUNCE))
                     .collect {
                         val html = compiledTemplate.evaluateState(templateState)
                         htmlContent.value = html
-                        withMain {
-                            webView.loadContent(html)
-                        }
                     }
             }
-            return TemplateOutput(tabsContext.context, templateState.template, htmlContent)
+            return TemplateOutput(
+                tabsContext.context,
+                templateState.template,
+                htmlContent
+            )
         }
     }
 }
