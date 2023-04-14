@@ -278,6 +278,8 @@ class TabsContext(val template: Template) {
 
         val webView = newDynamicWebView(context) {
             loadWithOverviewMode = true
+            builtInZoomControls = true
+            displayZoomControls = false
         }
 
         val newGraph =

@@ -17,7 +17,6 @@ fun newDynamicWebView(
 }
 
 fun WebView.loadContent(html: String, baseUrl: String? = Texts.FILE_PROTOCOL_ASSETS_PREFIX) {
-    setInitialScale(0)
     loadDataWithBaseURL(
         baseUrl,
         html,
