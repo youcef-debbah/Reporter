@@ -3,6 +3,10 @@
 package com.reporter.client.ui
 
 import android.content.res.Resources
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -31,6 +35,7 @@ import com.google.common.collect.ImmutableList
 import com.reporter.client.R
 import com.reporter.client.model.MainViewModel
 import com.reporter.client.model.RecordState
+import com.reporter.client.model.ResourcesRepository
 import com.reporter.client.model.SectionState
 import com.reporter.client.model.Template
 import com.reporter.client.model.TemplateOutput
@@ -43,6 +48,7 @@ import com.reporter.common.loadContent
 import com.reporter.common.newDynamicWebView
 import com.reporter.common.removeIf
 import com.reporter.common.withMain
+import com.reporter.util.model.Teller
 import com.reporter.util.ui.AbstractApplication
 import com.reporter.util.ui.AbstractDestination
 import com.reporter.util.ui.ContentCard
@@ -130,6 +136,7 @@ class TabsContext(val template: Template) {
                 val initialContent = compiledTemplate.evaluateState(templateState)
                 withMain {
                     buildAndNavigateToTemplatePreviewTab(
+                        viewModel.resourcesRepository,
                         template,
                         templateState,
                         compiledTemplate,
@@ -220,6 +227,7 @@ class TabsContext(val template: Template) {
     }
 
     private fun buildAndNavigateToTemplatePreviewTab(
+        resourcesRepository: ResourcesRepository,
         template: Template,
         templateState: TemplateState,
         compiledTemplate: PebbleTemplate,
@@ -271,6 +279,7 @@ class TabsContext(val template: Template) {
 
         val templateOutput = TemplateOutput.from(
             this,
+            resourcesRepository,
             templateState,
             compiledTemplate,
             initialContent,
@@ -280,6 +289,16 @@ class TabsContext(val template: Template) {
             loadWithOverviewMode = true
             builtInZoomControls = true
             displayZoomControls = false
+        }
+        webView.webViewClient = object : WebViewClient() {
+            override fun shouldInterceptRequest(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): WebResourceResponse? {
+                val path = request?.url?.path
+                Teller.debug("loading web resource from: $path")
+                return resourcesRepository.load(path)?.asWebResourceResponse()
+            }
         }
 
         val newGraph =

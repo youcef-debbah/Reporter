@@ -9,11 +9,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.reporter.common.MIME_TYPE_SVG
+import com.reporter.common.readAsBytes
 import com.reporter.util.model.EmbeddedListConverter
 import com.reporter.util.model.LogDAO
 import com.reporter.util.model.LoggedEvent
 import com.reporter.util.model.StandardDatabase
 import com.reporter.util.model.Teller
+import com.reporter.util.ui.AbstractApplication
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -40,10 +43,13 @@ abstract class ReporterDataModule {
                 .build()
 
         @Provides
-        fun templateDAO(database: ReporterDatabase) = database.templateDAO()
+        fun templatesDAO(database: ReporterDatabase) = database.templatesDAO()
 
         @Provides
-        fun valueDAO(database: ReporterDatabase) = database.valueDAO()
+        fun valuesDAO(database: ReporterDatabase) = database.valuesDAO()
+
+        @Provides
+        fun resourcesDAO(database: ReporterDatabase) = database.resourcesDAO()
     }
 
     class DatabaseCallback : RoomDatabase.Callback() {
@@ -59,17 +65,25 @@ abstract class ReporterDataModule {
                     put(TEMPLATE_COLUMN_DESC_FR, "Facture de bois standard pour les petits clients")
                     put(TEMPLATE_COLUMN_LAST_UPDATE, System.currentTimeMillis())
                 })
+
+                db.insert(TEMPLATE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
+                    put(TEMPLATE_COLUMN_NAME, "water_bill")
+                    put(TEMPLATE_COLUMN_LABEL_EN, "Water bill")
+                    put(TEMPLATE_COLUMN_LABEL_AR, "فاتورة ماء")
+                    put(TEMPLATE_COLUMN_LABEL_FR, "Facture de l'eau")
+                    put(TEMPLATE_COLUMN_DESC_EN, "Standard water bill for small clients")
+                    put(TEMPLATE_COLUMN_DESC_AR, "فاتورة ماء قياسية للعملاء الصغار")
+                    put(TEMPLATE_COLUMN_DESC_FR, "Facture de l'eau standard pour les petits clients")
+                    put(TEMPLATE_COLUMN_LAST_UPDATE, System.currentTimeMillis())
+                })
+
+                db.insert(RESOURCE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
+                    put(RESOURCE_COLUMN_PATH, "/icons/loaded.svg")
+                    put(RESOURCE_COLUMN_MIME_TYPE, MIME_TYPE_SVG)
+                    put(RESOURCE_COLUMN_LAST_MODIFIED, System.currentTimeMillis())
+                    put(RESOURCE_COLUMN_DATA, AbstractApplication.INSTANCE.assets.open("icons/test.svg").readAsBytes())
+                })
             }
-            db.insert(TEMPLATE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
-                put(TEMPLATE_COLUMN_NAME, "water_bill")
-                put(TEMPLATE_COLUMN_LABEL_EN, "Water bill")
-                put(TEMPLATE_COLUMN_LABEL_AR, "فاتورة ماء")
-                put(TEMPLATE_COLUMN_LABEL_FR, "Facture de l'eau")
-                put(TEMPLATE_COLUMN_DESC_EN, "Standard water bill for small clients")
-                put(TEMPLATE_COLUMN_DESC_AR, "فاتورة ماء قياسية للعملاء الصغار")
-                put(TEMPLATE_COLUMN_DESC_FR, "Facture de l'eau standard pour les petits clients")
-                put(TEMPLATE_COLUMN_LAST_UPDATE, System.currentTimeMillis())
-            })
         }
     }
 }
@@ -93,6 +107,7 @@ private fun SupportSQLiteDatabase.runTransaction(transaction: SupportSQLiteDatab
         Template::class,
         Value::class,
         LoggedEvent::class,
+        Resource::class,
     ],
 )
 @TypeConverters(EmbeddedListConverter::class)
@@ -104,7 +119,9 @@ abstract class ReporterDatabase : RoomDatabase(), StandardDatabase {
 
     abstract override fun logDAO(): LogDAO
 
-    abstract fun templateDAO(): TemplateDAO
+    abstract fun templatesDAO(): TemplatesDAO
 
-    abstract fun valueDAO(): ValueDAO
+    abstract fun valuesDAO(): ValuesDAO
+
+    abstract fun resourcesDAO(): ResourcesDAO
 }

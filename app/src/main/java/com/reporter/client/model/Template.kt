@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 import com.reporter.util.model.Localizer
 
 const val TEMPLATE_TABLE = "template"
-const val TEMPLATE_COLUMN_NAME = "template_name"
+const val TEMPLATE_COLUMN_NAME = TEMPLATE_TABLE + "_name"
 const val TEMPLATE_COLUMN_LABEL_EN = "label_en"
 const val TEMPLATE_COLUMN_LABEL_AR = "label_ar"
 const val TEMPLATE_COLUMN_LABEL_FR = "label_fr"

@@ -70,13 +70,13 @@ class TemplateState private constructor(
     companion object {
 
         @Volatile
-        private var globalValueDAO: ValueDAO? = null
+        private var globalValuesDAO: ValuesDAO? = null
         private val pendingUpdates = Channel<ValueUpdate>(capacity = Channel.UNLIMITED)
 
         init {
             ioLaunch {
                 val firstUpdate = pendingUpdates.receive()
-                val dao = globalValueDAO!!
+                val dao = globalValuesDAO!!
                 dao.execute(firstUpdate)
                 while (true) {
                     val update = pendingUpdates.receive()
@@ -88,7 +88,7 @@ class TemplateState private constructor(
         suspend fun from(
             templateName: String,
             meta: TemplateMeta,
-            valueDAO: Lazy<ValueDAO>
+            valuesDAO: Lazy<ValuesDAO>
         ): TemplateState {
             val environmentBuilder: ImmutableMap.Builder<String, Any> = ImmutableMap.builder()
             val variablesBuilder: ImmutableMap.Builder<String, VariableState> =
@@ -113,7 +113,7 @@ class TemplateState private constructor(
             val variablesStates = variablesBuilder.build()
 
             withIO {
-                val dao: ValueDAO = valueDAO.get()
+                val dao: ValuesDAO = valuesDAO.get()
                 val loadedValues: List<Value> = dao.findValuesPrefixedBy(templateName)
                 val toDelete: ArrayList<Value> = ArrayList(loadedValues.size)
 
@@ -127,7 +127,7 @@ class TemplateState private constructor(
                 }
 
                 dao.deleteAll(toDelete)
-                globalValueDAO = dao
+                globalValuesDAO = dao
             }
 
             return TemplateState(

@@ -13,8 +13,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    val resourcesRepository: ResourcesRepository,
     private val templatesRepository: TemplatesRepository,
-    private val valueDAO: Lazy<ValueDAO>,
+    private val valuesDAO: Lazy<ValuesDAO>,
 ) : ViewModel() {
 
     private var currentTabsContext: TabsContext? = null
@@ -41,7 +42,7 @@ class MainViewModel @Inject constructor(
     fun templates(): StateFlow<Map<String, Template>?> = templatesRepository.templates
 
     suspend fun newTemplateState(templateName: String, meta: TemplateMeta) =
-        TemplateState.from(templateName, meta, valueDAO)
+        TemplateState.from(templateName, meta, valuesDAO)
 
     suspend fun loadTemplateMeta(templateName: String): TemplateMeta {
         var metaInput = ""

@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 
 @Dao
-interface TemplateDAO {
+interface TemplatesDAO {
     @Query("select * from template")
     suspend fun loadTemplates(): List<Template>
 }

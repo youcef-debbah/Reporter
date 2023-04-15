@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface ValueDAO {
+interface ValuesDAO {
     suspend fun findValuesPrefixedBy(namespacePrefix: String): List<Value> =
         findValues("$namespacePrefix%")
 

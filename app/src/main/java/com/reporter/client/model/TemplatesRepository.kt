@@ -15,25 +15,25 @@ import java.io.InputStream
 import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 
-class TemplatesRepository @Inject constructor(private val templateDao: Lazy<TemplateDAO>) {
+class TemplatesRepository @Inject constructor(private val templatesDao: Lazy<TemplatesDAO>) {
 
     val context: Context = AbstractApplication.INSTANCE
 
     @Volatile
-    private var lastLoadedTemplates: ImmutableMap<String, Template>? = null
+    private var loadedTemplates: ImmutableMap<String, Template>? = null
 
-    private val firstLoadingLatch = CountDownLatch(1)
+    private val templatesLoadingLatch = CountDownLatch(1)
 
     val templates = MutableStateFlow<Map<String, Template>?>(null).apply {
         ioLaunch {
             val builder: ImmutableMap.Builder<String, Template> = ImmutableMap.builder()
-            for (template in templateDao.get().loadTemplates()) {
+            for (template in templatesDao.get().loadTemplates()) {
                 builder.put(template.name, template)
             }
             val result = builder.build()
             value = result
-            lastLoadedTemplates = result
-            firstLoadingLatch.countDown()
+            loadedTemplates = result
+            templatesLoadingLatch.countDown()
         }
     }.asStateFlow()
 
@@ -42,9 +42,9 @@ class TemplatesRepository @Inject constructor(private val templateDao: Lazy<Temp
         .build()
 
     fun loadedTemplates(): ImmutableMap<String, Template> =
-        lastLoadedTemplates ?: run {
-            firstLoadingLatch.await()
-            lastLoadedTemplates!!
+        loadedTemplates ?: run {
+            templatesLoadingLatch.await()
+            loadedTemplates!!
         }
 
     fun templateExists(templateName: String): Boolean =

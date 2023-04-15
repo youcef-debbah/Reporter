@@ -34,9 +34,6 @@ object Texts {
     const val ASSETS_PREFIX = "/android_asset/"
     const val FILE_PROTOCOL_ASSETS_PREFIX = "file://${ASSETS_PREFIX}"
 
-    const val MEME_TYPE_TEXT_HTML = "text/html"
-    const val MEME_TYPE_APPLICATION_PDF = "application/pdf"
-
     const val UTF_8 = "UTF-8";
 
     val ZEROS: Array<String> = Array(20) { "0".repeat(it) }
