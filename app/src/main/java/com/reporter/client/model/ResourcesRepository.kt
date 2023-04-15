@@ -20,9 +20,8 @@ class ResourcesRepository @Inject constructor(
 
     fun load(path: String?): Resource? {
         if (path == null) return null
-//      load from the assets and the database
-//      support smart caching
-//      context.assets.open(Texts.ASSETS_PREFIX + path)
+//      support loading static assets
+//      support caching
         val dao = resourcesDAO.get()
         val paths =  dao.paths()
         val resource = dao.load(path)

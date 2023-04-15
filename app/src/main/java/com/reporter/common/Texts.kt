@@ -32,7 +32,7 @@ object Texts {
     const val KEY_VALUE_SEPARATOR = "="
 
     const val ASSETS_PREFIX = "/android_asset/"
-    const val FILE_PROTOCOL_ASSETS_PREFIX = "file://${ASSETS_PREFIX}"
+    const val FILE_PROTOCOL_ASSETS_PREFIX = "file://$ASSETS_PREFIX"
 
     const val UTF_8 = "UTF-8";
 
