@@ -36,15 +36,16 @@ private val FONT_WEIGHTS: NavigableMap<Int, String> =
         .put(900, "Black")
         .build()
 
+// show the fonts in this order in the drop menu
 val FONT_ASSETS: Map<String, BinaryResource> = ImmutableMap.builder<String, BinaryResource>()
-    .addFont(400, 700, fontDir = "Amiri/")
     .addFont(400, 700, fontDir = "Cairo/")
-    .addFont(400, 700, fontDir = "Lateef/")
     .addFont(400, 700, fontDir = "MarkaziText/")
-    .addFont(400, 700, fontDir = "NotoNaskhArabic/")
     .addFont(400, 700, fontDir = "ReadexPro/")
-    .addFont(400, 700, fontDir = "ScheherazadeNew/")
     .addFont(400, 700, fontDir = "Vazirmatn/")
+    .addFont(400, 700, fontDir = "NotoNaskhArabic/")
+    .addFont(400, 700, fontDir = "Lateef/")
+    .addFont(400, 700, fontDir = "ScheherazadeNew/")
+    .addFont(400, 700, fontDir = "Amiri/")
     .build()
 
 private fun ImmutableMap.Builder<String, BinaryResource>.addFont(
