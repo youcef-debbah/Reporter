@@ -21,3 +21,10 @@ fun <K, V> MutableMap<K, V>.calcIfAbsent(
     key: K,
     mappingFunction: (K) -> V,
 ): V = get(key) ?: mappingFunction.invoke(key).also { put(key, it) }
+
+fun <V, K : Comparable<K>> NavigableMap<K, V>.closedRange(range: ClosedRange<K>): NavigableMap<K, V> =
+    subMap(range.start, true, range.endInclusive, true)
+
+@ExperimentalStdlibApi
+fun <V, K : Comparable<K>> NavigableMap<K, V>.openEndRange(range: OpenEndRange<K>): NavigableMap<K, V> =
+    subMap(range.start, true, range.endExclusive, false)

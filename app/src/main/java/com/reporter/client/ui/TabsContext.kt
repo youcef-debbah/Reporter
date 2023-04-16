@@ -48,7 +48,6 @@ import com.reporter.common.loadContent
 import com.reporter.common.newDynamicWebView
 import com.reporter.common.removeIf
 import com.reporter.common.withMain
-import com.reporter.util.model.Teller
 import com.reporter.util.ui.AbstractApplication
 import com.reporter.util.ui.AbstractDestination
 import com.reporter.util.ui.ContentCard
@@ -294,11 +293,8 @@ class TabsContext(val template: Template) {
             override fun shouldInterceptRequest(
                 view: WebView?,
                 request: WebResourceRequest?
-            ): WebResourceResponse? {
-                val path = request?.url?.path
-                Teller.debug("loading web resource from: $path")
-                return resourcesRepository.load(path)?.asWebResourceResponse()
-            }
+            ): WebResourceResponse? =
+                resourcesRepository.loadBlocking(request?.url?.path)?.asWebResourceResponse()
         }
 
         val newGraph =
@@ -467,6 +463,10 @@ fun VariableInput(variableState: VariableState) {
     PaddedColumn {
         Divider()
         ThemedText(variableState.variable.label)
-        TextField(value = value, onValueChange = variableState.setter)
+        TextField(
+            value = value,
+            onValueChange = variableState.setter,
+            label = { ThemedText(variableState.variable.label) },
+        )
     }
 }

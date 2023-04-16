@@ -8,6 +8,8 @@ import androidx.room.PrimaryKey
 import com.google.common.collect.ImmutableMap
 import com.reporter.common.Texts
 import com.reporter.common.Webkit
+import com.reporter.common.readAsBytes
+import com.reporter.util.ui.AbstractApplication
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 
@@ -21,23 +23,14 @@ const val RESOURCE_COLUMN_LAST_MODIFIED = "last_update"
 class Resource(
     @PrimaryKey
     @ColumnInfo(name = RESOURCE_COLUMN_PATH)
-    val path: String,
+    override val path: String,
     @ColumnInfo(name = RESOURCE_COLUMN_MIME_TYPE)
-    val mimeType: String,
+    override val mimeType: String,
     @ColumnInfo(name = RESOURCE_COLUMN_DATA)
     val data: ByteArray,
     @ColumnInfo(name = RESOURCE_COLUMN_LAST_MODIFIED)
-    val lastModified: Long,
-) {
-
-    @Ignore
-    private val headers = ImmutableMap.builder<String, String>().apply {
-        put("Content-Type", "$mimeType;charset=${Texts.UTF_8}")
-        put("Content-Length", data.size.toString())
-        put("Cache-Control", "no-cache")
-        put("Expires", "Thu, 01 Jan 1970 00:00:00 GMT")
-        put("Last-Modified", Webkit.formatDate(lastModified))
-    }.build()
+    override val lastModified: Long,
+) : BinaryResource() {
 
     override fun equals(other: Any?) =
         this === other || (other is Resource && this.path == other.path)
@@ -46,7 +39,31 @@ class Resource(
 
     override fun toString() = "Resource(path='$path')"
 
-    fun asWebResourceResponse(encoding: String = Texts.UTF_8): WebResourceResponse =
+    override fun size(): Int = data.size
+
+    override fun asInputStream(): InputStream = ByteArrayInputStream(data)
+
+    override fun asByteArray(): ByteArray = data
+}
+
+abstract class BinaryResource {
+
+    abstract val path: String
+    abstract val mimeType: String
+    abstract val lastModified: Long
+
+    @delegate:Ignore
+    private val headers by lazy {
+        ImmutableMap.builder<String, String>().apply {
+            put("Content-Type", "$mimeType;charset=${Texts.UTF_8}")
+            put("Cache-Control", "no-cache")
+            put("Expires", "Thu, 01 Jan 1970 00:00:00 GMT")
+            put("Last-Modified", Webkit.formatDate(lastModified))
+            size()?.let { put("Content-Length", it.toString()) }
+        }.build()
+    }
+
+    open fun asWebResourceResponse(encoding: String = Texts.UTF_8): WebResourceResponse =
         WebResourceResponse(
             mimeType,
             Texts.UTF_8,
@@ -56,5 +73,23 @@ class Resource(
             asInputStream()
         )
 
-    fun asInputStream(): InputStream = ByteArrayInputStream(data)
+    abstract fun asInputStream(): InputStream
+
+    abstract fun asByteArray(): ByteArray
+
+    abstract fun size(): Int?
+}
+
+class AssetResource(
+    override val path: String,
+    override val mimeType: String,
+) : BinaryResource() {
+    companion object {
+        val application: AbstractApplication = AbstractApplication.INSTANCE
+        val buildEpoch: Long = application.config.buildEpoch
+    }
+    override val lastModified: Long = buildEpoch
+    override fun size(): Int? = null
+    override fun asInputStream(): InputStream = application.assets.open(path.removePrefix("/"))
+    override fun asByteArray(): ByteArray = asInputStream().readAsBytes()
 }

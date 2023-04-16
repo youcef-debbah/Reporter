@@ -330,6 +330,18 @@ class Variable internal constructor(
     val desc_fr: String,
     val desc_en: String,
 ) {
+    object Type {
+        const val TEXT: String = "text"
+        const val NUMBER: String = "number"
+        const val COUNTER: String = "counter"
+        const val DECIMAL: String = "decimal"
+        const val DATE: String = "date"
+        const val SWITCH: String = "switch"
+        const val COLOR: String = "color"
+        const val FONT: String = "font"
+        const val OPTIONS: String = "options"
+    }
+
     val key = key(namespace, name)
 
     val label by lazy {

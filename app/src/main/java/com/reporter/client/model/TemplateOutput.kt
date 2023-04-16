@@ -8,10 +8,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.itextpdf.html2pdf.ConverterProperties
 import com.itextpdf.html2pdf.HtmlConverter
+import com.itextpdf.io.font.PdfEncodings
 import com.itextpdf.kernel.geom.PageSize
 import com.itextpdf.kernel.pdf.CompressionConstants
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.layout.font.FontProvider
+import com.itextpdf.layout.font.FontSet
 import com.reporter.client.R
 import com.reporter.client.ui.TabsContext
 import com.reporter.common.MIME_TYPE_APPLICATION_PDF
@@ -23,18 +26,28 @@ import com.reporter.util.ui.Toasts
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.flow.debounce
 
+
 class TemplateOutput(
     private val resourcesRepository: ResourcesRepository,
-    private val templateName: String,
+    private val templateState: TemplateState,
     val htmlContent: MutableState<String>
 ) {
 
     private val latestUri = mutableStateOf<Uri>(Uri.EMPTY)
 
-    private val properties = ConverterProperties().apply {
-        resourceRetriever = resourcesRepository
-        isImmediateFlush = false
+    private suspend fun loadFontSet() = FontSet().apply {
+        val fontNames = templateState.fontsVariablesStates.values.map { it.state.value }
+        resourcesRepository.loadFonts(fontNames).forEach { resource ->
+            addFont(resource.asByteArray(), PdfEncodings.IDENTITY_H)
+        }
     }
+
+    private suspend fun buildConverterProperties(): ConverterProperties =
+        ConverterProperties().apply {
+            resourceRetriever = resourcesRepository
+            isImmediateFlush = false
+            fontProvider = FontProvider(loadFontSet(), "Helvetica")
+        }
 
     fun exportTemplateAsPDF(uri: Uri) {
         ioLaunch {
@@ -51,7 +64,7 @@ class TemplateOutput(
                         val document = HtmlConverter.convertToDocument(
                             htmlContent.value,
                             pdfDocument,
-                            properties
+                            buildConverterProperties()
                         )
                         document.setMargins(0f, 0f, 0f, 0f)
                         document.relayout()
@@ -75,7 +88,7 @@ class TemplateOutput(
     fun newExportPdfIntent(): Intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)
         type = MIME_TYPE_APPLICATION_PDF
-        putExtra(Intent.EXTRA_TITLE, "$templateName.pdf")
+        putExtra(Intent.EXTRA_TITLE, "${templateState.template}.pdf")
         if (latestUri != Uri.EMPTY && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             putExtra(DocumentsContract.EXTRA_INITIAL_URI, latestUri.value)
         }
@@ -100,7 +113,7 @@ class TemplateOutput(
             }
             return TemplateOutput(
                 resourcesRepository,
-                templateState.template,
+                templateState,
                 htmlContent
             )
         }

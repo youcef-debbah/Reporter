@@ -27,6 +27,7 @@ class TemplateState private constructor(
     val recordsStates: ImmutableMap<String, RecordState>,
     val environment: ImmutableMap<String, Any>,
     val templateUpdates: MutableSharedFlow<ValueUpdate>,
+    val fontsVariablesStates: ImmutableMap<String, VariableState>,
 ) {
 
     val scope = CoroutineScope(SupervisorJob() + AsyncConfig.backgroundDispatcher)
@@ -91,8 +92,8 @@ class TemplateState private constructor(
             valuesDAO: Lazy<ValuesDAO>
         ): TemplateState {
             val environmentBuilder: ImmutableMap.Builder<String, Any> = ImmutableMap.builder()
-            val variablesBuilder: ImmutableMap.Builder<String, VariableState> =
-                ImmutableMap.builder()
+            val variablesBuilder: ImmutableMap.Builder<String, VariableState> = ImmutableMap.builder()
+            val fontVariablesBuilder: ImmutableMap.Builder<String, VariableState> = ImmutableMap.builder()
             val sectionsBuilder: ImmutableList.Builder<SectionState> = ImmutableList.builder()
             val recordsBuilder: ImmutableMap.Builder<String, RecordState> = ImmutableMap.builder()
             val templateUpdates = MutableSharedFlow<ValueUpdate>(
@@ -105,6 +106,7 @@ class TemplateState private constructor(
             buildEmptyState(
                 meta,
                 variablesBuilder,
+                fontVariablesBuilder,
                 sectionsBuilder,
                 recordsBuilder,
                 environmentBuilder,
@@ -137,13 +139,15 @@ class TemplateState private constructor(
                 sectionsBuilder.build(),
                 recordsBuilder.build(),
                 environmentBuilder.build(),
-                templateUpdates
+                templateUpdates,
+                fontVariablesBuilder.build()
             )
         }
 
         private fun buildEmptyState(
             meta: TemplateMeta,
             variablesBuilder: ImmutableMap.Builder<String, VariableState>,
+            fontVariablesBuilder: ImmutableMap.Builder<String, VariableState>,
             sectionsBuilder: ImmutableList.Builder<SectionState>,
             recordsBuilder: ImmutableMap.Builder<String, RecordState>,
             environmentBuilder: ImmutableMap.Builder<String, Any>,
@@ -156,7 +160,7 @@ class TemplateState private constructor(
                 val varsBuilder: ImmutableMap.Builder<String, VariableState> =
                     ImmutableMap.builder()
                 for (variable in section.variables.values) {
-                    val variableState = addVariableState(variablesBuilder, variable, templateUpdates)
+                    val variableState = addVariableState(variablesBuilder, fontVariablesBuilder, variable, templateUpdates)
                     varsBuilder.put(variable.key, variableState)
                     environmentBuilder.put(variable.name, variableState)
                 }
@@ -168,7 +172,7 @@ class TemplateState private constructor(
                     ImmutableMap.builder()
                 val recordEnvironment = ImmutableMap.builder<String, VariableState>()
                 for (variable in record.variables.values) {
-                    val variableState = addVariableState(variablesBuilder, variable, templateUpdates)
+                    val variableState = addVariableState(variablesBuilder, fontVariablesBuilder, variable, templateUpdates)
                     varsBuilder.put(variable.key, variableState)
                     recordEnvironment.put(variable.name, variableState)
                 }
@@ -178,7 +182,8 @@ class TemplateState private constructor(
         }
 
         private fun addVariableState(
-            builder: ImmutableMap.Builder<String, VariableState>,
+            variablesBuilder: ImmutableMap.Builder<String, VariableState>,
+            fontVariablesBuilder: ImmutableMap.Builder<String, VariableState>,
             variable: Variable,
             templateUpdates: MutableSharedFlow<ValueUpdate>
         ): VariableState {
@@ -186,7 +191,10 @@ class TemplateState private constructor(
             val variableState = VariableState(variable, state) {
                 setState(variable, state, it, templateUpdates)
             }
-            builder.put(variable.key, variableState)
+            variablesBuilder.put(variable.key, variableState)
+            if (variable.type == Variable.Type.FONT) {
+                fontVariablesBuilder.put(variable.key, variableState)
+            }
             return variableState
         }
 

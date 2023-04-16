@@ -12,6 +12,7 @@ import java.util.Locale
 const val MIME_TYPE_TEXT_HTML = "text/html"
 const val MIME_TYPE_APPLICATION_PDF = "application/pdf"
 const val MIME_TYPE_SVG = "image/svg+xml"
+const val MIME_TYPE_TTF_FONT = "font/ttf"
 const val DEFAULT_BASE_URL = "https://webkit/"
 
 object Webkit {
