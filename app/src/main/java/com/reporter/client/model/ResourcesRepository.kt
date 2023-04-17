@@ -102,6 +102,10 @@ class ResourcesRepository @Inject constructor(
             return@withIO font
         }
 
+        if (path.startsWith("/static") || path.startsWith("static")) {
+            return@withIO AssetResource(path, "text/css")
+        }
+
         val resource = resourcesDAO.get().load(path)
         if (resource != null) {
             Teller.debug("resource loaded: $path")
