@@ -52,7 +52,7 @@ class TemplateOutput(
     fun exportTemplateAsPDF(uri: Uri) {
         ioLaunch {
             try {
-                resourcesRepository.openFile(uri)?.use { outputStream ->
+                resourcesRepository.openSystemContent(uri)?.use { outputStream ->
                     val pdfWriter = PdfWriter(outputStream).apply {
                         compressionLevel = CompressionConstants.BEST_COMPRESSION
                         setSmartMode(AppConfig.get(CONFIG_PDF_RESOURCES_CACHING_ENABLED))

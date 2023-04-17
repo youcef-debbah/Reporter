@@ -78,7 +78,7 @@ abstract class ReporterDataModule {
                 })
 
                 db.insert(RESOURCE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
-                    put(RESOURCE_COLUMN_PATH, "/icons/loaded.svg")
+                    put(RESOURCE_COLUMN_PATH, "icons/loaded.svg")
                     put(RESOURCE_COLUMN_MIME_TYPE, MIME_TYPE_SVG)
                     put(RESOURCE_COLUMN_LAST_MODIFIED, System.currentTimeMillis())
                     put(RESOURCE_COLUMN_DATA, AbstractApplication.INSTANCE.assets.open("icons/test.svg").readAsBytes())

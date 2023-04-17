@@ -20,7 +20,7 @@ import java.net.URL
 import java.util.NavigableMap
 import javax.inject.Inject
 
-private const val FONT_DIR_PATH = "/fonts/"
+private const val FONT_DIR_PATH = "fonts/"
 private const val FONT_FILE_FORMAT = ".ttf"
 
 private val FONT_WEIGHTS: NavigableMap<Int, String> =
@@ -95,24 +95,26 @@ class ResourcesRepository @Inject constructor(
     }
 
     suspend fun load(path: String?): BinaryResource? = withIO {
-        if (path == null) return@withIO null
+        path?.let { loadBinaryResource(it.removePrefix("/")) }
+    }
 
+    private fun loadBinaryResource(path: String): BinaryResource? {
         val font = FONT_ASSETS[path]//tofix
         if (font != null) {
-            return@withIO font
+            return font
         }
 
-        if (path.startsWith("/static") || path.startsWith("static")) {
-            return@withIO AssetResource(path, "text/css")
+        if (path.startsWith("static")) {
+            return AssetResource(path, "text/css")
         }
 
         val resource = resourcesDAO.get().load(path)
         if (resource != null) {
             Teller.debug("resource loaded: $path")
-            return@withIO resource
+            return resource
         } else {
             Teller.warn("resource not found: $path")
-            return@withIO null
+            return null
         }
     }
 
@@ -125,7 +127,7 @@ class ResourcesRepository @Inject constructor(
 
     override fun getByteArrayByUrl(url: URL): ByteArray? = loadBlocking(url.path)?.asByteArray()
 
-    suspend fun openFile(uri: Uri): OutputStream? = withIO {
+    suspend fun openSystemContent(uri: Uri): OutputStream? = withIO {
         context.contentResolver.openOutputStream(uri)
     }
 }

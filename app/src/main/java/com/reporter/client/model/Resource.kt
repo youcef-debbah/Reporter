@@ -90,6 +90,6 @@ class AssetResource(
     }
     override val lastModified: Long = buildEpoch
     override fun size(): Int? = null
-    override fun asInputStream(): InputStream = application.assets.open(path.removePrefix("/"))
+    override fun asInputStream(): InputStream = application.assets.open(path)
     override fun asByteArray(): ByteArray = asInputStream().readAsBytes()
 }
