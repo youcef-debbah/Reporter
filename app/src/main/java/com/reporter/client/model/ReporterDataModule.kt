@@ -9,8 +9,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.reporter.common.MIME_TYPE_SVG
-import com.reporter.common.readAsBytes
 import com.reporter.util.model.EmbeddedListConverter
 import com.reporter.util.model.LogDAO
 import com.reporter.util.model.LoggedEvent
@@ -54,6 +52,7 @@ abstract class ReporterDataModule {
 
     class DatabaseCallback : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
+            val buildEpoch = AbstractApplication.INSTANCE.config.buildEpoch
             db.runTransaction {
                 db.insert(TEMPLATE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
                     put(TEMPLATE_COLUMN_NAME, "wood_bill")
@@ -63,7 +62,7 @@ abstract class ReporterDataModule {
                     put(TEMPLATE_COLUMN_DESC_EN, "Standard wood bill for small clients")
                     put(TEMPLATE_COLUMN_DESC_AR, "فاتورة خشب قياسية للعملاء الصغار")
                     put(TEMPLATE_COLUMN_DESC_FR, "Facture de bois standard pour les petits clients")
-                    put(TEMPLATE_COLUMN_LAST_UPDATE, System.currentTimeMillis())
+                    put(TEMPLATE_COLUMN_LAST_UPDATE, buildEpoch)
                 })
 
                 db.insert(TEMPLATE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
@@ -74,14 +73,7 @@ abstract class ReporterDataModule {
                     put(TEMPLATE_COLUMN_DESC_EN, "Standard water bill for small clients")
                     put(TEMPLATE_COLUMN_DESC_AR, "فاتورة ماء قياسية للعملاء الصغار")
                     put(TEMPLATE_COLUMN_DESC_FR, "Facture de l'eau standard pour les petits clients")
-                    put(TEMPLATE_COLUMN_LAST_UPDATE, System.currentTimeMillis())
-                })
-
-                db.insert(RESOURCE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
-                    put(RESOURCE_COLUMN_PATH, "icons/loaded.svg")
-                    put(RESOURCE_COLUMN_MIME_TYPE, MIME_TYPE_SVG)
-                    put(RESOURCE_COLUMN_LAST_MODIFIED, System.currentTimeMillis())
-                    put(RESOURCE_COLUMN_DATA, AbstractApplication.INSTANCE.assets.open("icons/test.svg").readAsBytes())
+                    put(TEMPLATE_COLUMN_LAST_UPDATE, buildEpoch)
                 })
             }
         }

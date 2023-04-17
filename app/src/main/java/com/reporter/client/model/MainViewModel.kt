@@ -53,5 +53,5 @@ class MainViewModel @Inject constructor(
     }
 
     suspend fun compileTemplate(templateName: String) =
-        withIO { templatesRepository.compileTemplate(templateName) }
+        withIO { templatesRepository.compileTemplateBlocking(templateName) }
 }

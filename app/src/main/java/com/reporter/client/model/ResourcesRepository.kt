@@ -6,7 +6,8 @@ import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSortedMap
 import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
 import com.reporter.common.AsyncConfig
-import com.reporter.common.MIME_TYPE_TTF_FONT
+import com.reporter.common.MIME_TYPE_FONT_TTF
+import com.reporter.common.Webkit
 import com.reporter.common.withIO
 import com.reporter.util.model.Teller
 import dagger.Lazy
@@ -20,8 +21,8 @@ import java.net.URL
 import java.util.NavigableMap
 import javax.inject.Inject
 
-private const val FONT_DIR_PATH = "fonts/"
-private const val FONT_FILE_FORMAT = ".ttf"
+private const val WEB_RESOURCE_PREFIX = "web/"
+private const val FONT_RESOURCE_PREFIX = "fonts/"
 
 private val FONT_WEIGHTS: NavigableMap<Int, String> =
     ImmutableSortedMap.Builder<Int, String>(Integer::compare)
@@ -54,13 +55,13 @@ private fun ImmutableMap.Builder<String, BinaryResource>.addFont(
 ): ImmutableMap.Builder<String, BinaryResource> {
     weights.forEach { weight ->
         val path = fontPath(fontDir, weight)
-        put(path, AssetResource(path, MIME_TYPE_TTF_FONT))
+        put(path, AssetResource(path, MIME_TYPE_FONT_TTF))
     }
     return this
 }
 
 fun fontPath(fontDir: String, weight: Int) =
-    FONT_DIR_PATH + fontDir + FONT_WEIGHTS[weight] + FONT_FILE_FORMAT
+    FONT_RESOURCE_PREFIX + fontDir + FONT_WEIGHTS[weight] + ".ttf"
 
 fun fontPaths(fontNames: Collection<String>): List<String> {
     val result = ArrayList<String>(fontNames.size * 2)
@@ -98,24 +99,21 @@ class ResourcesRepository @Inject constructor(
         path?.let { loadBinaryResource(it.removePrefix("/")) }
     }
 
-    private fun loadBinaryResource(path: String): BinaryResource? {
-        val font = FONT_ASSETS[path]//tofix
-        if (font != null) {
-            return font
-        }
-
-        if (path.startsWith("static")) {
-            return AssetResource(path, "text/css")
-        }
-
+    private suspend fun loadBinaryResource(path: String): BinaryResource? {
         val resource = resourcesDAO.get().load(path)
         if (resource != null) {
             Teller.debug("resource loaded: $path")
             return resource
-        } else {
-            Teller.warn("resource not found: $path")
-            return null
         }
+
+        if (path.startsWith(WEB_RESOURCE_PREFIX)) {
+            return AssetResource(path, Webkit.mimeType(path))
+        } else if (path.startsWith(FONT_RESOURCE_PREFIX)) {
+            FONT_ASSETS[path]?.let { return it }
+        }
+
+        Teller.warn("resource not found: $path")
+        return null
     }
 
     fun loadBlocking(path: String?): BinaryResource? = runBlocking(AsyncConfig.ioDispatcher) {
