@@ -78,6 +78,10 @@ abstract class BinaryResource {
     abstract fun asByteArray(): ByteArray
 
     abstract fun size(): Int?
+
+    override fun toString(): String {
+        return "BinaryResource(path='$path', mimeType='$mimeType')"
+    }
 }
 
 class AssetResource(
@@ -92,4 +96,22 @@ class AssetResource(
     override fun size(): Int? = null
     override fun asInputStream(): InputStream = application.assets.open(path)
     override fun asByteArray(): ByteArray = asInputStream().readAsBytes()
+}
+
+class CachedResource(private val resource: BinaryResource): BinaryResource() {
+
+    val data = lazy { resource.asByteArray() }
+
+    override val path: String
+        get() = resource.path
+    override val mimeType: String
+        get() = resource.mimeType
+    override val lastModified: Long
+        get() = resource.lastModified
+
+    override fun asInputStream(): InputStream = ByteArrayInputStream(asByteArray())
+
+    override fun asByteArray(): ByteArray = data.value
+
+    override fun size(): Int? = if (data.isInitialized()) data.value.size else resource.size()
 }

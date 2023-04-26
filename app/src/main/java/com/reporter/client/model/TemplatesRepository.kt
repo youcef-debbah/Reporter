@@ -47,11 +47,13 @@ class TemplatesRepository @Inject constructor(
     suspend fun loadTemplateContent(templateName: String): InputStream? =
         loadTemplateFile(templateName, "html")
 
-    suspend fun loadTemplateMeta(templateName: String): InputStream? =
-        loadTemplateFile(templateName, "json")
+    suspend fun loadTemplateMeta(templateName: String): InputStream? {
+        resourcesRepository.clearCache()
+        return loadTemplateFile(templateName, "json")
+    }
 
     private suspend fun loadTemplateFile(templateName: String, fileFormat: String): InputStream? =
-        resourcesRepository.load("templates/$templateName.$fileFormat")?.asInputStream()
+        resourcesRepository.loadWithoutCache("$TEMPLATE_RESOURCE_PREFIX$templateName.$fileFormat")?.asInputStream()
 
     fun compileTemplateBlocking(templateName: String): PebbleTemplate =
         pebbleEngine.getTemplate(templateName)

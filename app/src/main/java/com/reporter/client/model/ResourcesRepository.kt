@@ -4,10 +4,12 @@ import android.content.Context
 import android.net.Uri
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSortedMap
+import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
 import com.reporter.common.AsyncConfig
 import com.reporter.common.MIME_TYPE_FONT_TTF
 import com.reporter.common.Webkit
 import com.reporter.common.withIO
+import com.reporter.util.model.SimpleCache
 import com.reporter.util.model.Teller
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -20,8 +22,9 @@ import java.net.URL
 import java.util.NavigableMap
 import javax.inject.Inject
 
-private const val WEB_RESOURCE_PREFIX = "web/"
-private const val FONT_RESOURCE_PREFIX = "fonts/"
+const val WEB_RESOURCE_PREFIX = "web/"
+const val FONT_RESOURCE_PREFIX = "fonts/"
+const val TEMPLATE_RESOURCE_PREFIX = "templates/"
 
 private val FONT_WEIGHTS: NavigableMap<Int, String> =
     ImmutableSortedMap.Builder<Int, String>(Integer::compare)
@@ -76,9 +79,13 @@ class ResourcesRepository @Inject constructor(
     @ApplicationContext
     private val context: Context,
     private val resourcesDAO: Lazy<ResourcesDAO>,
-) : PdfResourceRetriever {
+) : IResourceRetriever {
 
-    override suspend fun loadFonts(fontNames: Collection<String>): List<ByteArray> = withIO {
+    private val cache = SimpleCache<BinaryResource>()
+
+    suspend fun loadFonts(
+        fontNames: Collection<String>
+    ): List<ByteArray> = withIO {
         if (fontNames.isEmpty()) {
             return@withIO emptyList()
         } else if (fontNames.size == 1) {
@@ -95,8 +102,19 @@ class ResourcesRepository @Inject constructor(
     }
 
     suspend fun load(path: String?): BinaryResource? = withIO {
-        path?.let { loadBinaryResource(it.removePrefix("/")) }
+        path?.let { loadCachedBinaryResource(it.removePrefix("/")) }
     }
+
+    fun clearCache() {
+        cache.clear()
+    }
+
+    suspend fun loadWithoutCache(path: String): BinaryResource? = withIO {
+        loadBinaryResource(path)
+    }
+
+    private suspend fun loadCachedBinaryResource(path: String): BinaryResource? =
+        cache.load(path) { loadBinaryResource(path) }
 
     private suspend fun loadBinaryResource(path: String): BinaryResource? {
         val resource = resourcesDAO.get().load(path)
@@ -105,10 +123,13 @@ class ResourcesRepository @Inject constructor(
             return resource
         }
 
-        if (path.startsWith(WEB_RESOURCE_PREFIX) || path.startsWith("templates")) {
-            return AssetResource(path, Webkit.mimeType(path))
+        if (path.startsWith(WEB_RESOURCE_PREFIX) || path.startsWith(TEMPLATE_RESOURCE_PREFIX)) {
+            return CachedResource(AssetResource(path, Webkit.mimeType(path)))
         } else if (path.startsWith(FONT_RESOURCE_PREFIX)) {
-            FONT_ASSETS[path]?.let { return it }
+            val fontResource = FONT_ASSETS[path]
+            if (fontResource != null) {
+                return CachedResource(fontResource)
+            }
         }
 
         Teller.warn("resource not found: $path")
@@ -122,7 +143,8 @@ class ResourcesRepository @Inject constructor(
     override fun getInputStreamByUrl(url: URL): InputStream? =
         loadBlocking(url.path)?.asInputStream()
 
-    override fun getByteArrayByUrl(url: URL): ByteArray? = loadBlocking(url.path)?.asByteArray()
+    override fun getByteArrayByUrl(url: URL): ByteArray? =
+        loadBlocking(url.path)?.asByteArray()
 
     suspend fun openSystemContent(uri: Uri): OutputStream? = withIO {
         context.contentResolver.openOutputStream(uri)

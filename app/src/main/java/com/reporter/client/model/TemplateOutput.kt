@@ -24,8 +24,8 @@ class TemplateOutput(
     val htmlContent: MutableState<String>
 ) {
 
-    val pdfConverter = PdfConverter(resourcesRepository, { htmlContent.value }) {
-        templateState.fontsVariablesStates.values.map { it.state.value }
+    val pdfConverter = PdfConverter(resourcesRepository) {
+        resourcesRepository.loadFonts(templateState.fontsVariablesStates.values.map { it.state.value })
     }
 
     private val latestUri = mutableStateOf<Uri>(Uri.EMPTY)
@@ -34,7 +34,10 @@ class TemplateOutput(
         ioLaunch {
             try {
                 resourcesRepository.openSystemContent(uri)?.use { outputStream ->
-                    pdfConverter.generatePDF(outputStream)
+                    pdfConverter.generatePDF(
+                        outputStream,
+                        htmlContent.value
+                    )
                     Toasts.launchShort(R.string.pdf_exporting_succeed)
                     latestUri.value = uri
                     return@ioLaunch
