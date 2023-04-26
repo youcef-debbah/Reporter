@@ -57,7 +57,10 @@
     <string name="error_code">Error code: %d</string>
     <string name="pdf_exporting_succeed">PDF exported successfully!</string>
     <string name="pdf_exporting_internal_failure">PDF exporting failed due to an internal error!</string>
-    <string name="pdf_exporting_system_failure">PDF exporting failed deu to a system error!</string>
+    <string name="output_stream_system_failure">System error!</string>
+    <string name="input_stream_system_failure">System error!</string>
+    <string name="output_stream_io_failure">Could not open the target file!</string>
+    <string name="input_stream_io_failure">Could not modify the target file!</string>
     <string name="zoom_in_preview_desc">Zoom in the preview</string>
     <string name="zoom_out_preview_desc">Zoom out the preview</string>
 </resources>

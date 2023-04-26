@@ -304,7 +304,7 @@ class TabsContext(val template: Template) {
             ) {
                 activeScreens[previewTab.route] = previewTab
                 composable(previewTab.route) {
-                    val openDocumentLauncher = rememberLauncherForActivityResult(
+                    val resultLauncher = rememberLauncherForActivityResult(
                         ActivityResultContracts.StartActivityForResult()
                     ) { result ->
                         result.data?.data?.let { uri ->
@@ -328,7 +328,7 @@ class TabsContext(val template: Template) {
                                 ThemedText(previewTab.template.desc)
                                 PaddedRow {
                                     Button({
-                                        openDocumentLauncher.launch(templateOutput.newExportPdfIntent())
+                                        resultLauncher.launch(templateOutput.newExportPdfIntent())
                                     }) {
                                         ThemedText("export PDF")
                                     }

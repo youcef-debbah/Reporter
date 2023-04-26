@@ -21,23 +21,25 @@ const val MIME_TYPE_FONT_TTF = "font/ttf"
 const val MIME_TYPE_TEXT_CSS = "text/css"
 const val MIME_TYPE_TEXT_JAVASCRIPT = "text/javascript"
 const val MIME_TYPE_APPLICATION_JSON = "application/json"
+const val MIME_TYPE_APPLICATION_ZIP = "application/zip"
 
 object Webkit {
 
     object TypesMappings {
-        val mimeTypesByExtentions = ImmutableMap.Builder<String, String>()
+        val mimeTypesByExtensions: ImmutableMap<String, String> = ImmutableMap.Builder<String, String>()
             .put("pdf", MIME_TYPE_APPLICATION_PDF)
             .put("svg", MIME_TYPE_SVG)
             .put("ttf", MIME_TYPE_FONT_TTF)
             .put("css", MIME_TYPE_TEXT_CSS)
             .put("js", MIME_TYPE_TEXT_JAVASCRIPT)
             .put("json", MIME_TYPE_APPLICATION_JSON)
+            .put("zip", MIME_TYPE_APPLICATION_ZIP)
             .build()
     }
 
     fun mimeType(filename: String) = mimeType(File(filename))
 
-    fun mimeType(file: File): String = TypesMappings.mimeTypesByExtentions[file.extension]?: MIME_TYPE_TEXT_PLAIN
+    fun mimeType(file: File): String = TypesMappings.mimeTypesByExtensions[file.extension]?: MIME_TYPE_TEXT_PLAIN
 
     object Formatters {
         val httpDateFormatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US).apply {

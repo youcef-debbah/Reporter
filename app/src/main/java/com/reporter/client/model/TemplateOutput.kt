@@ -11,8 +11,10 @@ import com.reporter.client.ui.TabsContext
 import com.reporter.common.MIME_TYPE_APPLICATION_PDF
 import com.reporter.common.backgroundLaunch
 import com.reporter.common.ioLaunch
+import com.reporter.common.useOutputStream
 import com.reporter.util.model.AppConfig
 import com.reporter.util.model.Teller
+import com.reporter.util.ui.AbstractApplication
 import com.reporter.util.ui.Toasts
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.flow.debounce
@@ -24,6 +26,8 @@ class TemplateOutput(
     val htmlContent: MutableState<String>
 ) {
 
+    private val context = AbstractApplication.INSTANCE
+
     val pdfConverter = PdfConverter(resourcesRepository) {
         resourcesRepository.loadFonts(templateState.fontsVariablesStates.values.map { it.state.value })
     }
@@ -33,17 +37,14 @@ class TemplateOutput(
     fun exportTemplateAsPDF(uri: Uri) {
         ioLaunch {
             try {
-                resourcesRepository.openSystemContent(uri)?.use { outputStream ->
+                context.useOutputStream(uri) { outputStream ->
                     pdfConverter.generatePDF(
                         outputStream,
                         htmlContent.value
                     )
                     Toasts.launchShort(R.string.pdf_exporting_succeed)
                     latestUri.value = uri
-                    return@ioLaunch
                 }
-                Toasts.launchShort(R.string.pdf_exporting_system_failure)
-                Teller.warn("null file output stream for path: ${uri.path}")
             } catch (e: Exception) {
                 Teller.error("pdf exporting failed for path: ${uri.path}", e)
                 Toasts.launchShort(R.string.pdf_exporting_internal_failure)

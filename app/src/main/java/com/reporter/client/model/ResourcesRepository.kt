@@ -145,8 +145,4 @@ class ResourcesRepository @Inject constructor(
 
     override fun getByteArrayByUrl(url: URL): ByteArray? =
         loadBlocking(url.path)?.asByteArray()
-
-    suspend fun openSystemContent(uri: Uri): OutputStream? = withIO {
-        context.contentResolver.openOutputStream(uri)
-    }
 }

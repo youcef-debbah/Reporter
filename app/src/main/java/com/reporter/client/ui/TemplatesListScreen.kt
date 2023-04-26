@@ -2,6 +2,9 @@
 
 package com.reporter.client.ui
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,7 +20,12 @@ import com.reporter.client.R
 import com.reporter.client.model.CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import com.reporter.client.model.MainViewModel
 import com.reporter.client.model.Template
+import com.reporter.common.MIME_TYPE_APPLICATION_ZIP
 import com.reporter.common.RoundedCorner
+import com.reporter.common.ioLaunch
+import com.reporter.common.useInputStream
+import com.reporter.util.model.Teller
+import com.reporter.util.ui.AbstractApplication
 import com.reporter.util.ui.AnimatedLazyLoading
 import com.reporter.util.ui.ContentCard
 import com.reporter.util.ui.InfoIcon
@@ -27,6 +35,8 @@ import com.reporter.util.ui.StaticScreenDestination
 import com.reporter.util.ui.ThemedText
 import com.reporter.util.ui.activeScreens
 import com.reporter.util.ui.collectWithLifecycleAsState
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 object TemplatesListScreen : StaticScreenDestination(
     route = "templates_list",
@@ -55,6 +65,25 @@ object TemplatesListScreen : StaticScreenDestination(
     ) {
         val templateState = viewModel.templates().collectWithLifecycleAsState()
         val templates = templateState.value
+        val resultLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            result.data?.data?.let { uri ->
+                ioLaunch {
+                    AbstractApplication.INSTANCE.useInputStream(uri) {
+                        ZipInputStream(it).use { zipStream ->
+                            var entry: ZipEntry? = zipStream.nextEntry
+                            while (entry != null) {
+                                // Print the name of the entry
+                                Teller.test(entry.name)
+                                // Advance to the next entry
+                                entry = zipStream.nextEntry
+                            }
+                        }
+                    }
+                }
+            }
+        }
         SimpleScaffold(
             topBar = {
                 SimpleAppBar(
@@ -64,7 +93,7 @@ object TemplatesListScreen : StaticScreenDestination(
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = {
-                    // TODO
+                    resultLauncher.launch(newOpenTemplateFileIntent())
                 }) {
                     InfoIcon(icon = R.drawable.baseline_add_24, desc = R.string.add_template_desc)
                 }
@@ -80,6 +109,11 @@ object TemplatesListScreen : StaticScreenDestination(
                 }
             }
         }
+    }
+
+    private fun newOpenTemplateFileIntent() = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+        addCategory(Intent.CATEGORY_OPENABLE)
+        type = MIME_TYPE_APPLICATION_ZIP
     }
 }
 
