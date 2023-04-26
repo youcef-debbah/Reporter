@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSortedMap
-import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
 import com.reporter.common.AsyncConfig
 import com.reporter.common.MIME_TYPE_FONT_TTF
 import com.reporter.common.Webkit
@@ -77,9 +76,9 @@ class ResourcesRepository @Inject constructor(
     @ApplicationContext
     private val context: Context,
     private val resourcesDAO: Lazy<ResourcesDAO>,
-) : IResourceRetriever {
+) : PdfResourceRetriever {
 
-    suspend fun loadFonts(fontNames: Collection<String>): List<BinaryResource> = withIO {
+    override suspend fun loadFonts(fontNames: Collection<String>): List<ByteArray> = withIO {
         if (fontNames.isEmpty()) {
             return@withIO emptyList()
         } else if (fontNames.size == 1) {
@@ -89,9 +88,9 @@ class ResourcesRepository @Inject constructor(
         }
     }
 
-    suspend fun loadAll(paths: List<String>): List<BinaryResource> = withIO {
+    suspend fun loadAll(paths: List<String>): List<ByteArray> = withIO {
         paths.map { path ->
-            async { load(path) }
+            async { load(path)?.asByteArray() }
         }.awaitAll().filterNotNull()
     }
 
@@ -106,7 +105,7 @@ class ResourcesRepository @Inject constructor(
             return resource
         }
 
-        if (path.startsWith(WEB_RESOURCE_PREFIX)) {
+        if (path.startsWith(WEB_RESOURCE_PREFIX) || path.startsWith("templates")) {
             return AssetResource(path, Webkit.mimeType(path))
         } else if (path.startsWith(FONT_RESOURCE_PREFIX)) {
             FONT_ASSETS[path]?.let { return it }

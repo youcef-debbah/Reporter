@@ -6,15 +6,6 @@ import android.os.Build
 import android.provider.DocumentsContract
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.itextpdf.html2pdf.ConverterProperties
-import com.itextpdf.html2pdf.HtmlConverter
-import com.itextpdf.io.font.PdfEncodings
-import com.itextpdf.kernel.geom.PageSize
-import com.itextpdf.kernel.pdf.CompressionConstants
-import com.itextpdf.kernel.pdf.PdfDocument
-import com.itextpdf.kernel.pdf.PdfWriter
-import com.itextpdf.layout.font.FontProvider
-import com.itextpdf.layout.font.FontSet
 import com.reporter.client.R
 import com.reporter.client.ui.TabsContext
 import com.reporter.common.MIME_TYPE_APPLICATION_PDF
@@ -33,44 +24,17 @@ class TemplateOutput(
     val htmlContent: MutableState<String>
 ) {
 
-    private val latestUri = mutableStateOf<Uri>(Uri.EMPTY)
-
-    private suspend fun loadFontSet() = FontSet().apply {
-        val fontNames = templateState.fontsVariablesStates.values.map { it.state.value }
-        resourcesRepository.loadFonts(fontNames).forEach { resource ->
-            addFont(resource.asByteArray(), PdfEncodings.IDENTITY_H)
-        }
+    val pdfConverter = PdfConverter(resourcesRepository, { htmlContent.value }) {
+        templateState.fontsVariablesStates.values.map { it.state.value }
     }
 
-    private suspend fun buildConverterProperties(): ConverterProperties =
-        ConverterProperties().apply {
-            resourceRetriever = resourcesRepository
-            isImmediateFlush = false
-            fontProvider = FontProvider(loadFontSet(), "Helvetica")
-        }
+    private val latestUri = mutableStateOf<Uri>(Uri.EMPTY)
 
     fun exportTemplateAsPDF(uri: Uri) {
         ioLaunch {
             try {
                 resourcesRepository.openSystemContent(uri)?.use { outputStream ->
-                    val pdfWriter = PdfWriter(outputStream).apply {
-                        compressionLevel = CompressionConstants.BEST_COMPRESSION
-                        setSmartMode(AppConfig.get(CONFIG_PDF_RESOURCES_CACHING_ENABLED))
-                    }
-
-                    PdfDocument(pdfWriter).apply {
-                        defaultPageSize = PageSize.A4
-                    }.use { pdfDocument ->
-                        val document = HtmlConverter.convertToDocument(
-                            htmlContent.value,
-                            pdfDocument,
-                            buildConverterProperties()
-                        )
-                        document.setMargins(0f, 0f, 0f, 0f)
-                        document.relayout()
-                        document.flush()
-                    }
-
+                    pdfConverter.generatePDF(outputStream)
                     Toasts.launchShort(R.string.pdf_exporting_succeed)
                     latestUri.value = uri
                     return@ioLaunch
