@@ -7,7 +7,6 @@ import io.pebbletemplates.pebble.PebbleEngine
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.io.InputStream
 import javax.inject.Inject
@@ -16,28 +15,25 @@ class TemplatesRepository @Inject constructor(
     private val resourcesRepository: ResourcesRepository,
     private val templatesDao: Lazy<TemplatesDAO>,
 ) {
-    private val templatesInitJob: Job
-    val templates: StateFlow<ImmutableMap<String, Template>?>
-
-    init {
-        val mutableStateFlow: MutableStateFlow<ImmutableMap<String, Template>?> = MutableStateFlow(null)
-        templatesInitJob = ioLaunch {
-            val builder: ImmutableMap.Builder<String, Template> = ImmutableMap.builder()
-            for (template in templatesDao.get().loadTemplates()) {
-                builder.put(template.name, template)
-            }
-            val result = builder.build()
-            mutableStateFlow.value = result
-        }
-        templates = mutableStateFlow.asStateFlow()
-    }
+    private val mTemplates: MutableStateFlow<ImmutableMap<String, Template>?> = MutableStateFlow(null)
+    val templates = mTemplates.asStateFlow()
+    private val firstRefreshJob: Job = ioLaunch { refresh() }
 
     val pebbleEngine: PebbleEngine = PebbleEngine.Builder()
         .loader(TemplateLoader(this))
         .build()
 
+    private suspend fun refresh() {
+        val builder: ImmutableMap.Builder<String, Template> = ImmutableMap.builder()
+        for (template in templatesDao.get().loadTemplates()) {
+            builder.put(template.name, template)
+        }
+        val result = builder.build()
+        mTemplates.value = result
+    }
+
     suspend fun loadedTemplates(): ImmutableMap<String, Template> {
-        templatesInitJob.join()
+        firstRefreshJob.join()
         return templates.value!!
     }
 
@@ -57,4 +53,11 @@ class TemplatesRepository @Inject constructor(
 
     fun compileTemplateBlocking(templateName: String): PebbleTemplate =
         pebbleEngine.getTemplate(templateName)
+
+    suspend fun updateTemplates(templates: List<Template>, resources: List<Resource>) {
+        templatesDao.get().updateAll(templates)
+        resourcesRepository.updateResources(resources)
+        firstRefreshJob.join()
+        refresh()
+    }
 }

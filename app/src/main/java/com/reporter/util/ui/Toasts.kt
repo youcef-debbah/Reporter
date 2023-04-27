@@ -3,8 +3,9 @@ package com.reporter.util.ui
 import android.content.Context
 import android.widget.Toast
 import androidx.annotation.StringRes
-import com.reporter.common.PublicAPI
 import com.reporter.client.R
+import com.reporter.common.PublicAPI
+import com.reporter.common.mainLaunch
 import com.reporter.common.withMain
 
 object Toasts {
@@ -33,15 +34,21 @@ object Toasts {
         short(R.string.not_implemented_yet, context)
     }
 
-    suspend fun launchShort(msg: Int, context: Context = AbstractApplication.INSTANCE) {
-        withMain {
-            short(context.getString(msg), context)
+    fun launchShort(msg: Int, context: Context = AbstractApplication.INSTANCE) =
+        launchShort(context.getString(msg), context)
+
+    fun launchShort(msg: String, context: Context = AbstractApplication.INSTANCE) {
+        mainLaunch {
+            short(msg, context)
         }
     }
 
-    suspend fun launchLong(msg: Int, context: Context = AbstractApplication.INSTANCE) {
-        withMain {
-            long(context.getString(msg), context)
+    fun launchLong(msg: Int, context: Context = AbstractApplication.INSTANCE) =
+        launchLong(context.getString(msg), context)
+
+    fun launchLong(msg: String, context: Context = AbstractApplication.INSTANCE) {
+        mainLaunch {
+            long(msg, context)
         }
     }
 }

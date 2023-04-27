@@ -100,7 +100,9 @@ class AssetResource(
 
 class CachedResource(private val resource: BinaryResource): BinaryResource() {
 
-    val data = lazy { resource.asByteArray() }
+    val data = lazy {
+        resource.asByteArray()
+    }
 
     override val path: String
         get() = resource.path

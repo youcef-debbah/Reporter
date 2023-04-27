@@ -433,26 +433,39 @@ fun String.joinWith(another: String, separator: Char = Texts.SPACE_CHAR): String
     }
 }
 
-fun InputStream.readAsString(bufferSize: Int = DEFAULT_BUFFER_SIZE): String {
-    val buffer = CharArray(bufferSize)
-    val result = StringBuilder(bufferSize)
-    InputStreamReader(this, StandardCharsets.UTF_8).use { reader ->
+fun InputStream.readAsString(
+    bufferSize: Int = DEFAULT_BUFFER_SIZE,
+    autoClose: Boolean = true,
+): String = try {
+    val buffer = CharArray(if (bufferSize < 1) DEFAULT_BUFFER_SIZE else bufferSize)
+    val result = StringBuilder(buffer.size)
+    val inputReader: (InputStreamReader) -> Unit = { reader ->
         var bytesRead: Int
-        while (reader.read(buffer, 0, bufferSize).also { bytesRead = it } != -1) {
+        while (reader.read(buffer, 0, buffer.size).also { bytesRead = it } != -1) {
             result.append(buffer, 0, bytesRead)
         }
-
-        reader.close()
     }
-    return result.toString()
+    inputReader.invoke(InputStreamReader(this, StandardCharsets.UTF_8))
+    result.toString()
+} finally {
+    if (autoClose) {
+        close()
+    }
 }
 
-fun InputStream.readAsBytes(bufferSize: Int = DEFAULT_BUFFER_SIZE): ByteArray {
-    val buffer = ByteArray(bufferSize)
+fun InputStream.readAsBytes(
+    bufferSize: Int = -1,
+    autoClose: Boolean = true,
+): ByteArray = try {
+    val buffer = ByteArray(if (bufferSize < 1) DEFAULT_BUFFER_SIZE else bufferSize)
     val output = ByteArrayOutputStream()
     var bytesRead: Int
     while (this.read(buffer).also { bytesRead = it } != -1) {
         output.write(buffer, 0, bytesRead)
     }
-    return output.toByteArray()
+    output.toByteArray()
+} finally {
+    if (autoClose) {
+        close()
+    }
 }

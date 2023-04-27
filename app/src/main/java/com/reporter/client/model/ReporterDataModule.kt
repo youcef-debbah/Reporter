@@ -1,8 +1,6 @@
 package com.reporter.client.model
 
-import android.content.ContentValues
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import androidx.annotation.WorkerThread
 import androidx.room.Database
 import androidx.room.Room
@@ -14,7 +12,6 @@ import com.reporter.util.model.LogDAO
 import com.reporter.util.model.LoggedEvent
 import com.reporter.util.model.StandardDatabase
 import com.reporter.util.model.Teller
-import com.reporter.util.ui.AbstractApplication
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -37,7 +34,6 @@ abstract class ReporterDataModule {
         fun getDatabase(@ApplicationContext context: Context): ReporterDatabase =
             Room.databaseBuilder(context, ReporterDatabase::class.java, ReporterDatabase.NAME)
                 .fallbackToDestructiveMigration()
-                .addCallback(DatabaseCallback())
                 .build()
 
         @Provides
@@ -48,35 +44,6 @@ abstract class ReporterDataModule {
 
         @Provides
         fun resourcesDAO(database: ReporterDatabase) = database.resourcesDAO()
-    }
-
-    class DatabaseCallback : RoomDatabase.Callback() {
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            val buildEpoch = AbstractApplication.INSTANCE.config.buildEpoch
-            db.runTransaction {
-                db.insert(TEMPLATE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
-                    put(TEMPLATE_COLUMN_NAME, "wood_bill")
-                    put(TEMPLATE_COLUMN_LABEL_EN, "Wood bill")
-                    put(TEMPLATE_COLUMN_LABEL_AR, "فاتورة الحطب")
-                    put(TEMPLATE_COLUMN_LABEL_FR, "Facture de bois")
-                    put(TEMPLATE_COLUMN_DESC_EN, "Standard wood bill for small clients")
-                    put(TEMPLATE_COLUMN_DESC_AR, "فاتورة خشب قياسية للعملاء الصغار")
-                    put(TEMPLATE_COLUMN_DESC_FR, "Facture de bois standard pour les petits clients")
-                    put(TEMPLATE_COLUMN_LAST_UPDATE, buildEpoch)
-                })
-
-                db.insert(TEMPLATE_TABLE, SQLiteDatabase.CONFLICT_ROLLBACK, ContentValues().apply {
-                    put(TEMPLATE_COLUMN_NAME, "water_bill")
-                    put(TEMPLATE_COLUMN_LABEL_EN, "Water bill")
-                    put(TEMPLATE_COLUMN_LABEL_AR, "فاتورة ماء")
-                    put(TEMPLATE_COLUMN_LABEL_FR, "Facture de l'eau")
-                    put(TEMPLATE_COLUMN_DESC_EN, "Standard water bill for small clients")
-                    put(TEMPLATE_COLUMN_DESC_AR, "فاتورة ماء قياسية للعملاء الصغار")
-                    put(TEMPLATE_COLUMN_DESC_FR, "Facture de l'eau standard pour les petits clients")
-                    put(TEMPLATE_COLUMN_LAST_UPDATE, buildEpoch)
-                })
-            }
-        }
     }
 }
 

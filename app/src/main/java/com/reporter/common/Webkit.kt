@@ -27,13 +27,13 @@ object Webkit {
 
     object TypesMappings {
         val mimeTypesByExtensions: ImmutableMap<String, String> = ImmutableMap.Builder<String, String>()
-            .put("pdf", MIME_TYPE_APPLICATION_PDF)
-            .put("svg", MIME_TYPE_SVG)
-            .put("ttf", MIME_TYPE_FONT_TTF)
-            .put("css", MIME_TYPE_TEXT_CSS)
-            .put("js", MIME_TYPE_TEXT_JAVASCRIPT)
-            .put("json", MIME_TYPE_APPLICATION_JSON)
-            .put("zip", MIME_TYPE_APPLICATION_ZIP)
+            .put(FILE_EXTENSION_PDF, MIME_TYPE_APPLICATION_PDF)
+            .put(FILE_EXTENSION_SVG, MIME_TYPE_SVG)
+            .put(FILE_EXTENSION_TTF, MIME_TYPE_FONT_TTF)
+            .put(FILE_EXTENSION_CSS, MIME_TYPE_TEXT_CSS)
+            .put(FILE_EXTENSION_JS, MIME_TYPE_TEXT_JAVASCRIPT)
+            .put(FILE_EXTENSION_JSON, MIME_TYPE_APPLICATION_JSON)
+            .put(FILE_EXTENSION_ZIP, MIME_TYPE_APPLICATION_ZIP)
             .build()
     }
 

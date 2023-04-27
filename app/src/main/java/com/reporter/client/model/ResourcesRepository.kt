@@ -1,13 +1,13 @@
 package com.reporter.client.model
 
 import android.content.Context
-import android.net.Uri
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSortedMap
 import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
 import com.reporter.common.AsyncConfig
+import com.reporter.common.FILE_EXTENSION_PROPERTIES
 import com.reporter.common.MIME_TYPE_FONT_TTF
-import com.reporter.common.Webkit
+import com.reporter.common.PATH_SEPARATOR
 import com.reporter.common.withIO
 import com.reporter.util.model.SimpleCache
 import com.reporter.util.model.Teller
@@ -17,7 +17,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import java.io.InputStream
-import java.io.OutputStream
 import java.net.URL
 import java.util.NavigableMap
 import javax.inject.Inject
@@ -25,6 +24,10 @@ import javax.inject.Inject
 const val WEB_RESOURCE_PREFIX = "web/"
 const val FONT_RESOURCE_PREFIX = "fonts/"
 const val TEMPLATE_RESOURCE_PREFIX = "templates/"
+
+private val ASSETS: Map<String, BinaryResource> = ImmutableMap.builder<String, BinaryResource>()
+    // loadable assets should be added here
+    .build()
 
 private val FONT_WEIGHTS: NavigableMap<Int, String> =
     ImmutableSortedMap.Builder<Int, String>(Integer::compare)
@@ -68,7 +71,7 @@ fun fontPath(fontDir: String, weight: Int) =
 fun fontPaths(fontNames: Collection<String>): List<String> {
     val result = ArrayList<String>(fontNames.size * 2)
     fontNames.forEach {
-        val fontDir = it.replace(" ", "") + "/"
+        val fontDir = it.replace(" ", "") + PATH_SEPARATOR
         result.add(fontPath(fontDir, 200))
         result.add(fontPath(fontDir, 400))
     }
@@ -102,7 +105,7 @@ class ResourcesRepository @Inject constructor(
     }
 
     suspend fun load(path: String?): BinaryResource? = withIO {
-        path?.let { loadCachedBinaryResource(it.removePrefix("/")) }
+        path?.let { loadCachedBinaryResource(it.removePrefix(PATH_SEPARATOR)) }
     }
 
     fun clearCache() {
@@ -117,19 +120,16 @@ class ResourcesRepository @Inject constructor(
         cache.load(path) { loadBinaryResource(path) }
 
     private suspend fun loadBinaryResource(path: String): BinaryResource? {
-        val resource = resourcesDAO.get().load(path)
-        if (resource != null) {
-            Teller.debug("resource loaded: $path")
-            return resource
+        val databaseResource = resourcesDAO.get().load(path)
+        if (databaseResource != null) {
+            Teller.debug("resource loaded from database: $path")
+            return databaseResource
         }
 
-        if (path.startsWith(WEB_RESOURCE_PREFIX) || path.startsWith(TEMPLATE_RESOURCE_PREFIX)) {
-            return CachedResource(AssetResource(path, Webkit.mimeType(path)))
-        } else if (path.startsWith(FONT_RESOURCE_PREFIX)) {
-            val fontResource = FONT_ASSETS[path]
-            if (fontResource != null) {
-                return CachedResource(fontResource)
-            }
+        val assetResource = if (path.startsWith(FONT_RESOURCE_PREFIX)) FONT_ASSETS[path] else ASSETS[path]
+        if (assetResource != null) {
+            Teller.debug("resource loaded from assets: $path")
+            return CachedResource(assetResource)
         }
 
         Teller.warn("resource not found: $path")
@@ -145,4 +145,8 @@ class ResourcesRepository @Inject constructor(
 
     override fun getByteArrayByUrl(url: URL): ByteArray? =
         loadBlocking(url.path)?.asByteArray()
+
+    suspend fun updateResources(resources: List<Resource>) {
+        resourcesDAO.get().updateAll(resources)
+    }
 }

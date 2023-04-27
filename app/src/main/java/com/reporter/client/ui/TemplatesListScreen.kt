@@ -21,6 +21,7 @@ import com.reporter.client.model.CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import com.reporter.client.model.MainViewModel
 import com.reporter.client.model.Template
 import com.reporter.common.MIME_TYPE_APPLICATION_ZIP
+import com.reporter.common.PATH_SEPARATOR
 import com.reporter.common.RoundedCorner
 import com.reporter.common.ioLaunch
 import com.reporter.common.useInputStream
@@ -35,6 +36,7 @@ import com.reporter.util.ui.StaticScreenDestination
 import com.reporter.util.ui.ThemedText
 import com.reporter.util.ui.activeScreens
 import com.reporter.util.ui.collectWithLifecycleAsState
+import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -69,19 +71,7 @@ object TemplatesListScreen : StaticScreenDestination(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             result.data?.data?.let { uri ->
-                ioLaunch {
-                    AbstractApplication.INSTANCE.useInputStream(uri) {
-                        ZipInputStream(it).use { zipStream ->
-                            var entry: ZipEntry? = zipStream.nextEntry
-                            while (entry != null) {
-                                // Print the name of the entry
-                                Teller.test(entry.name)
-                                // Advance to the next entry
-                                entry = zipStream.nextEntry
-                            }
-                        }
-                    }
-                }
+                viewModel.importTemplate(uri)
             }
         }
         SimpleScaffold(

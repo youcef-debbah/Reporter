@@ -63,4 +63,7 @@
     <string name="input_stream_io_failure">Could not modify the target file!</string>
     <string name="zoom_in_preview_desc">Zoom in the preview</string>
     <string name="zoom_out_preview_desc">Zoom out the preview</string>
+    <string name="templates_updated_successfully">%d Template(s) Updated Successfully</string>
+    <string name="templates_importing_failed">Templates importing failed!</string>
+    <string name="no_templates_found">No template found!</string>
 </resources>

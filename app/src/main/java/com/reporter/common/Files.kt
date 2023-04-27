@@ -9,18 +9,31 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
+const val PATH_SEPARATOR = "/"
+
+const val FILE_EXTENSION_TXT = "txt"
+const val FILE_EXTENSION_PROPERTIES = "properties"
+
+const val FILE_EXTENSION_PDF = "pdf"
+const val FILE_EXTENSION_SVG = "svg"
+const val FILE_EXTENSION_TTF = "ttf"
+const val FILE_EXTENSION_CSS = "css"
+const val FILE_EXTENSION_JS = "js"
+const val FILE_EXTENSION_JSON = "json"
+const val FILE_EXTENSION_ZIP = "zip"
+
 suspend fun Context.useOutputStream(uri: Uri, block: suspend (OutputStream) -> Unit) = withIO {
     var outputStream: OutputStream? = null
 
     try {
         outputStream = this@useOutputStream.contentResolver.openOutputStream(uri)
     } catch (e: IOException) {
-        Toasts.short(R.string.output_stream_io_failure, this@useOutputStream)
+        Toasts.launchShort(R.string.output_stream_io_failure, this@useOutputStream)
         Teller.error("failed to open OutputStream for path: ${uri.path}", e)
     }
 
     if (outputStream == null) {
-        Toasts.short(R.string.output_stream_system_failure, this@useOutputStream)
+        Toasts.launchShort(R.string.output_stream_system_failure, this@useOutputStream)
         Teller.warn("null OutputStream for path: ${uri.path}")
         return@withIO
     } else {
@@ -34,12 +47,12 @@ suspend fun Context.useInputStream(uri: Uri, block: suspend (InputStream) -> Uni
     try {
         inputStream = this@useInputStream.contentResolver.openInputStream(uri)
     } catch (e: IOException) {
-        Toasts.short(R.string.input_stream_io_failure, this@useInputStream)
+        Toasts.launchShort(R.string.input_stream_io_failure, this@useInputStream)
         Teller.error("failed to open InputStream for path: ${uri.path}", e)
     }
 
     if (inputStream == null) {
-        Toasts.short(R.string.input_stream_system_failure, this@useInputStream)
+        Toasts.launchShort(R.string.input_stream_system_failure, this@useInputStream)
         Teller.warn("null InputStream for path: ${uri.path}")
         return@withIO
     } else {
