@@ -12,6 +12,7 @@
     <string name="default_sort_by_name_z_a">Name (Z to A)</string>
     <string name="default_sort_a_z">Default Order (A to Z)</string>
     <string name="default_sort_z_z">Default Order (Z to A)</string>
+    <string name="activity_missing_action_link">Could not open the default browser</string>
     <string name="activity_missing_action_dial">Could not open the default phone calls app</string>
     <string name="activity_missing_action_mailto">Could not open the default email app</string>
     <string name="default_email_content">Hello there,\n</string>
@@ -66,4 +67,6 @@
     <string name="templates_updated_successfully">%d Template(s) Updated Successfully</string>
     <string name="templates_importing_failed">Templates importing failed!</string>
     <string name="no_templates_found">No template found!</string>
+    <string name="import_template">Import</string>
+    <string name="download_templates">Download</string>
 </resources>

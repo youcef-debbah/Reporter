@@ -15,7 +15,16 @@ object ExternalLink {
     const val PROTOCOL_TEL = "tel:"
     const val ACTION_DIAL = Intent.ACTION_DIAL
 
-    suspend fun openNumberDialer(phoneNumber: String, context: Context = AbstractApplication.INSTANCE) {
+    fun openLink(link: String, context: Context = AbstractApplication.INSTANCE) = try {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(link)
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        Teller.error("could not open the default browser at: $link", e)
+        Toasts.launchLong(R.string.activity_missing_action_link, context)
+    }
+
+    fun openNumberDialer(phoneNumber: String, context: Context = AbstractApplication.INSTANCE) {
         try {
             val intent = Intent(ACTION_DIAL)
             intent.data = Uri.parse(PROTOCOL_TEL + phoneNumber)
@@ -29,7 +38,7 @@ object ExternalLink {
         }
     }
 
-    suspend fun openEmailDialer(email: String, context: Context = AbstractApplication.INSTANCE) {
+    fun openEmailDialer(email: String, context: Context = AbstractApplication.INSTANCE) {
         try {
             val intent = Intent()
             intent.data = Uri.parse(PROTOCOL_MAILTO)
