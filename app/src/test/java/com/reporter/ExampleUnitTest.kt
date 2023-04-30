@@ -1,4 +1,4 @@
-package com.reporter
+package dz.nexatech.reporter
 
 import org.junit.Test
 

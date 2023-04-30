@@ -1,4 +1,4 @@
-package com.reporter.gradle
+package dz.nexatech.reporter.gradle
 
 object BuildSettings {
     const val TARGET_SDK_LEVEL = 33

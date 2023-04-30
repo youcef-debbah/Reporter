@@ -1,4 +1,4 @@
-package com.reporter.gradle
+package dz.nexatech.reporter.gradle
 
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.process.CommandLineArgumentProvider

@@ -1,4 +1,4 @@
-package com.reporter.gradle
+package dz.nexatech.reporter.gradle
 
 import com.android.build.api.dsl.AnnotationProcessorOptions
 import com.android.build.api.dsl.ApplicationBuildType

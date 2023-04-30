@@ -1,4 +1,4 @@
-package com.reporter.gradle
+package dz.nexatech.reporter.gradle
 
 object Version {
     // https://github.com/junit-team/junit4/releases

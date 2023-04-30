@@ -1,11 +1,11 @@
-import com.reporter.gradle.Version
-import com.reporter.gradle.addCommonAndroidTestDependencies
-import com.reporter.gradle.addCommonTestDependencies
-import com.reporter.gradle.addHilt
-import com.reporter.gradle.addLifecycle
-import com.reporter.gradle.addRoomApi
-import com.reporter.gradle.addRoomCompiler
-import com.reporter.gradle.standardAndroidApp
+import dz.nexatech.reporter.gradle.Version
+import dz.nexatech.reporter.gradle.addCommonAndroidTestDependencies
+import dz.nexatech.reporter.gradle.addCommonTestDependencies
+import dz.nexatech.reporter.gradle.addHilt
+import dz.nexatech.reporter.gradle.addLifecycle
+import dz.nexatech.reporter.gradle.addRoomApi
+import dz.nexatech.reporter.gradle.addRoomCompiler
+import dz.nexatech.reporter.gradle.standardAndroidApp
 
 plugins {
     id("com.android.application")
@@ -24,7 +24,7 @@ plugins {
 
 println("app build config...")
 
-standardAndroidApp("com.reporter.client", 4, "proguard-rules.pro")
+standardAndroidApp("dz.nexatech.reporter.client", 5, "proguard-rules.pro")
 
 dependencies {
     addCommonTestDependencies()
