@@ -1,13 +1,13 @@
 package dz.nexatech.reporter.util.model
 
 import android.os.Build
-import androidx.annotation.StringRes
 import com.google.common.collect.ImmutableList
-import dz.nexatech.reporter.common.Texts
+import dz.nexatech.reporter.client.common.AbstractLocalizer
+import dz.nexatech.reporter.client.common.Texts
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import java.util.*
 
-object Localizer {
+object Localizer : AbstractLocalizer() {
 
     private val preferredLanguages: ImmutableList<String> by lazy {
         val result = LinkedList<String>()
@@ -42,27 +42,25 @@ object Localizer {
         return@lazy ImmutableList.copyOf(result)
     }
 
-    fun inPrimaryLang(
+    override fun inPrimaryLang(
         latinText: String?,
         arabicText: String?,
     ): String = inPrimaryLang(latinText, latinText, arabicText)
 
-    fun inPrimaryLang(
+    override fun inPrimaryLang(
         englishText: String?,
         frenchText: String?,
         arabicText: String?,
     ): String = Texts.inPrimaryLang(englishText, frenchText, arabicText, preferredLanguages)
 
-    fun inSecondaryLang(
+    override fun inSecondaryLang(
         latinText: String?,
         arabicText: String?,
     ): String = inSecondaryLang(latinText, latinText, arabicText)
 
-    fun inSecondaryLang(
+    override fun inSecondaryLang(
         englishText: String?,
         frenchText: String?,
         arabicText: String?,
     ): String = Texts.inSecondaryLang(englishText, frenchText, arabicText, preferredLanguages)
-
-    fun getString(@StringRes resId: Int) = AbstractApplication.INSTANCE.getString(resId)
 }

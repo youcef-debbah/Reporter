@@ -1,8 +1,8 @@
 package dz.nexatech.reporter.util.model
 
 import androidx.room.TypeConverter
-import dz.nexatech.reporter.common.Texts
-import dz.nexatech.reporter.common.splitIntoList
+import dz.nexatech.reporter.client.common.Texts
+import dz.nexatech.reporter.client.common.splitIntoList
 
 class EmbeddedListConverter {
 

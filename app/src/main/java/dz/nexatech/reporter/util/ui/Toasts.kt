@@ -4,9 +4,9 @@ import android.content.Context
 import android.widget.Toast
 import androidx.annotation.StringRes
 import dz.nexatech.reporter.client.R
-import dz.nexatech.reporter.common.PublicAPI
-import dz.nexatech.reporter.common.mainLaunch
-import dz.nexatech.reporter.common.withMain
+import dz.nexatech.reporter.client.common.PublicAPI
+import dz.nexatech.reporter.client.common.mainLaunch
+import dz.nexatech.reporter.client.common.withMain
 
 object Toasts {
     @PublicAPI

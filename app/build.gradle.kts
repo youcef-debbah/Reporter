@@ -51,7 +51,7 @@ dependencies {
     implementation("androidx.core:core-ktx:${Version.ANDROIDX_CORE}")
     implementation("com.google.android.material:material:${Version.GOOGLE_MATERIAL}")
     implementation("androidx.preference:preference:${Version.PREFERENCE}")
-    implementation("com.google.guava:guava:${Version.GUAVA}")
+    implementation("com.google.guava:guava:${Version.GUAVA_ANDROID}")
 
     implementation("androidx.paging:paging-runtime:${Version.PAGING}")
     implementation("androidx.paging:paging-compose:${Version.PAGING_COMPOSE}")
@@ -81,8 +81,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
 
-    implementation("io.pebbletemplates:pebble:3.2.0")
-    implementation("com.itextpdf:itext7-core:7.2.5")
-    implementation("com.itextpdf:html2pdf:4.0.5")
-    implementation(files("libs/typography-3.0.2.jar"))
+    implementation(project(":core"))
 }

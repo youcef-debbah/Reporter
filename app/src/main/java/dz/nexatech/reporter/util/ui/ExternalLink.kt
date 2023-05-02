@@ -9,15 +9,16 @@ import dz.nexatech.reporter.util.model.Teller
 
 object ExternalLink {
 
-    const val PROTOCOL_MAILTO = "mailto:"
-    const val ACTION_MAILTO = Intent.ACTION_SENDTO
+    private const val PROTOCOL_MAILTO = "mailto:"
+    private const val ACTION_MAILTO = Intent.ACTION_SENDTO
 
-    const val PROTOCOL_TEL = "tel:"
-    const val ACTION_DIAL = Intent.ACTION_DIAL
+    private const val PROTOCOL_TEL = "tel:"
+    private const val ACTION_DIAL = Intent.ACTION_DIAL
 
     fun openLink(link: String, context: Context = AbstractApplication.INSTANCE) = try {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(link)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     } catch (e: Exception) {
         Teller.error("could not open the default browser at: $link", e)
@@ -28,6 +29,7 @@ object ExternalLink {
         try {
             val intent = Intent(ACTION_DIAL)
             intent.data = Uri.parse(PROTOCOL_TEL + phoneNumber)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             Teller.error(
@@ -44,6 +46,7 @@ object ExternalLink {
             intent.data = Uri.parse(PROTOCOL_MAILTO)
             intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
             intent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.default_email_content))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             Toasts.launchLong(R.string.activity_missing_action_mailto, context)

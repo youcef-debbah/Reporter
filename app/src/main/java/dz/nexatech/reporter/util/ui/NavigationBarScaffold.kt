@@ -24,8 +24,8 @@ import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import dz.nexatech.reporter.client.model.CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
-import dz.nexatech.reporter.common.indexDiff
+import dz.nexatech.reporter.client.model.REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
+import dz.nexatech.reporter.client.common.indexDiff
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.REMOTE_NAVIGATION_ANIMATION_DURATION
 
@@ -95,7 +95,7 @@ private fun StatelessNavigationBarScaffold(
                     modifier = Modifier.padding(innerPadding),
                     builder = { builder.invoke(this, navController) },
                     enterTransition = {
-                        if (AppConfig.get(CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                        if (AppConfig.get(REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
                             val diff = destinations.iterator().indexDiff(
                                 initialState.destination::isLinkedTo,
                                 targetState.destination::isLinkedTo,
@@ -111,7 +111,7 @@ private fun StatelessNavigationBarScaffold(
                         }
                     },
                     exitTransition = {
-                        if (AppConfig.get(CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                        if (AppConfig.get(REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
                             val diff = destinations.iterator().indexDiff(
                                 initialState.destination::isLinkedTo,
                                 targetState.destination::isLinkedTo,
@@ -127,7 +127,7 @@ private fun StatelessNavigationBarScaffold(
                         }
                     },
                     popEnterTransition = {
-                        if (AppConfig.get(CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                        if (AppConfig.get(REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
                             val diff = destinations.iterator().indexDiff(
                                 initialState.destination::isLinkedTo,
                                 targetState.destination::isLinkedTo,
@@ -143,7 +143,7 @@ private fun StatelessNavigationBarScaffold(
                         }
                     },
                     popExitTransition = {
-                        if (AppConfig.get(CONFIG_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                        if (AppConfig.get(REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
                             val diff = destinations.iterator().indexDiff(
                                 initialState.destination::isLinkedTo,
                                 targetState.destination::isLinkedTo,

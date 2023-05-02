@@ -5,14 +5,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
-import dz.nexatech.reporter.common.AsyncConfig
-import dz.nexatech.reporter.common.ioLaunch
-import dz.nexatech.reporter.common.withIO
-import dagger.Lazy
+import dz.nexatech.reporter.client.common.ioLaunch
+import dz.nexatech.reporter.client.common.withIO
+import dz.nexatech.reporter.client.core.AbstractValue
+import dz.nexatech.reporter.client.core.AbstractValuesDAO
+import dz.nexatech.reporter.client.core.ValueUpdate
 import io.pebbletemplates.pebble.template.PebbleTemplate
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,7 +19,6 @@ import java.io.StringWriter
 @Stable
 class TemplateState private constructor(
     val template: String,
-    val meta: TemplateMeta,
     val variablesStates: ImmutableMap<String, VariableState>,
     val sectionStates: ImmutableList<SectionState>,
     val recordsStates: ImmutableMap<String, RecordState>,
@@ -29,13 +26,6 @@ class TemplateState private constructor(
     val templateUpdates: MutableSharedFlow<ValueUpdate>,
     val fontsVariablesStates: ImmutableMap<String, VariableState>,
 ) {
-
-    val scope = CoroutineScope(SupervisorJob() + AsyncConfig.backgroundDispatcher)
-
-    fun close() {// TODO call this
-        scope.cancel()
-    }
-
     operator fun get(key: String): MutableState<String> = variablesStates[key]!!.state
 
     operator fun get(variable: Variable): MutableState<String> = get(variable.key)
@@ -71,7 +61,7 @@ class TemplateState private constructor(
     companion object {
 
         @Volatile
-        private var globalValuesDAO: ValuesDAO? = null
+        private var globalValuesDAO: AbstractValuesDAO? = null
         private val pendingUpdates = Channel<ValueUpdate>(capacity = Channel.UNLIMITED)
 
         init {
@@ -89,7 +79,7 @@ class TemplateState private constructor(
         suspend fun from(
             templateName: String,
             meta: TemplateMeta,
-            valuesDAO: Lazy<ValuesDAO>
+            valuesDaoSupplier: () -> AbstractValuesDAO,
         ): TemplateState {
             val environmentBuilder: ImmutableMap.Builder<String, Any> = ImmutableMap.builder()
             val variablesBuilder: ImmutableMap.Builder<String, VariableState> = ImmutableMap.builder()
@@ -115,26 +105,23 @@ class TemplateState private constructor(
             val variablesStates = variablesBuilder.build()
 
             withIO {
-                val dao: ValuesDAO = valuesDAO.get()
-                val loadedValues: List<Value> = dao.findValuesPrefixedBy(templateName)
-                val toDelete: ArrayList<Value> = ArrayList(loadedValues.size)
+                val dao: AbstractValuesDAO = valuesDaoSupplier.invoke()
+                val loadedValues: List<AbstractValue> = dao.findByNamespacePrefix(templateName)
 
                 for (loadedValue in loadedValues) {
                     val variableState = variablesStates[loadedValue.key]
                     if (variableState != null) {
                         variableState.state.value = loadedValue.content
                     } else {
-                        toDelete.add(loadedValue)
+                        dao.delete(loadedValue.namespace, loadedValue.name)
                     }
                 }
 
-                dao.deleteAll(toDelete)
                 globalValuesDAO = dao
             }
 
             return TemplateState(
                 templateName,
-                meta,
                 variablesStates,
                 sectionsBuilder.build(),
                 recordsBuilder.build(),
@@ -209,14 +196,8 @@ class TemplateState private constructor(
                 val namespace = variable.namespace
                 val name = variable.name
                 val update: ValueUpdate = if (newContent != null) {
-                    val newValue = Value(
-                        namespace = namespace,
-                        name = name,
-                        lastUpdate = System.currentTimeMillis(),
-                        content = newContent,
-                    )
                     state.value = newContent
-                    ValueUpdate(namespace, name, newValue)
+                    ValueUpdate(namespace, name, newContent)
 
                 } else {
                     state.value = variable.default
@@ -227,16 +208,6 @@ class TemplateState private constructor(
                 templateUpdates.tryEmit(update)
             }
         }
-    }
-}
-
-class ValueUpdate(
-    val namespace: String,
-    val name: String,
-    val newValue: Value?,
-) {
-    override fun toString(): String {
-        return "ValueUpdate(namespace='$namespace', name='$name', newValue=$newValue)"
     }
 }
 

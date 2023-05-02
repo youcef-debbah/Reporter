@@ -1,26 +1,45 @@
 package dz.nexatech.reporter.client.model
 
 import com.google.common.collect.ImmutableMap
-import dz.nexatech.reporter.common.ioLaunch
 import dagger.Lazy
+import dz.nexatech.reporter.client.common.filterByClass
+import dz.nexatech.reporter.client.core.TemplateLoader
+import dz.nexatech.reporter.client.common.ioLaunch
+import dz.nexatech.reporter.client.core.AbstractBinaryResource
+import dz.nexatech.reporter.client.core.AbstractTemplate
 import io.pebbletemplates.pebble.PebbleEngine
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.runBlocking
 import java.io.InputStream
+import java.util.function.Function
+import java.util.function.Predicate
 import javax.inject.Inject
 
 class TemplatesRepository @Inject constructor(
     private val resourcesRepository: ResourcesRepository,
     private val templatesDao: Lazy<TemplatesDAO>,
 ) {
-    private val mTemplates: MutableStateFlow<ImmutableMap<String, Template>?> = MutableStateFlow(null)
-    val templates = mTemplates.asStateFlow()
+    private val mTemplates: MutableStateFlow<ImmutableMap<String, Template>?> =
+        MutableStateFlow(null)
     private val firstRefreshJob: Job = ioLaunch { refresh() }
 
+    val templates = mTemplates.asStateFlow()
+
+    private val loader: Function<String, InputStream?> = Function { templateName ->
+        runBlocking {
+            loadTemplateContent(templateName)
+        }
+    }
+    private val checker: Predicate<String> = Predicate { templateName ->
+        runBlocking {
+            templateExists(templateName)
+        }
+    }
     val pebbleEngine: PebbleEngine = PebbleEngine.Builder()
-        .loader(TemplateLoader(this))
+        .loader(TemplateLoader(loader, checker))
         .build()
 
     private suspend fun refresh() {
@@ -49,12 +68,13 @@ class TemplatesRepository @Inject constructor(
     }
 
     private suspend fun loadTemplateFile(templateName: String, fileFormat: String): InputStream? =
-        resourcesRepository.loadWithoutCache("$TEMPLATE_RESOURCE_PREFIX$templateName.$fileFormat")?.asInputStream()
+        resourcesRepository.loadWithoutCache("$TEMPLATE_RESOURCE_PREFIX$templateName.$fileFormat")
+            ?.asInputStream()
 
     fun compileTemplateBlocking(templateName: String): PebbleTemplate =
         pebbleEngine.getTemplate(templateName)
 
-    suspend fun updateTemplates(templates: List<Template>, resources: List<Resource>) {
+    suspend fun updateTemplates(templates: List<Template>, resources: List<Resource>?) {
         templatesDao.get().updateAll(templates)
         resourcesRepository.updateResources(resources)
         firstRefreshJob.join()

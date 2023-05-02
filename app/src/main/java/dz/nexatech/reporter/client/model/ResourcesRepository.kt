@@ -4,15 +4,16 @@ import android.content.Context
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSortedMap
 import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
-import dz.nexatech.reporter.common.AsyncConfig
-import dz.nexatech.reporter.common.FILE_EXTENSION_PROPERTIES
-import dz.nexatech.reporter.common.MIME_TYPE_FONT_TTF
-import dz.nexatech.reporter.common.PATH_SEPARATOR
-import dz.nexatech.reporter.common.withIO
-import dz.nexatech.reporter.util.model.SimpleCache
-import dz.nexatech.reporter.util.model.Teller
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dz.nexatech.reporter.client.common.AsyncConfig
+import dz.nexatech.reporter.client.common.FILE_PATH_SEPARATOR
+import dz.nexatech.reporter.client.common.MimeType
+import dz.nexatech.reporter.client.common.withIO
+import dz.nexatech.reporter.client.core.AbstractBinaryResource
+import dz.nexatech.reporter.client.core.CachedResource
+import dz.nexatech.reporter.util.model.SimpleCache
+import dz.nexatech.reporter.util.model.Teller
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
@@ -25,9 +26,10 @@ const val WEB_RESOURCE_PREFIX = "web/"
 const val FONT_RESOURCE_PREFIX = "fonts/"
 const val TEMPLATE_RESOURCE_PREFIX = "templates/"
 
-private val ASSETS: Map<String, BinaryResource> = ImmutableMap.builder<String, BinaryResource>()
-    // loadable assets should be added here
-    .build()
+private val ASSETS: Map<String, AbstractBinaryResource> =
+    ImmutableMap.builder<String, AbstractBinaryResource>()
+        // loadable assets should be added here
+        .build()
 
 private val FONT_WEIGHTS: NavigableMap<Int, String> =
     ImmutableSortedMap.Builder<Int, String>(Integer::compare)
@@ -43,24 +45,25 @@ private val FONT_WEIGHTS: NavigableMap<Int, String> =
         .build()
 
 // show the fonts in this order in the drop menu
-val FONT_ASSETS: Map<String, BinaryResource> = ImmutableMap.builder<String, BinaryResource>()
-    .addFont(400, 700, fontDir = "Cairo/")
-    .addFont(400, 700, fontDir = "MarkaziText/")
-    .addFont(400, 700, fontDir = "ReadexPro/")
-    .addFont(400, 700, fontDir = "Vazirmatn/")
-    .addFont(400, 700, fontDir = "NotoNaskhArabic/")
-    .addFont(400, 700, fontDir = "Lateef/")
-    .addFont(400, 700, fontDir = "ScheherazadeNew/")
-    .addFont(400, 700, fontDir = "Amiri/")
-    .build()
+val FONT_ASSETS: Map<String, AbstractBinaryResource> =
+    ImmutableMap.builder<String, AbstractBinaryResource>()
+        .addFont(400, 700, fontDir = "Cairo/")
+        .addFont(400, 700, fontDir = "MarkaziText/")
+        .addFont(400, 700, fontDir = "ReadexPro/")
+        .addFont(400, 700, fontDir = "Vazirmatn/")
+        .addFont(400, 700, fontDir = "NotoNaskhArabic/")
+        .addFont(400, 700, fontDir = "Lateef/")
+        .addFont(400, 700, fontDir = "ScheherazadeNew/")
+        .addFont(400, 700, fontDir = "Amiri/")
+        .build()
 
-private fun ImmutableMap.Builder<String, BinaryResource>.addFont(
+private fun ImmutableMap.Builder<String, AbstractBinaryResource>.addFont(
     vararg weights: Int,
     fontDir: String,
-): ImmutableMap.Builder<String, BinaryResource> {
+): ImmutableMap.Builder<String, AbstractBinaryResource> {
     weights.forEach { weight ->
         val path = fontPath(fontDir, weight)
-        put(path, AssetResource(path, MIME_TYPE_FONT_TTF))
+        put(path, AssetResource(path, MimeType.FONT_TTF))
     }
     return this
 }
@@ -71,7 +74,7 @@ fun fontPath(fontDir: String, weight: Int) =
 fun fontPaths(fontNames: Collection<String>): List<String> {
     val result = ArrayList<String>(fontNames.size * 2)
     fontNames.forEach {
-        val fontDir = it.replace(" ", "") + PATH_SEPARATOR
+        val fontDir = it.replace(" ", "") + FILE_PATH_SEPARATOR
         result.add(fontPath(fontDir, 200))
         result.add(fontPath(fontDir, 400))
     }
@@ -84,7 +87,7 @@ class ResourcesRepository @Inject constructor(
     private val resourcesDAO: Lazy<ResourcesDAO>,
 ) : IResourceRetriever {
 
-    private val cache = SimpleCache<BinaryResource>()
+    private val cache = SimpleCache<AbstractBinaryResource>()
 
     suspend fun loadFonts(
         fontNames: Collection<String>
@@ -104,29 +107,30 @@ class ResourcesRepository @Inject constructor(
         }.awaitAll().filterNotNull()
     }
 
-    suspend fun load(path: String?): BinaryResource? = withIO {
-        path?.let { loadCachedBinaryResource(it.removePrefix(PATH_SEPARATOR)) }
+    suspend fun load(path: String?): AbstractBinaryResource? = withIO {
+        path?.let { loadCachedBinaryResource(it.removePrefix(FILE_PATH_SEPARATOR)) }
     }
 
     fun clearCache() {
         cache.clear()
     }
 
-    suspend fun loadWithoutCache(path: String): BinaryResource? = withIO {
+    suspend fun loadWithoutCache(path: String): AbstractBinaryResource? = withIO {
         loadBinaryResource(path)
     }
 
-    private suspend fun loadCachedBinaryResource(path: String): BinaryResource? =
+    private suspend fun loadCachedBinaryResource(path: String): AbstractBinaryResource? =
         cache.load(path) { loadBinaryResource(path) }
 
-    private suspend fun loadBinaryResource(path: String): BinaryResource? {
+    private suspend fun loadBinaryResource(path: String): AbstractBinaryResource? {
         val databaseResource = resourcesDAO.get().load(path)
         if (databaseResource != null) {
             Teller.debug("resource loaded from database: $path")
             return databaseResource
         }
 
-        val assetResource = if (path.startsWith(FONT_RESOURCE_PREFIX)) FONT_ASSETS[path] else ASSETS[path]
+        val assetResource =
+            if (path.startsWith(FONT_RESOURCE_PREFIX)) FONT_ASSETS[path] else ASSETS[path]
         if (assetResource != null) {
             Teller.debug("resource loaded from assets: $path")
             return CachedResource(assetResource)
@@ -136,9 +140,10 @@ class ResourcesRepository @Inject constructor(
         return null
     }
 
-    fun loadBlocking(path: String?): BinaryResource? = runBlocking(AsyncConfig.ioDispatcher) {
-        load(path)
-    }
+    fun loadBlocking(path: String?): AbstractBinaryResource? =
+        runBlocking(AsyncConfig.ioDispatcher) {
+            load(path)
+        }
 
     override fun getInputStreamByUrl(url: URL): InputStream? =
         loadBlocking(url.path)?.asInputStream()
@@ -146,7 +151,7 @@ class ResourcesRepository @Inject constructor(
     override fun getByteArrayByUrl(url: URL): ByteArray? =
         loadBlocking(url.path)?.asByteArray()
 
-    suspend fun updateResources(resources: List<Resource>) {
-        resourcesDAO.get().updateAll(resources)
+    suspend fun updateResources(resources: List<Resource>?) {
+        resources?.let { resourcesDAO.get().updateAll(it) }
     }
 }

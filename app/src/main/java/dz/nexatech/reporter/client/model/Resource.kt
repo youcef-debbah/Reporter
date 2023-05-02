@@ -6,9 +6,9 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.common.collect.ImmutableMap
-import dz.nexatech.reporter.common.Texts
-import dz.nexatech.reporter.common.Webkit
-import dz.nexatech.reporter.common.readAsBytes
+import dz.nexatech.reporter.client.common.Texts
+import dz.nexatech.reporter.client.common.readAsBytes
+import dz.nexatech.reporter.client.core.AbstractBinaryResource
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import java.io.ByteArrayInputStream
 import java.io.InputStream
@@ -30,7 +30,16 @@ class Resource(
     val data: ByteArray,
     @ColumnInfo(name = RESOURCE_COLUMN_LAST_MODIFIED)
     override val lastModified: Long,
-) : BinaryResource() {
+) : AbstractBinaryResource() {
+
+    @delegate:Ignore
+    override val headers: ImmutableMap<String, String> by lazy { headersBuilder().build() }
+
+    override fun size(): Int = data.size
+
+    override fun asInputStream(): InputStream = ByteArrayInputStream(data)
+
+    override fun asByteArray(): ByteArray = data
 
     override fun equals(other: Any?) =
         this === other || (other is Resource && this.path == other.path)
@@ -38,82 +47,30 @@ class Resource(
     override fun hashCode() = path.hashCode()
 
     override fun toString() = "Resource(path='$path')"
-
-    override fun size(): Int = data.size
-
-    override fun asInputStream(): InputStream = ByteArrayInputStream(data)
-
-    override fun asByteArray(): ByteArray = data
-}
-
-abstract class BinaryResource {
-
-    abstract val path: String
-    abstract val mimeType: String
-    abstract val lastModified: Long
-
-    @delegate:Ignore
-    private val headers by lazy {
-        ImmutableMap.builder<String, String>().apply {
-            put("Content-Type", "$mimeType;charset=${Texts.UTF_8}")
-            put("Cache-Control", "no-cache")
-            put("Expires", "Thu, 01 Jan 1970 00:00:00 GMT")
-            put("Last-Modified", Webkit.formatDate(lastModified))
-            size()?.let { put("Content-Length", it.toString()) }
-        }.build()
-    }
-
-    open fun asWebResourceResponse(encoding: String = Texts.UTF_8): WebResourceResponse =
-        WebResourceResponse(
-            mimeType,
-            Texts.UTF_8,
-            200,
-            "ok",
-            headers,
-            asInputStream()
-        )
-
-    abstract fun asInputStream(): InputStream
-
-    abstract fun asByteArray(): ByteArray
-
-    abstract fun size(): Int?
-
-    override fun toString(): String {
-        return "BinaryResource(path='$path', mimeType='$mimeType')"
-    }
 }
 
 class AssetResource(
     override val path: String,
     override val mimeType: String,
-) : BinaryResource() {
+) : AbstractBinaryResource() {
     companion object {
         val application: AbstractApplication = AbstractApplication.INSTANCE
         val buildEpoch: Long = application.config.buildEpoch
     }
+
+    override val headers: ImmutableMap<String, String> by lazy { headersBuilder().build() }
     override val lastModified: Long = buildEpoch
     override fun size(): Int? = null
     override fun asInputStream(): InputStream = application.assets.open(path)
     override fun asByteArray(): ByteArray = asInputStream().readAsBytes()
 }
 
-class CachedResource(private val resource: BinaryResource): BinaryResource() {
-
-    val data = lazy {
-        resource.asByteArray()
-    }
-
-    override val path: String
-        get() = resource.path
-    override val mimeType: String
-        get() = resource.mimeType
-    override val lastModified: Long
-        get() = resource.lastModified
-
-    override fun asInputStream(): InputStream = ByteArrayInputStream(asByteArray())
-
-    override fun asByteArray(): ByteArray = data.value
-
-    override fun size(): Int? = if (data.isInitialized()) data.value.size else resource.size()
-}
+fun AbstractBinaryResource.asWebResourceResponse(encoding: String = Texts.UTF_8): WebResourceResponse =
+    WebResourceResponse(
+        mimeType,
+        encoding,
+        200,
+        "ok",
+        headers,
+        asInputStream()
+    )

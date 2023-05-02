@@ -45,7 +45,7 @@ fun LoadingErrorCard(onRetry: () -> Unit, modifier: Modifier = Modifier) {
 fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
     val color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
     CentredRow(
-        Modifier
+        modifier
             .fillMaxWidth()
             .contentPadding(start = zero_padding, end = zero_padding)
     ) {

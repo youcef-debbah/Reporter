@@ -3,35 +3,29 @@ package dz.nexatech.reporter.client.model
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import dz.nexatech.reporter.client.R
-import dz.nexatech.reporter.client.ui.TabsContext
-import dz.nexatech.reporter.common.FILE_EXTENSION_PROPERTIES
-import dz.nexatech.reporter.common.Webkit
-import dz.nexatech.reporter.common.ioLaunch
-import dz.nexatech.reporter.common.readAsBytes
-import dz.nexatech.reporter.common.readAsString
-import dz.nexatech.reporter.common.useInputStream
-import dz.nexatech.reporter.common.withIO
-import dz.nexatech.reporter.util.model.Teller
-import dz.nexatech.reporter.util.ui.AbstractApplication
-import dz.nexatech.reporter.util.ui.Toasts
 import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.client.common.filterByClass
+import dz.nexatech.reporter.client.common.ioLaunch
+import dz.nexatech.reporter.client.common.readAsString
+import dz.nexatech.reporter.client.common.withIO
+import dz.nexatech.reporter.client.core.AbstractValuesDAO
+import dz.nexatech.reporter.client.core.TemplateEncoder
+import dz.nexatech.reporter.client.ui.TabsContext
+import dz.nexatech.reporter.util.model.Localizer
+import dz.nexatech.reporter.util.model.Teller
+import dz.nexatech.reporter.util.model.useInputStream
+import dz.nexatech.reporter.util.ui.AbstractApplication
+import dz.nexatech.reporter.util.ui.Toasts
 import kotlinx.coroutines.flow.StateFlow
-import java.io.ByteArrayInputStream
-import java.util.LinkedList
-import java.util.Properties
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
 import javax.inject.Inject
-
-private const val TEMPLATE_INFO_EXTENSION = ".$FILE_EXTENSION_PROPERTIES"
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     val resourcesRepository: ResourcesRepository,
     private val templatesRepository: TemplatesRepository,
-    private val valuesDAO: Lazy<ValuesDAO>,
+    private val valuesDAO: Lazy<AbstractValuesDAO>,
 ) : ViewModel() {
     private val context = AbstractApplication.INSTANCE
 
@@ -59,14 +53,14 @@ class MainViewModel @Inject constructor(
     fun templates(): StateFlow<Map<String, Template>?> = templatesRepository.templates
 
     suspend fun newTemplateState(templateName: String, meta: TemplateMeta) =
-        TemplateState.from(templateName, meta, valuesDAO)
+        TemplateState.from(templateName, meta, valuesDAO::get)
 
     suspend fun loadTemplateMeta(templateName: String): TemplateMeta {
         var metaInput = ""
         withIO {
             metaInput = templatesRepository.loadTemplateMeta(templateName)?.readAsString() ?: ""
         }
-        return TemplateMeta.from(templateName, metaInput)
+        return TemplateMeta.from(templateName, metaInput, Teller, Localizer)
     }
 
     suspend fun compileTemplate(templateName: String) =
@@ -76,71 +70,19 @@ class MainViewModel @Inject constructor(
         ioLaunch {
             try {
                 context.useInputStream(uri) {
-                    ZipInputStream(it).use { zipStream ->
-                        val templates = LinkedList<Template>()
-                        val resources = LinkedList<Resource>()
-                        var entry: ZipEntry? = zipStream.nextEntry
-                        while (entry != null) {
-                            val entryName = entry.name
-                            Teller.test("zip entry: $entryName")
-                            if (entry.isDirectory.not()) {
-                                if (entryName.endsWith(TEMPLATE_INFO_EXTENSION)) {
-                                    val properties = Properties()
-                                    properties.load(
-                                        ByteArrayInputStream(
-                                            zipStream.readAsBytes(
-                                                entry.size.toInt(),
-                                                false
-                                            )
-                                        )
-                                    )
-                                    val templateName: String? =
-                                        properties.getProperty(TEMPLATE_COLUMN_NAME)
-                                    if (templateName != null) {
-                                        templates.add(
-                                            Template(
-                                                templateName,
-                                                label_en = properties.getProperty(
-                                                    TEMPLATE_COLUMN_LABEL_EN
-                                                ),
-                                                label_ar = properties.getProperty(
-                                                    TEMPLATE_COLUMN_LABEL_AR
-                                                ),
-                                                label_fr = properties.getProperty(
-                                                    TEMPLATE_COLUMN_LABEL_FR
-                                                ),
-                                                desc_en = properties.getProperty(
-                                                    TEMPLATE_COLUMN_DESC_EN
-                                                ),
-                                                desc_ar = properties.getProperty(
-                                                    TEMPLATE_COLUMN_DESC_AR
-                                                ),
-                                                desc_fr = properties.getProperty(
-                                                    TEMPLATE_COLUMN_DESC_FR
-                                                ),
-                                                System.currentTimeMillis(),
-                                            )
-                                        )
-                                    }
-                                } else {
-                                    resources.add(
-                                        Resource(
-                                            path = entryName,
-                                            mimeType = Webkit.mimeType(entryName),
-                                            data = zipStream.readAsBytes(entry.size.toInt(), false),
-                                            lastModified = System.currentTimeMillis(),
-                                        )
-                                    )
-                                }
-                            }
-                            entry = zipStream.nextEntry
-                        }
-                        if (templates.isEmpty()) {
-                            Toasts.launchLong(R.string.no_templates_found, context)
-                        } else {
-                            templatesRepository.updateTemplates(templates, resources)
-                            Toasts.launchShort(context.getString(R.string.templates_updated_successfully, templates.size), context)
-                        }
+                    val loaded = TemplateEncoder.readZipInput(it, Localizer)
+                    val templates = loaded.first.filterByClass(Template::class)
+                    val resources = loaded.second.filterByClass(Resource::class)
+                    if (templates.isNullOrEmpty()) {
+                        Toasts.launchLong(R.string.no_templates_found, context)
+                    } else {
+                        templatesRepository.updateTemplates(templates, resources)
+                        Toasts.launchShort(
+                            context.getString(
+                                R.string.templates_updated_successfully,
+                                templates.size
+                            ), context
+                        )
                     }
                 }
             } catch (e: Exception) {

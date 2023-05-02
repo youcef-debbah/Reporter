@@ -17,6 +17,7 @@ pluginManagement {
     plugins {
         id("org.jetbrains.kotlin.android") version kotlinVersion
         id("org.jetbrains.kotlin.kapt") version kaptVersion
+        id("org.jetbrains.kotlin.jvm") version kotlinVersion
 //        id("com.google.devtools.ksp") version kspVersion
 //        id("androidx.benchmark") version "1.1.0-beta04"
     }
@@ -33,7 +34,6 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     @Suppress("UnstableApiUsage")
     repositories {
-        mavenLocal()
         google()
         mavenCentral()
     }
@@ -42,3 +42,4 @@ dependencyResolutionManagement {
 rootProject.name = "Reporter"
 
 include(":app")
+include(":core")

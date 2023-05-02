@@ -9,6 +9,7 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -50,6 +51,7 @@ data class Config(
     val kotlinVersion: String,
     val javaVersion: JavaVersion,
     val javaVersionName: String = javaVersion.toString(),
+    val javaLanguageVersion: JavaLanguageVersion = JavaLanguageVersion.of(javaVersionName),
     val kotlinCompatibility: String = kotlinVersion.substring(0..2),
 )
 

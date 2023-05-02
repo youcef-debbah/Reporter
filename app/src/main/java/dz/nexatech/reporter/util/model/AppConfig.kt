@@ -7,10 +7,13 @@ import com.google.common.collect.ImmutableMap
 import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue
-import dz.nexatech.reporter.common.*
+import com.tencent.mmkv.MMKV
+import dz.nexatech.reporter.client.common.PublicAPI
+import dz.nexatech.reporter.client.common.calcIfAbsent
+import dz.nexatech.reporter.client.common.calcIfNull
+import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.util.BuildTypeSettings
 import dz.nexatech.reporter.util.ui.AbstractApplication
-import com.tencent.mmkv.MMKV
 import java.util.concurrent.ConcurrentHashMap
 
 @AnyThread
@@ -20,7 +23,7 @@ object AppConfig {
     @SuppressLint("StaticFieldLeak")
     private var remoteConfig: FirebaseRemoteConfig? = null
 
-//    private lateinit var context: AbstractApplication
+    //    private lateinit var context: AbstractApplication
     private lateinit var localConfig: MMKV
 
     private val booleanStates = ConcurrentHashMap<String, MutableState<Boolean>>()
@@ -251,5 +254,8 @@ class LocalConfig<T>(override val key: String, override val default: T) : Config
     override fun toString() = key
 }
 
-fun ImmutableMap.Builder<String, Any>.putConfig(config: Config<out Any>): ImmutableMap.Builder<String, Any> =
+fun ImmutableMap.Builder<String, Any>.putRemoteConfig(config: RemoteConfig<out Any>): ImmutableMap.Builder<String, Any> =
+    put(config.key, config.default)
+
+fun ImmutableMap.Builder<String, Any>.putLocalConfig(config: LocalConfig<out Any>): ImmutableMap.Builder<String, Any> =
     put(config.key, config.default)

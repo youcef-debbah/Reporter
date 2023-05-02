@@ -18,6 +18,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dz.nexatech.reporter.client.core.AbstractValuesDAO
 import javax.inject.Singleton
 
 @Module
@@ -37,13 +38,13 @@ abstract class ReporterDataModule {
                 .build()
 
         @Provides
-        fun templatesDAO(database: ReporterDatabase) = database.templatesDAO()
+        fun templatesDAO(database: ReporterDatabase): TemplatesDAO = database.templatesDAO()
 
         @Provides
-        fun valuesDAO(database: ReporterDatabase) = database.valuesDAO()
+        fun resourcesDAO(database: ReporterDatabase): ResourcesDAO = database.resourcesDAO()
 
         @Provides
-        fun resourcesDAO(database: ReporterDatabase) = database.resourcesDAO()
+        fun valuesDAO(database: ReporterDatabase): AbstractValuesDAO = database.valuesDAO()
     }
 }
 

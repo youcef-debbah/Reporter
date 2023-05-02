@@ -1,7 +1,7 @@
 package dz.nexatech.reporter.util.model
 
 import android.os.BaseBundle
-import dz.nexatech.reporter.common.Texts
+import dz.nexatech.reporter.client.common.Texts
 
 fun BaseBundle.toDataString(): String {
     return if (this.isEmpty) Texts.NOT_AVAILABLE else {

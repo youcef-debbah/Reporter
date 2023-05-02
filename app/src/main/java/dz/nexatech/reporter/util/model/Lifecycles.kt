@@ -7,8 +7,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import dz.nexatech.reporter.common.PublicAPI
-import dz.nexatech.reporter.common.mainLaunch
+import dz.nexatech.reporter.client.common.PublicAPI
+import dz.nexatech.reporter.client.common.mainLaunch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

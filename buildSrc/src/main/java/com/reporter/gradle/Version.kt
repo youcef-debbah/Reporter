@@ -8,13 +8,15 @@ object Version {
     const val TRUTH = "1.1.3"
 
     // https://developer.android.com/jetpack/androidx/releases/core
-    const val ANDROIDX_CORE = "1.9.0"
+    const val ANDROIDX_CORE = "1.10.0"
 
     // https://developer.android.com/jetpack/androidx/releases/preference
     const val PREFERENCE = "1.2.0"
 
     // https://github.com/google/guava/releases
-    const val GUAVA = "31.1-android"
+    const val GUAVA = "31.1"
+    const val GUAVA_JRE = "$GUAVA-jre"
+    const val GUAVA_ANDROID = "$GUAVA-android"
 
     // https://github.com/google/dagger/releases
     const val HILT = "2.45"
@@ -26,7 +28,7 @@ object Version {
     const val CORE_ARCH = "2.2.0"
 
     // https://developer.android.com/jetpack/androidx/releases/activity
-    const val ACTIVITY = "1.6.1"
+    const val ACTIVITY = "1.7.1"
 
     // https://developer.android.com/jetpack/androidx/releases/customview
     const val CUSTOMVIEW = "1.1.0"
@@ -47,43 +49,44 @@ object Version {
     }
 
     // https://github.com/Tencent/MMKV
-    const val MMKV = "1.2.15"
+    const val MMKV = "1.2.16"
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     /* the versions below should get regulare updates becuase they are still under heavy development */
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     // https://firebase.google.com/support/release-notes/android#latest_sdk_versions
-    const val FIREBASE_BOM = "31.4.0"
+    const val FIREBASE_BOM = "31.5.0"
 
     // https://github.com/material-components/material-components-android/releases
-    const val GOOGLE_MATERIAL = "1.9.0-beta01"
+    const val GOOGLE_MATERIAL = "1.9.0-rc01"
 
     // https://developer.android.com/jetpack/androidx/releases/paging
     const val PAGING = "3.2.0-alpha04"
     const val PAGING_COMPOSE = "1.0.0-alpha18"
 
     // https://developer.android.com/jetpack/androidx/releases/appcompat
-    const val APPCOMPAT = "1.6.1"
+    const val APPCOMPAT = "1.7.0-alpha02"
+    // const val APPCOMPAT = "1.6.1"
 
     // https://developer.android.com/jetpack/androidx/releases/lifecycle
     const val LIFECYCLE = "2.6.1"
     const val LIFECYCLE_COMPOSE = "2.6.1"
 
     // https://github.com/alorma/Compose-Settings
-    const val COMPOSE_SETTINGS = "0.25.0"
+    const val COMPOSE_SETTINGS = "0.26.0"
 
     // https://github.com/google/accompanist
-    const val COMPOSE_ACCOMPANIST = "0.30.0"
+    const val COMPOSE_ACCOMPANIST = "0.30.1"
 
     // https://developer.android.com/jetpack/androidx/releases/compose
     object Compose {
-        const val ANIMATION = "1.4.0"
-        const val COMPILER = "1.4.4"
-        const val FOUNDATION = "1.4.0"
-        const val MATERIAL = "1.4.0"
-        const val MATERIAL3 = "1.0.1"
-        const val RUNTIME = "1.4.0"
-        const val UI = "1.4.0"
+        const val ANIMATION = "1.4.2"
+        const val COMPILER = "1.4.6"
+        const val FOUNDATION = "1.4.2"
+        const val MATERIAL = "1.4.2"
+        const val MATERIAL3 = "1.1.0-rc01"
+        const val RUNTIME = "1.4.2"
+        const val UI = "1.4.2"
     }
 }
