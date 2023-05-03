@@ -9,24 +9,27 @@ plugins {
 }
 
 description = "a shared library that encapsulates pdf reports generation capabilities."
-group = "dz.nexatech.reporter"
+group = "dz.nexatech"
 version = "0.9.0-" + System.currentTimeMillis()
-
-val assembleBinaries by tasks.registering(Jar::class) {
-    from(sourceSets.main.get().output)
-}
 
 val assembleSources by tasks.registering(Jar::class) {
     from(sourceSets.main.get().allSource)
     archiveClassifier.set("sources")
 }
 
+val assembleBinaries by tasks.registering(Jar::class) {
+    from(sourceSets.main.get().output)
+}
+
 publishing {
+    val artifact = "reporter-core"
     publications {
         register<MavenPublication>("binaries") {
+            artifactId = artifact
             artifact(assembleBinaries.get())
         }
         register<MavenPublication>("sources") {
+            artifactId = artifact
             artifact(assembleSources.get())
         }
     }
