@@ -5,6 +5,31 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("java-library")
     kotlin("jvm")
+    `maven-publish`
+}
+
+description = "a shared library that encapsulates pdf reports generation capabilities."
+group = "dz.nexatech.reporter"
+version = "0.9.0-" + System.currentTimeMillis()
+
+val assembleBinaries by tasks.registering(Jar::class) {
+    from(sourceSets.main.get().output)
+}
+
+val assembleSources by tasks.registering(Jar::class) {
+    from(sourceSets.main.get().allSource)
+    archiveClassifier.set("sources")
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("binaries") {
+            artifact(assembleBinaries.get())
+        }
+        register<MavenPublication>("sources") {
+            artifact(assembleSources.get())
+        }
+    }
 }
 
 java {
