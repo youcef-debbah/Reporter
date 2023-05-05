@@ -45,9 +45,7 @@ class SimpleTemplate(
     override val desc_fr: String?,
     override val lastUpdate: Long,
     private val localizer: AbstractLocalizer,
-): AbstractTemplate(
-
-) {
+): AbstractTemplate() {
     override val label by lazy {
         localizer.inPrimaryLang(label_en, label_ar, label_fr)
     }

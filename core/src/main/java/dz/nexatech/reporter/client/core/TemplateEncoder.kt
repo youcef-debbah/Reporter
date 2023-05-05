@@ -16,11 +16,11 @@ object TemplateEncoder {
     private const val TEMPLATE_INFO_EXTENSION = ".${FilesExtension.PROPERTIES}"
 
     fun readZipInput(input: InputStream, localizer: AbstractLocalizer): Pair<List<AbstractTemplate>, List<AbstractBinaryResource>> {
-        ZipInputStream(input).use { zipStream ->
-            val templates = LinkedList<AbstractTemplate>()
-            val resources = LinkedList<AbstractBinaryResource>()
-            var entry: ZipEntry? = zipStream.nextEntry
+        val templates = LinkedList<AbstractTemplate>()
+        val resources = LinkedList<AbstractBinaryResource>()
 
+        ZipInputStream(input).use { zipStream ->
+            var entry: ZipEntry? = zipStream.nextEntry
             while (entry != null) {
                 val entryName = entry.name
                 if (entry.isDirectory.not()) {
@@ -76,9 +76,8 @@ object TemplateEncoder {
                 }
                 entry = zipStream.nextEntry
             }
-
-
-            return Pair(templates, resources)
         }
+
+        return Pair(templates, resources)
     }
 }

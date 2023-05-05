@@ -42,7 +42,8 @@
     <string name="settings">Settings</string>
 
     <string name="app_name">Reporter</string>
-    <string name="add_template_desc">Add new report template</string>
+    <string name="import_template_menu_item">Import Template</string>
+    <string name="download_template_menu_item">Download Template</string>
     <string name="templates_list_title">Available Templates</string>
     <string name="templates_list_label">Home</string>
     <string name="template_tab_preview_title">Preview: %s</string>

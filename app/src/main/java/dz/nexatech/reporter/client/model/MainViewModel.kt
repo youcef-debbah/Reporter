@@ -1,15 +1,19 @@
 package dz.nexatech.reporter.client.model
 
 import android.net.Uri
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dz.nexatech.reporter.client.R
-import dz.nexatech.reporter.client.common.filterByClass
 import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.common.readAsString
 import dz.nexatech.reporter.client.common.withIO
+import dz.nexatech.reporter.client.common.withMain
 import dz.nexatech.reporter.client.core.AbstractValuesDAO
 import dz.nexatech.reporter.client.core.TemplateEncoder
 import dz.nexatech.reporter.client.ui.TabsContext
@@ -22,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
+@Stable
 class MainViewModel @Inject constructor(
     val resourcesRepository: ResourcesRepository,
     private val templatesRepository: TemplatesRepository,
@@ -30,6 +35,9 @@ class MainViewModel @Inject constructor(
     private val context = AbstractApplication.INSTANCE
 
     private var currentTabsContext: TabsContext? = null
+
+    private val _templateImporting: MutableState<Int> = mutableStateOf(0)
+    val templateImporting: State<Int> = _templateImporting
 
     fun navigateToTemplateTabs(
         template: Template,
@@ -67,13 +75,14 @@ class MainViewModel @Inject constructor(
         withIO { templatesRepository.compileTemplateBlocking(templateName) }
 
     fun importTemplate(uri: Uri) {
+        _templateImporting.value++
         ioLaunch {
             try {
                 context.useInputStream(uri) {
                     val loaded = TemplateEncoder.readZipInput(it, Localizer)
-                    val templates = loaded.first.filterByClass(Template::class)
-                    val resources = loaded.second.filterByClass(Resource::class)
-                    if (templates.isNullOrEmpty()) {
+                    val templates = loaded.first.map(Template::from)
+                    val resources = loaded.second.map(Resource::from)
+                    if (templates.isEmpty()) {
                         Toasts.launchLong(R.string.no_templates_found, context)
                     } else {
                         templatesRepository.updateTemplates(templates, resources)
@@ -88,6 +97,10 @@ class MainViewModel @Inject constructor(
             } catch (e: Exception) {
                 Teller.warn("template importing failure", e)
                 Toasts.launchShort(R.string.templates_importing_failed, context)
+            } finally {
+                withMain {
+                    _templateImporting.value--
+                }
             }
         }
     }

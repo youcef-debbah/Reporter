@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class,
+@file:OptIn(
+    ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class,
     ExperimentalLayoutApi::class
 )
 
@@ -11,11 +12,12 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
@@ -25,20 +27,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import com.google.accompanist.navigation.animation.composable
 import dz.nexatech.reporter.client.R
-import dz.nexatech.reporter.client.model.REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
-import dz.nexatech.reporter.client.model.MainViewModel
-import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.client.common.MimeType
-import dz.nexatech.reporter.util.ui.RoundedCorner
+import dz.nexatech.reporter.client.model.MainViewModel
+import dz.nexatech.reporter.client.model.REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
+import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.REMOTE_TEMPLATES_DOWNLOADING_LINK
 import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
 import dz.nexatech.reporter.util.ui.ExternalLink
-import dz.nexatech.reporter.util.ui.InfoIcon
-import dz.nexatech.reporter.util.ui.SimpleAppBar
+import dz.nexatech.reporter.util.ui.RoundedCorner
 import dz.nexatech.reporter.util.ui.SimpleScaffold
+import dz.nexatech.reporter.util.ui.StandardAppBar
+import dz.nexatech.reporter.util.ui.StandardAppBarDropdownMenu
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
 import dz.nexatech.reporter.util.ui.ThemedText
 import dz.nexatech.reporter.util.ui.activeScreens
@@ -81,23 +83,40 @@ object TemplatesListScreen : StaticScreenDestination(
         }
         SimpleScaffold(
             topBar = {
-                SimpleAppBar(
-                    this@TemplatesListScreen.titleRes,
-                    this@TemplatesListScreen.icon
-                )
-            },
-            floatingActionButton = {
-                FloatingActionButton(onClick = {
-                    templateImportLauncher.launch(newOpenTemplateFileIntent())
-                }) {
-                    InfoIcon(
-                        icon = R.drawable.baseline_upload_file_24,
-                        desc = R.string.add_template_desc
-                    )
+                StandardAppBar(
+                    navController = navController,
+                    title = this@TemplatesListScreen.titleRes,
+                    navigationIcon = { DecorativeIcon(icon = this@TemplatesListScreen.icon) },
+                ) {
+                    StandardAppBarDropdownMenu(navController) { menuOpened ->
+                        DropdownMenuItem(
+                            enabled = viewModel.templateImporting.value == 0,
+                            leadingIcon = { DecorativeIcon(icon = R.drawable.baseline_upload_file_24) },
+                            text = { ThemedText(R.string.import_template_menu_item) },
+                            onClick = {
+                                menuOpened.value = false
+                                templateImportLauncher.launch(newOpenTemplateFileIntent())
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            leadingIcon = { DecorativeIcon(icon = R.drawable.baseline_open_in_browser_24) },
+                            text = { ThemedText(R.string.download_template_menu_item) },
+                            onClick = {
+                                menuOpened.value = false
+                                ExternalLink.openLink(
+                                    AppConfig.get(REMOTE_TEMPLATES_DOWNLOADING_LINK)
+                                )
+                            }
+                        )
+                    }
                 }
-            }
+            },
         ) {
             ContentCard(shape = RoundedCorner.Medium) {
+                if (viewModel.templateImporting.value > 0) {
+                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                }
                 AnimatedLazyLoading(REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED, templates) {
                     val items = templates?.values
                     if (items != null) {
@@ -117,9 +136,7 @@ object TemplatesListScreen : StaticScreenDestination(
                                 Button(modifier = Modifier.contentPadding(),
                                     onClick = {
                                         ExternalLink.openLink(
-                                            AppConfig.get(
-                                                REMOTE_TEMPLATES_DOWNLOADING_LINK
-                                            )
+                                            AppConfig.get(REMOTE_TEMPLATES_DOWNLOADING_LINK)
                                         )
                                     }) {
                                     DecorativeIcon(icon = R.drawable.baseline_open_in_browser_24)

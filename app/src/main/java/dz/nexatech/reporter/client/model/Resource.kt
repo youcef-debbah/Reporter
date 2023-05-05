@@ -32,6 +32,21 @@ class Resource(
     override val lastModified: Long,
 ) : AbstractBinaryResource() {
 
+    companion object {
+        fun from(source: AbstractBinaryResource): Resource {
+            if (source is Resource) {
+                return source
+            } else {
+                return Resource(
+                    source.path,
+                    source.mimeType,
+                    source.asByteArray(),
+                    source.lastModified,
+                )
+            }
+        }
+    }
+
     @delegate:Ignore
     override val headers: ImmutableMap<String, String> by lazy { headersBuilder().build() }
 
