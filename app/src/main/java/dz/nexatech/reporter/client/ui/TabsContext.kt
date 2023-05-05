@@ -10,7 +10,9 @@ import android.webkit.WebViewClient
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,11 +22,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -35,6 +41,10 @@ import androidx.navigation.createGraph
 import com.google.accompanist.navigation.animation.composable
 import com.google.common.collect.ImmutableList
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.client.common.AsyncConfig
+import dz.nexatech.reporter.client.common.backgroundLaunch
+import dz.nexatech.reporter.client.common.removeIf
+import dz.nexatech.reporter.client.common.withMain
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.RecordState
 import dz.nexatech.reporter.client.model.ResourcesRepository
@@ -43,14 +53,10 @@ import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.client.model.TemplateOutput
 import dz.nexatech.reporter.client.model.TemplateState
 import dz.nexatech.reporter.client.model.VariableState
+import dz.nexatech.reporter.client.model.asWebResourceResponse
 import dz.nexatech.reporter.client.model.evaluateState
-import dz.nexatech.reporter.client.common.AsyncConfig
-import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.util.model.loadContent
 import dz.nexatech.reporter.util.model.newDynamicWebView
-import dz.nexatech.reporter.client.common.removeIf
-import dz.nexatech.reporter.client.common.withMain
-import dz.nexatech.reporter.client.model.asWebResourceResponse
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
 import dz.nexatech.reporter.util.ui.ContentCard
@@ -65,6 +71,7 @@ import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.ThemedText
 import dz.nexatech.reporter.util.ui.activeScreens
 import dz.nexatech.reporter.util.ui.contentPadding
+import dz.nexatech.reporter.util.ui.stringRes
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -316,6 +323,7 @@ class TabsContext(val template: Template) {
                     }
 
                     val html by templateOutput.htmlContent
+                    var toolbarExpanded by rememberSaveable { mutableStateOf(true) }
 
                     SimpleScaffold(
                         topBar = {
@@ -323,51 +331,55 @@ class TabsContext(val template: Template) {
                                 SimpleAppBar(previewTab.title())
                                 DefaultNavigationBar(navController)
                             }
-                        },
-                        bottomBar = {
                         }) {
-                        ContentCard {
-                            PaddedColumn {
-                                ThemedText(previewTab.template.desc)
-                                PaddedRow {
-                                    Button(
-                                        enabled = templateOutput.pdfGenerating.value == 0,
-                                        onClick = {
-                                            pdfExportingLauncher.launch(templateOutput.newExportPdfIntent())
-                                        }) {
-                                        if (templateOutput.pdfGenerating.value == 0) {
-                                            DecorativeIcon(icon = R.drawable.baseline_picture_as_pdf_24)
-                                        } else {
-                                            CircularProgressIndicator(Modifier.size(24.dp))
+                        PaddedColumn {
+                            ContentCard(
+                                Modifier.clickable(
+                                    onClickLabel = stringRes(if (toolbarExpanded) R.string.collapse_template_preview_toolbar_desc else R.string.expand_template_preview_toolbar_desc),
+                                ) {
+                                    toolbarExpanded = toolbarExpanded.not()
+                                }
+                            ) {
+                                PaddedColumn {
+                                    AnimatedVisibility(toolbarExpanded) {
+                                        ThemedText(previewTab.template.desc)
+                                    }
+                                    PaddedRow {
+                                        Button(
+                                            enabled = templateOutput.pdfGenerating.value == 0,
+                                            onClick = {
+                                                pdfExportingLauncher.launch(templateOutput.newExportPdfIntent())
+                                            }) {
+                                            if (templateOutput.pdfGenerating.value == 0) {
+                                                DecorativeIcon(icon = R.drawable.baseline_picture_as_pdf_24)
+                                            } else {
+                                                CircularProgressIndicator(Modifier.size(24.dp))
+                                            }
+                                            ThemedText(R.string.export_pdf)
                                         }
-                                        ThemedText(R.string.export_pdf)
-                                    }
-                                    Button({
-                                        webView.setInitialScale(0)
-                                    }) {
-                                        InfoIcon(
-                                            icon = R.drawable.baseline_zoom_in_24,
-                                            desc = R.string.zoom_in_preview_desc
-                                        )
-                                    }
-                                    Button({
-                                        webView.setInitialScale(1)
-                                    }) {
-                                        InfoIcon(
-                                            icon = R.drawable.baseline_zoom_out_24,
-                                            desc = R.string.zoom_out_preview_desc
-                                        )
+                                        FilledIconButton({ webView.setInitialScale(0) }) {
+                                            InfoIcon(
+                                                icon = R.drawable.baseline_zoom_in_map_24,
+                                                desc = R.string.zoom_in_preview_desc
+                                            )
+                                        }
+                                        FilledIconButton({ webView.setInitialScale(1) }) {
+                                            InfoIcon(
+                                                icon = R.drawable.baseline_zoom_out_map_24,
+                                                desc = R.string.zoom_out_preview_desc
+                                            )
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        ContentCard(shape = RectangleShape) {
-                            AndroidView(
-                                factory = { webView },
-                                update = { view -> view.loadContent(html) },
-                                modifier = Modifier.fillMaxSize()
-                            )
+                            ContentCard(shape = RectangleShape) {
+                                AndroidView(
+                                    factory = { webView },
+                                    update = { view -> view.loadContent(html) },
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
                         }
                     }
                 }

@@ -25,7 +25,7 @@ fun ContentCard(
     content: @Composable ColumnScope.() -> Unit,
 ) = ElevatedCard(
     modifier
-        .padding(Theme.dimens.content_padding * 2)
+        .contentPadding()
         .fillMaxWidth(),
     shape,
     colors,

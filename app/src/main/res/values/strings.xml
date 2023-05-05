@@ -71,4 +71,6 @@
     <string name="import_template">Import</string>
     <string name="download_templates">Download</string>
     <string name="export_pdf">Export PDF</string>
+    <string name="expand_template_preview_toolbar_desc">Expand toolbar</string>
+    <string name="collapse_template_preview_toolbar_desc">Collapse toolbar</string>
 </resources>
