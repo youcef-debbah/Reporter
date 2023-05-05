@@ -8,7 +8,7 @@ class ReadWriteHashMap<K, V>(
     loadFactor: Float = 0.75f,
 ) {
     private val map = HashMap<K, V>(initialCapacity, loadFactor)
-    private val mutex = ReadWriteMutex()
+    private val mutex = readWriteMutex()
 
     suspend fun size(): Int = mutex.read.withLock { map.size }
 

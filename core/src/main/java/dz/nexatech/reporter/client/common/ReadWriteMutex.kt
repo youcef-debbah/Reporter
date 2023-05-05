@@ -32,7 +32,7 @@ interface ReadWriteMutex {
     fun ensureUnlocked()
 }
 
-fun ReadWriteMutex(): ReadWriteMutex {
+fun readWriteMutex(): ReadWriteMutex {
     val mutex = Mutex()
     val writePermissions = Channel<Unit>()
     val readPermissions = Channel<Unit>()
