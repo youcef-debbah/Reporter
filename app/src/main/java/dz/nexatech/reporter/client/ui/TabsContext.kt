@@ -14,6 +14,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
@@ -328,10 +330,17 @@ class TabsContext(val template: Template) {
                             PaddedColumn {
                                 ThemedText(previewTab.template.desc)
                                 PaddedRow {
-                                    Button({
-                                        pdfExportingLauncher.launch(templateOutput.newExportPdfIntent())
-                                    }) {
-                                        ThemedText("export PDF")
+                                    Button(
+                                        enabled = templateOutput.pdfGenerating.value == 0,
+                                        onClick = {
+                                            pdfExportingLauncher.launch(templateOutput.newExportPdfIntent())
+                                        }) {
+                                        if (templateOutput.pdfGenerating.value == 0) {
+                                            DecorativeIcon(icon = R.drawable.baseline_picture_as_pdf_24)
+                                        } else {
+                                            CircularProgressIndicator(Modifier.size(24.dp))
+                                        }
+                                        ThemedText(R.string.export_pdf)
                                     }
                                     Button({
                                         webView.setInitialScale(0)

@@ -5,13 +5,15 @@ import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import dz.nexatech.reporter.client.R
-import dz.nexatech.reporter.client.core.PdfConverter
-import dz.nexatech.reporter.client.ui.TabsContext
 import dz.nexatech.reporter.client.common.MimeType
 import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.client.common.ioLaunch
+import dz.nexatech.reporter.client.common.withMain
+import dz.nexatech.reporter.client.core.PdfConverter
+import dz.nexatech.reporter.client.ui.TabsContext
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.Teller
 import dz.nexatech.reporter.util.model.useOutputStream
@@ -39,7 +41,11 @@ class TemplateOutput(
 
     private val latestUri = mutableStateOf<Uri>(Uri.EMPTY)
 
+    private val _pdfGenerating: MutableState<Int> = mutableStateOf(0)
+    val pdfGenerating: State<Int> = _pdfGenerating
+
     fun exportTemplateAsPDF(uri: Uri) {
+        _pdfGenerating.value++
         ioLaunch {
             try {
                 context.useOutputStream(uri) { outputStream ->
@@ -53,8 +59,12 @@ class TemplateOutput(
             } catch (e: Exception) {
                 Teller.error("pdf exporting failed for path: ${uri.path}", e)
                 Toasts.launchShort(R.string.pdf_exporting_internal_failure)
+                latestUri.value = Uri.EMPTY
+            } finally {
+                withMain {
+                    _pdfGenerating.value--
+                }
             }
-            latestUri.value = Uri.EMPTY
         }
     }
 
