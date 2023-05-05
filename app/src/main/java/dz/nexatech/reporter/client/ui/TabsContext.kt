@@ -360,13 +360,13 @@ class TabsContext(val template: Template) {
                                         FilledIconButton({ webView.setInitialScale(0) }) {
                                             InfoIcon(
                                                 icon = R.drawable.baseline_zoom_out_map_24,
-                                                desc = R.string.zoom_out_preview_desc
+                                                desc = R.string.zoom_in_preview_desc
                                             )
                                         }
                                         FilledIconButton({ webView.setInitialScale(1) }) {
                                             InfoIcon(
                                                 icon = R.drawable.baseline_zoom_in_map_24,
-                                                desc = R.string.zoom_in_preview_desc
+                                                desc = R.string.zoom_out_preview_desc
                                             )
                                         }
                                     }
