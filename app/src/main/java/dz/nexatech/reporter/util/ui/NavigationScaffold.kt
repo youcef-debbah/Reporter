@@ -5,35 +5,27 @@
 
 package dz.nexatech.reporter.util.ui
 
-import android.content.Context
-import android.os.Bundle
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.Navigator
-import androidx.navigation.compose.ComposeNavigator
-import androidx.navigation.compose.DialogNavigator
-import com.google.accompanist.navigation.animation.AnimatedComposeNavigator
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import dz.nexatech.reporter.client.model.REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import dz.nexatech.reporter.client.common.indexDiff
+import dz.nexatech.reporter.client.model.REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.REMOTE_NAVIGATION_ANIMATION_DURATION
 
@@ -42,7 +34,7 @@ fun NavigationScaffold(
     startDestination: AbstractDestination,
     modifier: Modifier = Modifier,
     bottomSheetNavigator: BottomSheetNavigator = rememberBottomSheetNavigator(),
-    navController: NavHostController = rememberDynamicAnimatedNavController(bottomSheetNavigator),
+    navController: NavHostController = rememberAnimatedNavController(bottomSheetNavigator),
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = { DefaultNavigationBar(navController) },
     snackbarHost: @Composable () -> Unit = {},
@@ -53,7 +45,7 @@ fun NavigationScaffold(
     builder: NavGraphBuilder.(NavHostController) -> Unit,
 ) {
     ApplicationTheme {
-        StatelessNavigationBarScaffold(
+        StatelessNavigationScaffold(
             startDestination,
             bottomSheetNavigator,
             navController,
@@ -71,7 +63,7 @@ fun NavigationScaffold(
 }
 
 @Composable
-private fun StatelessNavigationBarScaffold(
+private fun StatelessNavigationScaffold(
     startDestination: AbstractDestination,
     bottomSheetNavigator: BottomSheetNavigator,
     navController: NavHostController,
@@ -183,20 +175,6 @@ private fun defaultOutTransition(pop: Boolean): ExitTransition {
     return fadeOut(animationSpec = tween(AppConfig.get(REMOTE_NAVIGATION_ANIMATION_DURATION)))
 }
 
-//private fun AnimatedContentScope<NavBackStackEntry>.defaultInTransition(pop: Boolean): EnterTransition {
-//    return slideIntoContainer(
-//        if (pop) AnimatedContentScope.SlideDirection.Down else AnimatedContentScope.SlideDirection.Up,
-//        animationSpec = tween(AppConfig.get(RemoteInt.NAVIGATION_ANIMATION_DURATION))
-//    )
-//}
-//
-//private fun AnimatedContentScope<NavBackStackEntry>.defaultOutTransition(pop: Boolean): ExitTransition {
-//    return slideOutOfContainer(
-//        if (pop) AnimatedContentScope.SlideDirection.Down else AnimatedContentScope.SlideDirection.Up,
-//        animationSpec = tween(AppConfig.get(RemoteInt.NAVIGATION_ANIMATION_DURATION))
-//    )
-//}
-
 private fun AnimatedContentScope<NavBackStackEntry>.inTransition(goingDeeper: Boolean): EnterTransition =
     slideIntoContainer(
         if (goingDeeper) AnimatedContentScope.SlideDirection.Start else AnimatedContentScope.SlideDirection.End,
@@ -245,38 +223,3 @@ fun NavDestination?.isLinkedTo(abstractDestination: AbstractDestination) =
     isLinkedTo(abstractDestination.route)
 
 fun NavDestination?.isLinkedTo(route: String) = this?.hierarchy?.any { it.route == route } == true
-
-@Composable
-fun rememberDynamicAnimatedNavController(
-    vararg navigators: Navigator<out NavDestination>
-): NavHostController {
-    val animatedNavigator = remember { AnimatedComposeNavigator() }
-    return rememberDynamicNavController(animatedNavigator, *navigators)
-}
-
-@Composable
-fun rememberDynamicNavController(
-    vararg navigators: Navigator<out NavDestination>
-): NavHostController {
-    val context = LocalContext.current
-    return rememberSaveable(inputs = navigators, saver = DynamicNavControllerSaver(context)) {
-        createDynamicNavController(context)
-    }.apply {
-        for (navigator in navigators) {
-            navigatorProvider.addNavigator(navigator)
-        }
-    }
-}
-
-private fun createDynamicNavController(context: Context) =
-    NavHostController(context).apply {
-        navigatorProvider.addNavigator(ComposeNavigator())
-        navigatorProvider.addNavigator(DialogNavigator())
-    }
-
-private fun DynamicNavControllerSaver(
-    context: Context
-): Saver<NavHostController, *> = Saver(
-    save = { it.saveState() },
-    restore = { createDynamicNavController(context).apply { restoreState(it) } }
-)
