@@ -5,21 +5,29 @@
 
 package dz.nexatech.reporter.util.ui
 
+import android.content.Context
+import android.os.Bundle
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.Navigator
+import androidx.navigation.compose.ComposeNavigator
+import androidx.navigation.compose.DialogNavigator
+import com.google.accompanist.navigation.animation.AnimatedComposeNavigator
 import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -30,11 +38,11 @@ import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.REMOTE_NAVIGATION_ANIMATION_DURATION
 
 @Composable
-fun NavigationBarScaffold(
+fun NavigationScaffold(
     startDestination: AbstractDestination,
     modifier: Modifier = Modifier,
     bottomSheetNavigator: BottomSheetNavigator = rememberBottomSheetNavigator(),
-    navController: NavHostController = rememberAnimatedNavController(bottomSheetNavigator),
+    navController: NavHostController = rememberDynamicAnimatedNavController(bottomSheetNavigator),
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = { DefaultNavigationBar(navController) },
     snackbarHost: @Composable () -> Unit = {},
@@ -237,3 +245,38 @@ fun NavDestination?.isLinkedTo(abstractDestination: AbstractDestination) =
     isLinkedTo(abstractDestination.route)
 
 fun NavDestination?.isLinkedTo(route: String) = this?.hierarchy?.any { it.route == route } == true
+
+@Composable
+fun rememberDynamicAnimatedNavController(
+    vararg navigators: Navigator<out NavDestination>
+): NavHostController {
+    val animatedNavigator = remember { AnimatedComposeNavigator() }
+    return rememberDynamicNavController(animatedNavigator, *navigators)
+}
+
+@Composable
+fun rememberDynamicNavController(
+    vararg navigators: Navigator<out NavDestination>
+): NavHostController {
+    val context = LocalContext.current
+    return rememberSaveable(inputs = navigators, saver = DynamicNavControllerSaver(context)) {
+        createDynamicNavController(context)
+    }.apply {
+        for (navigator in navigators) {
+            navigatorProvider.addNavigator(navigator)
+        }
+    }
+}
+
+private fun createDynamicNavController(context: Context) =
+    NavHostController(context).apply {
+        navigatorProvider.addNavigator(ComposeNavigator())
+        navigatorProvider.addNavigator(DialogNavigator())
+    }
+
+private fun DynamicNavControllerSaver(
+    context: Context
+): Saver<NavHostController, *> = Saver(
+    save = { it.saveState() },
+    restore = { createDynamicNavController(context).apply { restoreState(it) } }
+)

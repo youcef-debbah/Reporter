@@ -12,7 +12,7 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.ui.TemplatesListScreen.addTemplatesListScreen
 import dz.nexatech.reporter.util.ui.AbstractActivity
-import dz.nexatech.reporter.util.ui.NavigationBarScaffold
+import dz.nexatech.reporter.util.ui.NavigationScaffold
 import dz.nexatech.reporter.util.ui.addStandardAppBarScreens
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,7 +23,7 @@ class MainActivity : AbstractActivity() {
         super.onCreate(state)
         setContent {
             val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-            NavigationBarScaffold(TemplatesListScreen) { navController ->
+            NavigationScaffold(TemplatesListScreen) { navController ->
                 addStandardAppBarScreens(navController)
                 addTemplatesListScreen(navController, viewModel)
             }
