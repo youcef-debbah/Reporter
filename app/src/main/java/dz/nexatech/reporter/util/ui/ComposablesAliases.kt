@@ -4,12 +4,6 @@ package dz.nexatech.reporter.util.ui
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.paging.compose.items
-import kotlinx.coroutines.flow.Flow
 
 /**
  * Contains functions to access the current theme values provided at the call site's position in
@@ -204,29 +198,29 @@ object Theme {
 //        )
 //}
 
-/**
- * Adds the [LazyPagingItems] and their content to the scope. The range from 0 (inclusive) to
- * [LazyPagingItems.itemCount] (exclusive) always represents the full range of presentable items,
- * because every event from [PagingDataDiffer] will trigger a recomposition.
- *
- * @sample androidx.paging.compose.samples.ItemsDemo
- *
- * This is only an alias to [androidx.paging.compose.LazyPagingItemsKt.items] with a distinguishable
- * name that allows for a better auto-import support by the IDE
- *
- * @param items the items received from a [Flow] of [PagingData].
- * @param key a factory of stable and unique keys representing the item. Using the same key
- * for multiple items in the list is not allowed. Type of the key should be saveable
- * via Bundle on Android. If null is passed the position in the list will represent the key.
- * When you specify the key the scroll position will be maintained based on the key, which
- * means if you add/remove items before the current visible item the item with the given key
- * will be kept as the first visible one.
- * @param itemContent the content displayed by a single item. In case the item is `null`, the
- * [itemContent] method should handle the logic of displaying a placeholder instead of the main
- * content displayed by an item which is not `null`.
- */
-fun <T : kotlin.Any> androidx.compose.foundation.lazy.LazyListScope.pagingItems(
-    items: androidx.paging.compose.LazyPagingItems<T>,
-    key: ((T) -> kotlin.Any)?,
-    itemContent: @androidx.compose.runtime.Composable() (androidx.compose.foundation.lazy.LazyItemScope.(T?) -> kotlin.Unit)
-) = items(items, key, itemContent)
+///**
+// * Adds the [LazyPagingItems] and their content to the scope. The range from 0 (inclusive) to
+// * [LazyPagingItems.itemCount] (exclusive) always represents the full range of presentable items,
+// * because every event from [PagingDataDiffer] will trigger a recomposition.
+// *
+// * @sample androidx.paging.compose.samples.ItemsDemo
+// *
+// * This is only an alias to [androidx.paging.compose.LazyPagingItemsKt.items] with a distinguishable
+// * name that allows for a better auto-import support by the IDE
+// *
+// * @param items the items received from a [Flow] of [PagingData].
+// * @param key a factory of stable and unique keys representing the item. Using the same key
+// * for multiple items in the list is not allowed. Type of the key should be saveable
+// * via Bundle on Android. If null is passed the position in the list will represent the key.
+// * When you specify the key the scroll position will be maintained based on the key, which
+// * means if you add/remove items before the current visible item the item with the given key
+// * will be kept as the first visible one.
+// * @param itemContent the content displayed by a single item. In case the item is `null`, the
+// * [itemContent] method should handle the logic of displaying a placeholder instead of the main
+// * content displayed by an item which is not `null`.
+// */
+//fun <T : kotlin.Any> androidx.compose.foundation.lazy.LazyListScope.pagingItems(
+//    items: androidx.paging.compose.LazyPagingItems<T>,
+//    key: ((T) -> kotlin.Any)?,
+//    itemContent: @androidx.compose.runtime.Composable() (androidx.compose.foundation.lazy.LazyItemScope.(T?) -> kotlin.Unit)
+//) = items(items, key, itemContent)
