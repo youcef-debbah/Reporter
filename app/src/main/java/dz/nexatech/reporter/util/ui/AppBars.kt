@@ -20,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import com.google.common.collect.ImmutableList
 import dz.nexatech.reporter.client.R
 
 @Composable
@@ -113,9 +114,4 @@ fun StandardAppBarDropdownMenu(
             },
         )
     }
-}
-
-fun NavGraphBuilder.addStandardAppBarScreens(navController: NavController) {
-    val destinations = AbstractApplication.INSTANCE.config.standardDestinations
-    destinations.addSettingsScreen(this, navController)
 }

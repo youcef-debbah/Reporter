@@ -15,7 +15,6 @@ import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.PaddedColumn
 import dz.nexatech.reporter.util.ui.ThemedText
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
-import dz.nexatech.reporter.util.ui.activeScreens
 
 object ReporterSettingsScreen : StaticScreenDestination(
     route = "settings",
@@ -26,10 +25,10 @@ object ReporterSettingsScreen : StaticScreenDestination(
         navigate(this@ReporterSettingsScreen.route, navOptions)
     }
 
-    fun NavGraphBuilder.addSettingsScreen(navController: NavController) {
+    fun NavGraphBuilder.addSettingsScreen(navController: NavController): ReporterSettingsScreen {
         val thisRoute = this@ReporterSettingsScreen.route
-        activeScreens[thisRoute] = this@ReporterSettingsScreen
         composable(thisRoute) { ReporterSettingsView(navController) }
+        return this@ReporterSettingsScreen
     }
 
     @Composable

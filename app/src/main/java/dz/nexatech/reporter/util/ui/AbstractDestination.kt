@@ -6,8 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * a destination can be a screen or a graph of screens
@@ -80,13 +78,6 @@ open class StaticScreenDestination(
 
     override val destinations: List<AbstractDestination>
         get() = emptyList()
-}
-
-val activeScreens = ConcurrentHashMap<String, AbstractDestination>(8)
-
-fun NavHostController.currentScreen(): AbstractDestination? {
-    val currentRoute = currentDestination?.route
-    return if (currentRoute == null) null else activeScreens[currentRoute]
 }
 
 fun AbstractDestination?.destinationsOrEmpty(): List<AbstractDestination> =

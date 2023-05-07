@@ -31,12 +31,18 @@ import dz.nexatech.reporter.util.model.REMOTE_NAVIGATION_ANIMATION_DURATION
 
 @Composable
 fun NavigationScaffold(
+    destinationsRegistry: DestinationsRegistry,
     startDestination: AbstractDestination,
     modifier: Modifier = Modifier,
     bottomSheetNavigator: BottomSheetNavigator = rememberBottomSheetNavigator(),
     navController: NavHostController = rememberAnimatedNavController(bottomSheetNavigator),
     topBar: @Composable () -> Unit = {},
-    bottomBar: @Composable () -> Unit = { DefaultNavigationBar(navController) },
+    bottomBar: @Composable () -> Unit = {
+        DefaultNavigationBar(
+            navController,
+            destinationsRegistry
+        )
+    },
     snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
@@ -46,6 +52,7 @@ fun NavigationScaffold(
 ) {
     ApplicationTheme {
         StatelessNavigationScaffold(
+            destinationsRegistry,
             startDestination,
             bottomSheetNavigator,
             navController,
@@ -64,12 +71,18 @@ fun NavigationScaffold(
 
 @Composable
 private fun StatelessNavigationScaffold(
+    destinationsRegistry: DestinationsRegistry,
     startDestination: AbstractDestination,
     bottomSheetNavigator: BottomSheetNavigator,
     navController: NavHostController,
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
-    bottomBar: @Composable () -> Unit = { DefaultNavigationBar(navController) },
+    bottomBar: @Composable () -> Unit = {
+        DefaultNavigationBar(
+            navController,
+            destinationsRegistry
+        )
+    },
     snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
@@ -88,7 +101,8 @@ private fun StatelessNavigationScaffold(
             containerColor = containerColor,
             contentColor = contentColor,
             content = { innerPadding ->
-                val destinations = navController.currentScreen().destinationsOrEmpty()
+                val destinations =
+                    destinationsRegistry.currentDestination(navController).destinationsOrEmpty()
                 AnimatedNavHost(
                     navController = navController,
                     startDestination = startDestination.route,
@@ -188,8 +202,11 @@ private fun AnimatedContentScope<NavBackStackEntry>.outTransition(goingDeeper: B
     )
 
 @Composable
-fun DefaultNavigationBar(navController: NavHostController) {
-    val currentScreen = navController.currentScreen()
+fun DefaultNavigationBar(
+    navController: NavHostController,
+    destinationsRegistry: DestinationsRegistry
+) {
+    val currentScreen = destinationsRegistry.currentDestination(navController)
     val destinations = currentScreen.destinationsOrEmpty()
     AnimatedVisibility(destinations.isNotEmpty()) {
         NavigationBar {

@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
 import com.google.accompanist.navigation.animation.composable
@@ -46,8 +47,10 @@ import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.client.common.removeIf
 import dz.nexatech.reporter.client.common.withMain
 import dz.nexatech.reporter.client.model.MainViewModel
+import dz.nexatech.reporter.client.model.Record
 import dz.nexatech.reporter.client.model.RecordState
 import dz.nexatech.reporter.client.model.ResourcesRepository
+import dz.nexatech.reporter.client.model.Section
 import dz.nexatech.reporter.client.model.SectionState
 import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.client.model.TemplateOutput
@@ -62,6 +65,7 @@ import dz.nexatech.reporter.util.ui.AbstractDestination
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
 import dz.nexatech.reporter.util.ui.DefaultNavigationBar
+import dz.nexatech.reporter.util.ui.DestinationsRegistry
 import dz.nexatech.reporter.util.ui.ErrorTheme
 import dz.nexatech.reporter.util.ui.InfoIcon
 import dz.nexatech.reporter.util.ui.PaddedColumn
@@ -69,7 +73,6 @@ import dz.nexatech.reporter.util.ui.PaddedRow
 import dz.nexatech.reporter.util.ui.SimpleAppBar
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.ThemedText
-import dz.nexatech.reporter.util.ui.activeScreens
 import dz.nexatech.reporter.util.ui.contentPadding
 import dz.nexatech.reporter.util.ui.stringRes
 import io.pebbletemplates.pebble.template.PebbleTemplate
@@ -112,12 +115,12 @@ class TabsContext(val template: Template) {
 
     fun navigablePreviewTabRoute(): String? = if (cleared.get()) null else previewTabRoute
 
-    fun clear(navController: NavHostController) {
+    fun clear(destinationsRegistry: DestinationsRegistry, navController: NavHostController) {
         if (!cleared.getAndSet(true)) {
             // remove old screens
             navController.graph.iterator()
-                .removeIf(postRemove = { activeScreens.remove(it.route) }) {
-                    it.route?.startsWith(TemplateTab.GLOBAL_ROUTE_PREFIX) ?: false
+                .removeIf(postRemove = { destinationsRegistry.remove(it.route) }) {
+                    it.route?.startsWith(TemplateTab.TEMPLATE_ROUTE_PREFIX) ?: false
                 }
             tabsScope.cancel()
         }
@@ -132,9 +135,9 @@ class TabsContext(val template: Template) {
             if (meta.hasErrors()) {
                 withMain {
                     buildAndNavigateToErrorTab(
-                        template,
-                        meta.errorCode,
+                        viewModel.activeDestinations,
                         navController,
+                        meta.errorCode,
                     )
                 }
             } else {
@@ -145,6 +148,7 @@ class TabsContext(val template: Template) {
                 val initialContent = compiledTemplate.evaluateState(templateState)
                 withMain {
                     buildAndNavigateToTemplatePreviewTab(
+                        viewModel.activeDestinations,
                         viewModel.resourcesRepository,
                         template,
                         templateState,
@@ -155,76 +159,60 @@ class TabsContext(val template: Template) {
                 }
             }
         }
-        buildAndNavigateToLoadingTab(navController)
+        buildAndNavigateToLoadingTab(viewModel.activeDestinations, navController)
     }
 
     private fun buildAndNavigateToLoadingTab(
+        destinationsRegistry: DestinationsRegistry,
         navController: NavHostController
     ) {
         val newGraph =
             navController.createGraph(
                 loadingTab.route,
-                TemplateTab.GLOBAL_ROUTE_PREFIX + "_loading"
-            ) {
-                activeScreens[loadingTab.route] = loadingTab
-                composable(loadingTab.route) {
-                    DisposableEffect(template) {
-                        onDispose {
-                            loadingScope.cancel()
-                        }
-                    }
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        CircularProgressIndicator(Modifier.contentPadding())
-                        ThemedText(R.string.template_tab_loading_desc)
-                    }
-                }
-            }
-
+                TemplateTab.TEMPLATE_ROUTE_PREFIX + "_loading"
+            ) { buildLoadingTab(this, destinationsRegistry, navController) }
         navController.graph.addAll(newGraph)
+
         navController.navigate(loadingTab.route)
     }
 
+    private fun buildLoadingTab(
+        navGraphBuilder: NavGraphBuilder,
+        destinationsRegistry: DestinationsRegistry,
+        navController: NavHostController
+    ) {
+        destinationsRegistry.register(navGraphBuilder, navController) {
+            composable(loadingTab.route) {
+                DisposableEffect(template) {
+                    onDispose {
+                        loadingScope.cancel()
+                    }
+                }
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CircularProgressIndicator(Modifier.contentPadding())
+                    ThemedText(R.string.template_tab_loading_desc)
+                }
+            }
+
+            loadingTab
+        }
+    }
+
     private fun buildAndNavigateToErrorTab(
-        template: Template,
-        errorCode: Int,
+        destinationsRegistry: DestinationsRegistry,
         navController: NavHostController,
+        errorCode: Int,
     ) {
         val newGraph =
             navController.createGraph(
                 errorTab.route,
-                TemplateTab.GLOBAL_ROUTE_PREFIX + "_error"
+                TemplateTab.TEMPLATE_ROUTE_PREFIX + "_error"
             ) {
-                activeScreens[errorTab.route] = errorTab
-                composable(errorTab.route) {
-                    ErrorTheme {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Card {
-                                Column(
-                                    modifier = Modifier.contentPadding(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                    DecorativeIcon(icon = R.drawable.baseline_error_24)
-                                    ThemedText(
-                                        resources.getString(
-                                            R.string.template_tab_error_desc,
-                                            template.label
-                                        )
-                                    )
-                                    ThemedText(resources.getString(R.string.error_code, errorCode))
-                                }
-                            }
-                        }
-                    }
-                }
+                buildErrorTab(destinationsRegistry, this, navController, errorCode)
             }
 
         navController.graph.addAll(newGraph)
@@ -235,7 +223,45 @@ class TabsContext(val template: Template) {
         }
     }
 
+    private fun buildErrorTab(
+        destinationsRegistry: DestinationsRegistry,
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
+        errorCode: Int,
+    ) {
+        destinationsRegistry.register(navGraphBuilder, navController) {
+            composable(errorTab.route) {
+                ErrorTheme {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Card {
+                            Column(
+                                modifier = Modifier.contentPadding(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                DecorativeIcon(icon = R.drawable.baseline_error_24)
+                                ThemedText(
+                                    resources.getString(
+                                        R.string.template_tab_error_desc,
+                                        template.label
+                                    )
+                                )
+                                ThemedText(resources.getString(R.string.error_code, errorCode))
+                            }
+                        }
+                    }
+                }
+            }
+            errorTab
+        }
+    }
+
     private fun buildAndNavigateToTemplatePreviewTab(
+        destinationsRegistry: DestinationsRegistry,
         resourcesRepository: ResourcesRepository,
         template: Template,
         templateState: TemplateState,
@@ -310,111 +336,43 @@ class TabsContext(val template: Template) {
         val newGraph =
             navController.createGraph(
                 previewTab.route,
-                TemplateTab.GLOBAL_ROUTE_PREFIX + "_loaded"
+                TemplateTab.TEMPLATE_ROUTE_PREFIX + "_loaded"
             ) {
-                activeScreens[previewTab.route] = previewTab
-                composable(previewTab.route) {
-                    val pdfExportingLauncher = rememberLauncherForActivityResult(
-                        ActivityResultContracts.StartActivityForResult()
-                    ) { result ->
-                        result.data?.data?.let { uri ->
-                            templateOutput.exportTemplateAsPDF(uri)
-                        }
-                    }
-
-                    val html by templateOutput.htmlContent
-                    var toolbarExpanded by rememberSaveable { mutableStateOf(true) }
-
-                    SimpleScaffold(
-                        topBar = {
-                            Column {
-                                SimpleAppBar(previewTab.title())
-                                DefaultNavigationBar(navController)
-                            }
-                        }) {
-                        PaddedColumn {
-                            ContentCard(
-                                Modifier.clickable(
-                                    onClickLabel = stringRes(if (toolbarExpanded) R.string.collapse_template_preview_toolbar_desc else R.string.expand_template_preview_toolbar_desc),
-                                ) {
-                                    toolbarExpanded = toolbarExpanded.not()
-                                }
-                            ) {
-                                PaddedColumn {
-                                    AnimatedVisibility(toolbarExpanded) {
-                                        ThemedText(previewTab.template.desc)
-                                    }
-                                    PaddedRow {
-                                        Button(
-                                            enabled = templateOutput.pdfGenerating.value == 0,
-                                            onClick = {
-                                                pdfExportingLauncher.launch(templateOutput.newExportPdfIntent())
-                                            }) {
-                                            if (templateOutput.pdfGenerating.value == 0) {
-                                                DecorativeIcon(icon = R.drawable.baseline_picture_as_pdf_24)
-                                            } else {
-                                                CircularProgressIndicator(Modifier.size(24.dp))
-                                            }
-                                            ThemedText(R.string.export_pdf)
-                                        }
-                                        FilledIconButton({ webView.setInitialScale(0) }) {
-                                            InfoIcon(
-                                                icon = R.drawable.baseline_zoom_out_map_24,
-                                                desc = R.string.zoom_in_preview_desc
-                                            )
-                                        }
-                                        FilledIconButton({ webView.setInitialScale(1) }) {
-                                            InfoIcon(
-                                                icon = R.drawable.baseline_zoom_in_map_24,
-                                                desc = R.string.zoom_out_preview_desc
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            ContentCard(shape = RectangleShape) {
-                                AndroidView(
-                                    factory = { webView },
-                                    update = { view -> view.loadContent(html) },
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                        }
-                    }
-                }
+                buildPreviewTab(
+                    this,
+                    navController,
+                    destinationsRegistry,
+                    previewTab,
+                    templateOutput,
+                    webView,
+                )
 
                 for (pair in sectionTabs) {
                     val tab = pair.first
                     val sectionState = pair.second
                     val section = sectionState.section
-                    activeScreens[tab.route] = tab
-                    composable(tab.route) {
-                        TabScaffold(tab = tab, navController = navController) {
-                            ThemedText("Section label: " + section.label)
-                            ThemedText("Section desc: " + section.desc)
-                            for (variable in sectionState.variables.values) {
-                                VariableInput(variable)
-                            }
-                        }
-                    }
+                    buildSectionTab(
+                        this,
+                        navController,
+                        destinationsRegistry,
+                        tab,
+                        section,
+                        sectionState
+                    )
                 }
 
                 for (pair in recordsTabs) {
                     val tab = pair.first
                     val recordState = pair.second
                     val record = recordState.record
-                    activeScreens[tab.route] = tab
-                    composable(tab.route) {
-                        TabScaffold(tab = tab, navController = navController) {
-                            ThemedText("Record name:" + record.name)
-                            ThemedText("Record label: " + record.label)
-                            ThemedText("Record desc: " + record.desc)
-                            for (variable in recordState.variables.values) {
-                                VariableInput(variable)
-                            }
-                        }
-                    }
+                    buildRecordTab(
+                        this,
+                        navController,
+                        destinationsRegistry,
+                        tab,
+                        record,
+                        recordState
+                    )
                 }
             }
 
@@ -424,6 +382,134 @@ class TabsContext(val template: Template) {
             popUpTo(loadingTab.route) {
                 inclusive = true
             }
+        }
+    }
+
+    private fun buildRecordTab(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
+        destinationsRegistry: DestinationsRegistry,
+        tab: TemplateTab,
+        record: Record,
+        recordState: RecordState
+    ) {
+        destinationsRegistry.register(navGraphBuilder, navController) { controller ->
+            composable(tab.route) {
+                TabScaffold(destinationsRegistry, controller, tab) {
+                    ThemedText("Record name:" + record.name)
+                    ThemedText("Record label: " + record.label)
+                    ThemedText("Record desc: " + record.desc)
+                    for (variable in recordState.variables.values) {
+                        VariableInput(variable)
+                    }
+                }
+            }
+            tab
+        }
+    }
+
+    private fun buildSectionTab(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
+        destinationsRegistry: DestinationsRegistry,
+        tab: TemplateTab,
+        section: Section,
+        sectionState: SectionState
+    ) {
+        destinationsRegistry.register(navGraphBuilder, navController) {controller ->
+            composable(tab.route) {
+                TabScaffold(destinationsRegistry, controller, tab) {
+                    ThemedText("Section label: " + section.label)
+                    ThemedText("Section desc: " + section.desc)
+                    for (variable in sectionState.variables.values) {
+                        VariableInput(variable)
+                    }
+                }
+            }
+            tab
+        }
+    }
+
+    private fun buildPreviewTab(
+        navGraphBuilder: NavGraphBuilder,
+        navController: NavHostController,
+        destinationsRegistry: DestinationsRegistry,
+        previewTab: TemplateTab,
+        templateOutput: TemplateOutput,
+        webView: WebView
+    ) {
+        destinationsRegistry.register(navGraphBuilder, navController) {controller ->
+            composable(previewTab.route) {
+                val pdfExportingLauncher = rememberLauncherForActivityResult(
+                    ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    result.data?.data?.let { uri ->
+                        templateOutput.exportTemplateAsPDF(uri)
+                    }
+                }
+
+                val html by templateOutput.htmlContent
+                var toolbarExpanded by rememberSaveable { mutableStateOf(true) }
+
+                SimpleScaffold(
+                    topBar = {
+                        Column {
+                            SimpleAppBar(previewTab.title())
+                            DefaultNavigationBar(controller, destinationsRegistry)
+                        }
+                    }) {
+                    PaddedColumn {
+                        ContentCard(
+                            Modifier.clickable(
+                                onClickLabel = stringRes(if (toolbarExpanded) R.string.collapse_template_preview_toolbar_desc else R.string.expand_template_preview_toolbar_desc),
+                            ) {
+                                toolbarExpanded = toolbarExpanded.not()
+                            }
+                        ) {
+                            PaddedColumn {
+                                AnimatedVisibility(toolbarExpanded) {
+                                    ThemedText(previewTab.template.desc)
+                                }
+                                PaddedRow {
+                                    Button(
+                                        enabled = templateOutput.pdfGenerating.value == 0,
+                                        onClick = {
+                                            pdfExportingLauncher.launch(templateOutput.newExportPdfIntent())
+                                        }) {
+                                        if (templateOutput.pdfGenerating.value == 0) {
+                                            DecorativeIcon(icon = R.drawable.baseline_picture_as_pdf_24)
+                                        } else {
+                                            CircularProgressIndicator(Modifier.size(24.dp))
+                                        }
+                                        ThemedText(R.string.export_pdf)
+                                    }
+                                    FilledIconButton({ webView.setInitialScale(0) }) {
+                                        InfoIcon(
+                                            icon = R.drawable.baseline_zoom_out_map_24,
+                                            desc = R.string.zoom_in_preview_desc
+                                        )
+                                    }
+                                    FilledIconButton({ webView.setInitialScale(1) }) {
+                                        InfoIcon(
+                                            icon = R.drawable.baseline_zoom_in_map_24,
+                                            desc = R.string.zoom_out_preview_desc
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        ContentCard(shape = RectangleShape) {
+                            AndroidView(
+                                factory = { webView },
+                                update = { view -> view.loadContent(html) },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
+                }
+            }
+            previewTab
         }
     }
 }
@@ -437,7 +523,7 @@ private class TemplateTab(
     tabName: String,
     tabsBuilder: ImmutableList.Builder<AbstractDestination> = ImmutableList.builder(),
 ) : AbstractDestination(
-    GLOBAL_ROUTE_PREFIX + template.name + '_' + tabName,
+    TEMPLATE_ROUTE_PREFIX + template.name + '_' + tabName,
     tabIcon,
 ) {
 
@@ -452,21 +538,22 @@ private class TemplateTab(
     }
 
     companion object {
-        const val GLOBAL_ROUTE_PREFIX = "template_"
+        const val TEMPLATE_ROUTE_PREFIX = "template_"
     }
 }
 
 @Composable
 private fun TabScaffold(
-    tab: TemplateTab,
+    destinationsRegistry: DestinationsRegistry,
     navController: NavHostController,
+    tab: TemplateTab,
     block: @Composable () -> Unit
 ) {
     SimpleScaffold(
         topBar = {
             Column {
                 SimpleAppBar(tab.title())
-                DefaultNavigationBar(navController)
+                DefaultNavigationBar(navController, destinationsRegistry)
             }
         },
         bottomBar = {

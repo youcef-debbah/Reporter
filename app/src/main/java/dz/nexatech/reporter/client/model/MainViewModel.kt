@@ -21,6 +21,7 @@ import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.model.Teller
 import dz.nexatech.reporter.util.model.useInputStream
 import dz.nexatech.reporter.util.ui.AbstractApplication
+import dz.nexatech.reporter.util.ui.DestinationsRegistry
 import dz.nexatech.reporter.util.ui.Toasts
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -39,6 +40,9 @@ class MainViewModel @Inject constructor(
     private val _templateImporting: MutableState<Int> = mutableStateOf(0)
     val templateImporting: State<Int> = _templateImporting
 
+    // not stable but never called from composable fun
+    val activeDestinations: DestinationsRegistry = DestinationsRegistry()
+
     fun navigateToTemplateTabs(
         template: Template,
         navController: NavHostController,
@@ -52,7 +56,7 @@ class MainViewModel @Inject constructor(
             }
         }
 
-        oldContext?.clear(navController)
+        oldContext?.clear(activeDestinations, navController)
         val newContext = TabsContext(template)
         currentTabsContext = newContext
         newContext.loadTemplateAndNavigateToPreviewTab(this, navController)

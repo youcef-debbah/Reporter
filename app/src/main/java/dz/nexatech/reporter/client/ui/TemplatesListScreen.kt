@@ -43,7 +43,6 @@ import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.StandardAppBarDropdownMenu
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
 import dz.nexatech.reporter.util.ui.ThemedText
-import dz.nexatech.reporter.util.ui.activeScreens
 import dz.nexatech.reporter.util.ui.collectWithLifecycleAsState
 import dz.nexatech.reporter.util.ui.contentPadding
 
@@ -61,10 +60,10 @@ object TemplatesListScreen : StaticScreenDestination(
     fun NavGraphBuilder.addTemplatesListScreen(
         navController: NavHostController,
         viewModel: MainViewModel,
-    ) {
+    ): TemplatesListScreen {
         val thisRoute = this@TemplatesListScreen.route
-        activeScreens[thisRoute] = this@TemplatesListScreen
         composable(thisRoute) { TemplatesListView(navController, viewModel) }
+        return this@TemplatesListScreen
     }
 
     @Composable

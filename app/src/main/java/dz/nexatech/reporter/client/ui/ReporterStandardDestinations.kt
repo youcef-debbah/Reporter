@@ -10,6 +10,6 @@ object ReporterStandardDestinations : StandardDestinations {
 
     override val settingsScreen: AbstractDestination get() = ReporterSettingsScreen
 
-    override fun addSettingsScreen(builder: NavGraphBuilder, navController: NavController) =
+    override fun addSettingsScreen(builder: NavGraphBuilder, navController: NavController): ReporterSettingsScreen =
         builder.addSettingsScreen(navController)
 }
