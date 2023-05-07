@@ -59,11 +59,11 @@ object Version {
     const val FIREBASE_BOM = "31.5.0"
 
     // https://github.com/material-components/material-components-android/releases
-    const val GOOGLE_MATERIAL = "1.9.0-rc01"
+    const val GOOGLE_MATERIAL = "1.9.0"
 
     // https://developer.android.com/jetpack/androidx/releases/paging
-    const val PAGING = "3.2.0-alpha04"
-    const val PAGING_COMPOSE = "1.0.0-alpha18"
+    const val PAGING = "3.2.0-alpha05"
+    const val PAGING_COMPOSE = "1.0.0-alpha19"
 
     // https://developer.android.com/jetpack/androidx/releases/appcompat
     const val APPCOMPAT = "1.7.0-alpha02"
