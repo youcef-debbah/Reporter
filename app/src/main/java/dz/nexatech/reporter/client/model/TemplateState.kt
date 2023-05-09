@@ -211,6 +211,7 @@ class TemplateState private constructor(
     }
 }
 
+@Stable
 class VariableState(
     val variable: Variable,
     val state: MutableState<String>,
@@ -221,6 +222,7 @@ class VariableState(
     }
 }
 
+@Stable
 class RecordState(
     val record: Record,
     val variables: ImmutableMap<String, VariableState>,
@@ -230,6 +232,7 @@ class RecordState(
     }
 }
 
+@Stable
 class SectionState(
     val section: Section,
     val variables: ImmutableMap<String, VariableState>,
