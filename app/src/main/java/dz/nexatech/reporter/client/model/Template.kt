@@ -60,11 +60,11 @@ class Template(
 
     @delegate:Ignore
     override val label by lazy {
-        Localizer.inPrimaryLang(label_en, label_ar, label_fr)
+        Localizer.inPrimaryLang(label_en, label_fr, label_ar)
     }
 
     @delegate:Ignore
     override val desc by lazy {
-        Localizer.inPrimaryLang(desc_en, desc_ar, desc_fr)
+        Localizer.inPrimaryLang(desc_en, desc_fr, desc_ar)
     }
 }

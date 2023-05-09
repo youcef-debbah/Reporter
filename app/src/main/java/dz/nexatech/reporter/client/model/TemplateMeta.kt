@@ -106,8 +106,12 @@ class TemplateMeta private constructor(
                                 variableJsonObject.optString("icon"),
                                 variableJsonObject.optInt("min"),
                                 variableJsonObject.getInt("max"),
-                                variableJsonObject.optString("prefix"),
-                                variableJsonObject.optString("suffix"),
+                                variableJsonObject.optString("prefix_ar"),
+                                variableJsonObject.optString("prefix_fr"),
+                                variableJsonObject.optString("prefix_en"),
+                                variableJsonObject.optString("suffix_ar"),
+                                variableJsonObject.optString("suffix_fr"),
+                                variableJsonObject.optString("suffix_en"),
                                 variableJsonObject.optString("default"),
                                 variableJsonObject.getString("label_ar"),
                                 variableJsonObject.getString("label_fr"),
@@ -183,8 +187,12 @@ class TemplateMeta private constructor(
                                     variableJsonObject.optString("icon"),
                                     variableJsonObject.optInt("min"),
                                     variableJsonObject.getInt("max"),
-                                    variableJsonObject.optString("prefix"),
-                                    variableJsonObject.optString("suffix"),
+                                    variableJsonObject.optString("prefix_ar"),
+                                    variableJsonObject.optString("prefix_fr"),
+                                    variableJsonObject.optString("prefix_en"),
+                                    variableJsonObject.optString("suffix_ar"),
+                                    variableJsonObject.optString("suffix_fr"),
+                                    variableJsonObject.optString("suffix_en"),
                                     variableJsonObject.optString("default"),
                                     variableJsonObject.getString("label_ar"),
                                     variableJsonObject.getString("label_fr"),
@@ -249,11 +257,11 @@ abstract class Form(
     val className: String = this.javaClass.simpleName
 
     val label by lazy {
-        localizer.inPrimaryLang(label_en, label_ar, label_fr)
+        localizer.inPrimaryLang(label_en, label_fr, label_ar)
     }
 
     val desc by lazy {
-        localizer.inPrimaryLang(desc_en, desc_ar, desc_fr)
+        localizer.inPrimaryLang(desc_en, desc_fr, desc_ar)
     }
 
     private val hash: Int by lazy {
@@ -362,8 +370,12 @@ class Variable internal constructor(
     val icon: String,
     val min: Int,
     val max: Int,
-    val prefix: String,
-    val suffix: String,
+    val prefix_ar: String,
+    val prefix_fr: String,
+    val prefix_en: String,
+    val suffix_ar: String,
+    val suffix_fr: String,
+    val suffix_en: String,
     val default: String,
     val label_ar: String,
     val label_fr: String,
@@ -389,11 +401,19 @@ class Variable internal constructor(
     val key = key(namespace, name)
 
     val label by lazy {
-        localizer.inPrimaryLang(label_en, label_ar, label_fr)
+        localizer.inPrimaryLang(label_en, label_fr, label_ar)
     }
 
     val desc by lazy {
-        localizer.inPrimaryLang(desc_en, desc_ar, desc_fr)
+        localizer.inPrimaryLang(desc_en, desc_fr, desc_ar)
+    }
+    
+    val prefix by lazy {
+        localizer.inPrimaryLang(prefix_en ,prefix_fr, prefix_ar)
+    }
+
+    val suffix by lazy {
+        localizer.inPrimaryLang(suffix_en ,suffix_fr, suffix_ar)
     }
 
     private val hash by lazy {

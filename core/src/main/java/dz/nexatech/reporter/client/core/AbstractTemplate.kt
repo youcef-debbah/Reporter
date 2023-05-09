@@ -47,9 +47,9 @@ class SimpleTemplate(
     private val localizer: AbstractLocalizer,
 ): AbstractTemplate() {
     override val label by lazy {
-        localizer.inPrimaryLang(label_en, label_ar, label_fr)
+        localizer.inPrimaryLang(label_en, label_fr, label_ar)
     }
     override val desc by lazy {
-        localizer.inPrimaryLang(desc_en, desc_ar, desc_fr)
+        localizer.inPrimaryLang(desc_en, desc_fr, desc_ar)
     }
 }
