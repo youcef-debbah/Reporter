@@ -374,6 +374,7 @@ class Variable internal constructor(
     val localizer: AbstractLocalizer,
 ) {
     object Type {
+        const val EXPRESSION: String = "expression"
         const val TEXT: String = "text"
         const val NUMBER: String = "number"
         const val COUNTER: String = "counter"
