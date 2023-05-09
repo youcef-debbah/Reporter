@@ -20,10 +20,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
@@ -55,7 +53,6 @@ import dz.nexatech.reporter.client.model.SectionState
 import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.client.model.TemplateOutput
 import dz.nexatech.reporter.client.model.TemplateState
-import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.client.model.asWebResourceResponse
 import dz.nexatech.reporter.client.model.evaluateState
 import dz.nexatech.reporter.util.model.loadContent
@@ -73,6 +70,7 @@ import dz.nexatech.reporter.util.ui.PaddedRow
 import dz.nexatech.reporter.util.ui.SimpleAppBar
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.ThemedText
+import dz.nexatech.reporter.util.ui.VariableInput
 import dz.nexatech.reporter.util.ui.contentPadding
 import dz.nexatech.reporter.util.ui.stringRes
 import io.pebbletemplates.pebble.template.PebbleTemplate
@@ -416,7 +414,7 @@ class TabsContext(val template: Template) {
         section: Section,
         sectionState: SectionState
     ) {
-        destinationsRegistry.register(navGraphBuilder, navController) {controller ->
+        destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
                     ThemedText("Section label: " + section.label)
@@ -438,7 +436,7 @@ class TabsContext(val template: Template) {
         templateOutput: TemplateOutput,
         webView: WebView
     ) {
-        destinationsRegistry.register(navGraphBuilder, navController) {controller ->
+        destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(previewTab.route) {
                 val pdfExportingLauncher = rememberLauncherForActivityResult(
                     ActivityResultContracts.StartActivityForResult()
@@ -563,19 +561,5 @@ private fun TabScaffold(
                 block()
             }
         }
-    }
-}
-
-@Composable
-fun VariableInput(variableState: VariableState) {
-    val value by variableState.state
-    PaddedColumn {
-        Divider()
-        ThemedText(variableState.variable.label)
-        TextField(
-            value = value,
-            onValueChange = variableState.setter,
-            label = { ThemedText(variableState.variable.label) },
-        )
     }
 }
