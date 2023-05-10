@@ -7,7 +7,7 @@ import androidx.room.Query
 
 @Dao
 interface TemplatesDAO {
-    @Query("select * from template")
+    @Query("select * from template order by template_name")
     suspend fun loadTemplates(): List<Template>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
