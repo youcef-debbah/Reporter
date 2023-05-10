@@ -10,6 +10,8 @@ import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.core.AbstractValue
 import dz.nexatech.reporter.client.core.AbstractValuesDAO
 import dz.nexatech.reporter.client.core.ValueUpdate
+import dz.nexatech.reporter.util.model.Teller
+import dz.nexatech.reporter.util.model.errorHtmlPage
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
@@ -244,8 +246,11 @@ class SectionState(
 
 fun PebbleTemplate.evaluateState(
     templateState: TemplateState
-): String {
+): String = try {
     val writer = StringWriter()
     evaluate(writer, templateState.environment)
-    return writer.toString()
+    writer.toString()
+} catch (e: Exception) {
+    Teller.warn("error while evaluating template: ${templateState.template}")
+    errorHtmlPage(e.message ?: "something went wrong while evaluating this HTML content!")
 }

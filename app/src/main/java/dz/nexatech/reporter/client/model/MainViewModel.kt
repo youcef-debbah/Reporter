@@ -23,6 +23,7 @@ import dz.nexatech.reporter.util.model.useInputStream
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.DestinationsRegistry
 import dz.nexatech.reporter.util.ui.Toasts
+import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
@@ -75,7 +76,7 @@ class MainViewModel @Inject constructor(
         return TemplateMeta.from(templateName, metaInput, Teller, Localizer)
     }
 
-    suspend fun compileTemplate(templateName: String) =
+    suspend fun compileTemplate(templateName: String): PebbleTemplate? =
         withIO { templatesRepository.compileTemplateBlocking(templateName) }
 
     fun importTemplate(uri: Uri) {

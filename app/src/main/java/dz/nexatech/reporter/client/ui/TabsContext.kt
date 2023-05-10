@@ -143,17 +143,27 @@ class TabsContext(val template: Template) {
                 val compiledTemplateJob = async { viewModel.compileTemplate(template.name) }
                 val templateState = templateStateJob.await()
                 val compiledTemplate = compiledTemplateJob.await()
-                val initialContent = compiledTemplate.evaluateState(templateState)
-                withMain {
-                    buildAndNavigateToTemplatePreviewTab(
-                        viewModel.activeDestinations,
-                        viewModel.resourcesRepository,
-                        template,
-                        templateState,
-                        compiledTemplate,
-                        initialContent,
-                        navController,
-                    )
+                if (compiledTemplate == null) {
+                    withMain {
+                        buildAndNavigateToErrorTab(
+                            viewModel.activeDestinations,
+                            navController,
+                            500,
+                        )
+                    }
+                } else {
+                    val initialContent = compiledTemplate.evaluateState(templateState)
+                    withMain {
+                        buildAndNavigateToTemplatePreviewTab(
+                            viewModel.activeDestinations,
+                            viewModel.resourcesRepository,
+                            template,
+                            templateState,
+                            compiledTemplate,
+                            initialContent,
+                            navController,
+                        )
+                    }
                 }
             }
         }

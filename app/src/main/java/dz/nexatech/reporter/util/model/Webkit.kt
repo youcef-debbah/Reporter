@@ -31,3 +31,15 @@ fun WebView.loadContent(html: String, baseUrl: String? = DEFAULT_BASE_URL) {
         null
     )
 }
+
+fun errorHtmlPage(message: String): String =
+"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=595pt, initial-scale=0">
+</head>
+<body>
+<h3>Error</h3>
+<p>${message}</p>
+</body>
+</html>"""

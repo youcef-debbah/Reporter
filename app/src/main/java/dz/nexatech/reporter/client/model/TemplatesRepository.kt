@@ -2,11 +2,9 @@ package dz.nexatech.reporter.client.model
 
 import com.google.common.collect.ImmutableMap
 import dagger.Lazy
-import dz.nexatech.reporter.client.common.filterByClass
-import dz.nexatech.reporter.client.core.TemplateLoader
 import dz.nexatech.reporter.client.common.ioLaunch
-import dz.nexatech.reporter.client.core.AbstractBinaryResource
-import dz.nexatech.reporter.client.core.AbstractTemplate
+import dz.nexatech.reporter.client.core.TemplateLoader
+import dz.nexatech.reporter.util.model.Teller
 import io.pebbletemplates.pebble.PebbleEngine
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.Job
@@ -71,8 +69,13 @@ class TemplatesRepository @Inject constructor(
         resourcesRepository.loadWithoutCache("$TEMPLATE_RESOURCE_PREFIX$templateName.$fileFormat")
             ?.asInputStream()
 
-    fun compileTemplateBlocking(templateName: String): PebbleTemplate =
-        pebbleEngine.getTemplate(templateName)
+    fun compileTemplateBlocking(templateName: String): PebbleTemplate? =
+        try {
+            pebbleEngine.getTemplate(templateName)
+        } catch (e: Exception) {
+            Teller.warn("error while parsing template: $templateName", e)
+            null
+        }
 
     suspend fun updateTemplates(templates: List<Template>, resources: List<Resource>?) {
         templatesDao.get().updateAll(templates)
