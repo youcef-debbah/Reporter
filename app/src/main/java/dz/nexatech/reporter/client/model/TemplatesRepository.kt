@@ -73,7 +73,7 @@ class TemplatesRepository @Inject constructor(
         try {
             pebbleEngine.getTemplate(templateName)
         } catch (e: Exception) {
-            Teller.warn("error while parsing template: $templateName", e)
+            Teller.error("error while parsing template: $templateName", e)
             null
         }
 

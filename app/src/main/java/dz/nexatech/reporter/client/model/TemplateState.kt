@@ -251,6 +251,6 @@ fun PebbleTemplate.evaluateState(
     evaluate(writer, templateState.environment)
     writer.toString()
 } catch (e: Exception) {
-    Teller.warn("error while evaluating template: ${templateState.template}")
+    Teller.error("error while evaluating template: ${templateState.template}", e)
     errorHtmlPage(e.message ?: "something went wrong while evaluating this HTML content!")
 }
