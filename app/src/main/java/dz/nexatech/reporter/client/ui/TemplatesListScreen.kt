@@ -49,6 +49,7 @@ import dz.nexatech.reporter.util.ui.RoundedCorner
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.StandardAppBarDropdownMenu
+import dz.nexatech.reporter.util.ui.StandardAppbarIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
 import dz.nexatech.reporter.util.ui.ThemedText
 import dz.nexatech.reporter.util.ui.collectWithLifecycleAsState
@@ -94,7 +95,7 @@ object TemplatesListScreen : StaticScreenDestination(
                 StandardAppBar(
                     navController = navController,
                     title = this@TemplatesListScreen.titleRes,
-                    navigationIcon = { DecorativeIcon(icon = this@TemplatesListScreen.icon) },
+                    navigationIcon = { StandardAppbarIcon(this@TemplatesListScreen.icon) },
                 ) {
                     StandardAppBarDropdownMenu(navController) { menuOpened ->
                         DropdownMenuItem(

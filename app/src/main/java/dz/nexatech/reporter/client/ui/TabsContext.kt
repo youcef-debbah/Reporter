@@ -67,8 +67,8 @@ import dz.nexatech.reporter.util.ui.ErrorTheme
 import dz.nexatech.reporter.util.ui.InfoIcon
 import dz.nexatech.reporter.util.ui.PaddedColumn
 import dz.nexatech.reporter.util.ui.PaddedRow
-import dz.nexatech.reporter.util.ui.SimpleAppBar
 import dz.nexatech.reporter.util.ui.SimpleScaffold
+import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.ThemedText
 import dz.nexatech.reporter.util.ui.VariableInput
 import dz.nexatech.reporter.util.ui.contentPadding
@@ -462,7 +462,7 @@ class TabsContext(val template: Template) {
                 SimpleScaffold(
                     topBar = {
                         Column {
-                            SimpleAppBar(previewTab.title())
+                            StandardAppBar(controller, previewTab.title())
                             DefaultNavigationBar(controller, destinationsRegistry)
                         }
                     }) {
@@ -560,7 +560,7 @@ private fun TabScaffold(
     SimpleScaffold(
         topBar = {
             Column {
-                SimpleAppBar(tab.title())
+                StandardAppBar(navController, tab.title())
                 DefaultNavigationBar(navController, destinationsRegistry)
             }
         },

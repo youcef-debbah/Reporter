@@ -4,7 +4,6 @@ package dz.nexatech.reporter.util.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -13,14 +12,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import com.google.common.collect.ImmutableList
 import dz.nexatech.reporter.client.R
 
 @Composable
@@ -29,7 +24,10 @@ fun SimpleAppBar(@StringRes title: Int, @DrawableRes icon: Int? = null) {
 }
 
 @Composable
-fun SimpleAppBar(title: String = AbstractApplication.INSTANCE.config.applicationName, @DrawableRes icon: Int? = null) {
+fun SimpleAppBar(
+    title: String = AbstractApplication.INSTANCE.config.applicationName,
+    @DrawableRes icon: Int? = null
+) {
     TopAppBar(
         title = {
             ThemedText(title)
@@ -82,6 +80,18 @@ fun StandardBackButton(navController: NavController) {
             icon = R.drawable.baseline_arrow_back_24,
             desc = R.string.back
         )
+    }
+}
+
+@Composable
+fun StandardAppbarIcon(@DrawableRes icon: Int?) {
+    if (icon != null) {
+        IconButton(
+            enabled = false,
+            onClick = {},
+        ) {
+            DecorativeIcon(icon = icon)
+        }
     }
 }
 
