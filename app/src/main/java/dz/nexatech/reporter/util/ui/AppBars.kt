@@ -4,17 +4,23 @@ package dz.nexatech.reporter.util.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import dz.nexatech.reporter.client.R
 
@@ -109,19 +115,62 @@ fun StandardAppBarDropdownMenu(
     }
     DropdownMenu(expanded = menuExpanded.value, onDismissRequest = { menuExpanded.value = false }) {
         val destinations = remember { AbstractApplication.INSTANCE.config.standardDestinations }
-
         actions(menuExpanded)
-
-        DropdownMenuItem(
-            leadingIcon = { DecorativeIcon(destinations.settingsScreen.icon) },
-            text = { ThemedText(destinations.settingsScreen.title()) },
-            onClick = {
-                menuExpanded.value = false
-                navController.navigate(destinations.settingsScreen.route) {
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            },
-        )
+        DropdownMenuTextItem(
+            destinations.settingsScreen.title(),
+            destinations.settingsScreen.icon
+        ) {
+            menuExpanded.value = false
+            navController.navigate(destinations.settingsScreen.route) {
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
     }
+}
+
+@Composable
+fun DropdownMenuTextItem(
+    @StringRes title: Int,
+    @DrawableRes icon: Int?,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: MenuItemColors = MenuDefaults.itemColors(),
+    contentPadding: PaddingValues = MenuDefaults.DropdownMenuItemContentPadding,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onClick: () -> Unit,
+) {
+    DropdownMenuTextItem(
+        stringRes(title),
+        icon,
+        modifier,
+        enabled,
+        colors,
+        contentPadding,
+        interactionSource,
+        onClick
+    )
+}
+
+@Composable
+fun DropdownMenuTextItem(
+    title: String,
+    @DrawableRes icon: Int?,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: MenuItemColors = MenuDefaults.itemColors(),
+    contentPadding: PaddingValues = MenuDefaults.DropdownMenuItemContentPadding,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onClick: () -> Unit,
+) {
+    DropdownMenuItem(
+        text = { ThemedText(text = title, style = MaterialTheme.typography.titleMedium) },
+        leadingIcon = { DecorativeIcon(icon) },
+        modifier = modifier,
+        enabled = enabled,
+        colors = colors,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        onClick = onClick,
+    )
 }

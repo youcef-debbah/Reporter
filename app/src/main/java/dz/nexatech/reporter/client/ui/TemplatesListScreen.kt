@@ -20,7 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +43,7 @@ import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.CentredColumn
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
+import dz.nexatech.reporter.util.ui.DropdownMenuTextItem
 import dz.nexatech.reporter.util.ui.ExternalLink
 import dz.nexatech.reporter.util.ui.RoundedCorner
 import dz.nexatech.reporter.util.ui.SimpleScaffold
@@ -98,26 +98,24 @@ object TemplatesListScreen : StaticScreenDestination(
                     navigationIcon = { StandardAppbarIcon(this@TemplatesListScreen.icon) },
                 ) {
                     StandardAppBarDropdownMenu(navController) { menuOpened ->
-                        DropdownMenuItem(
+                        DropdownMenuTextItem(
+                            title = R.string.import_template_menu_item,
+                            icon = R.drawable.baseline_upload_file_24,
                             enabled = viewModel.templateImporting.value == 0,
-                            leadingIcon = { DecorativeIcon(icon = R.drawable.baseline_upload_file_24) },
-                            text = { ThemedText(R.string.import_template_menu_item) },
-                            onClick = {
-                                menuOpened.value = false
-                                templateImportLauncher.launch(newOpenTemplateFileIntent())
-                            }
-                        )
+                        ) {
+                            menuOpened.value = false
+                            templateImportLauncher.launch(newOpenTemplateFileIntent())
+                        }
 
-                        DropdownMenuItem(
-                            leadingIcon = { DecorativeIcon(icon = R.drawable.baseline_open_in_browser_24) },
-                            text = { ThemedText(R.string.download_template_menu_item) },
-                            onClick = {
-                                menuOpened.value = false
-                                ExternalLink.openLink(
-                                    AppConfig.get(REMOTE_TEMPLATES_DOWNLOADING_LINK)
-                                )
-                            }
-                        )
+                        DropdownMenuTextItem(
+                            title = R.string.download_template_menu_item,
+                            icon = R.drawable.baseline_open_in_browser_24,
+                        ) {
+                            menuOpened.value = false
+                            ExternalLink.openLink(
+                                AppConfig.get(REMOTE_TEMPLATES_DOWNLOADING_LINK)
+                            )
+                        }
                     }
                 }
             },
