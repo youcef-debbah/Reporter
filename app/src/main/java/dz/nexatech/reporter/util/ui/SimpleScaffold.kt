@@ -20,8 +20,6 @@ fun SimpleScaffold(
     snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
-    containerColor: Color = MaterialTheme.colorScheme.background,
-    contentColor: Color = contentColorFor(containerColor),
     content: @Composable ColumnScope.() -> Unit
 ) {
     ApplicationTheme {
@@ -32,8 +30,6 @@ fun SimpleScaffold(
             snackbarHost = snackbarHost,
             floatingActionButton = floatingActionButton,
             floatingActionButtonPosition = floatingActionButtonPosition,
-            containerColor = containerColor,
-            contentColor = contentColor,
             content = { paddingValues ->
                 Column(
                     modifier = columnModifier

@@ -46,25 +46,21 @@ fun NavigationScaffold(
     snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
-    containerColor: Color = MaterialTheme.colorScheme.background,
-    contentColor: Color = contentColorFor(containerColor),
     builder: NavGraphBuilder.(NavHostController) -> Unit,
 ) {
     ApplicationTheme {
         StatelessNavigationScaffold(
-            destinationsRegistry,
-            startDestination,
-            bottomSheetNavigator,
-            navController,
-            modifier,
-            topBar,
-            bottomBar,
-            snackbarHost,
-            floatingActionButton,
-            floatingActionButtonPosition,
-            containerColor,
-            contentColor,
-            builder
+            destinationsRegistry = destinationsRegistry,
+            startDestination = startDestination,
+            bottomSheetNavigator = bottomSheetNavigator,
+            navController = navController,
+            modifier = modifier,
+            topBar = topBar,
+            bottomBar = bottomBar,
+            snackbarHost = snackbarHost,
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = floatingActionButtonPosition,
+            builder = builder,
         )
     }
 }

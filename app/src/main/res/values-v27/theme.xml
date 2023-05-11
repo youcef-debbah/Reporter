@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Reporter" parent="Theme.Reporter.Basic">
+        <item name="android:navigationBarColor">@color/default_background</item>
+        <item name="android:windowLightNavigationBar">@bool/light_navigation_bar</item>
+    </style>
+</resources>
