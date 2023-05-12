@@ -11,6 +11,7 @@ import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.model.Variable
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.util.model.Localizer
+import kotlin.math.min
 
 @Composable
 fun VariableInput(variableState: VariableState) {
@@ -25,9 +26,11 @@ private fun TextInput(variableState: VariableState) {
     val value = variableState.state.value
     val variable = variableState.variable
     val length = value.length
-    val errorMessage: String? = remember(length) {
+    val errorMessage: String? = remember(variable.required, variable.max, variable.min, length) {
         val context = AbstractApplication.INSTANCE
-        if (length > variable.max) {
+        if (variable.required && length == 0) {
+            context.getString(R.string.input_required)
+        } else if (length > variable.max) {
             context.getString(R.string.input_too_long, variable.max)
         } else if (length < variable.min) {
             context.getString(R.string.input_too_short, variable.min)

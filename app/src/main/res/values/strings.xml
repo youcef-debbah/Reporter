@@ -75,4 +75,5 @@
     <string name="collapse_template_preview_toolbar_desc">Collapse toolbar</string>
     <string name="input_too_long">At most %d characters are permitted</string>
     <string name="input_too_short">At least %d characters are required</string>
+    <string name="input_required">This input is required</string>
 </resources>
