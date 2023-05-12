@@ -64,7 +64,7 @@ inline fun PaddedColumn(
 @Composable
 inline fun CentredRow(
     modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     content: @Composable RowScope.() -> Unit
 ) = Row(
@@ -77,7 +77,7 @@ inline fun CentredRow(
 @Composable
 inline fun PaddedRow(
     modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     content: @Composable RowScope.() -> Unit
 ) = Row(

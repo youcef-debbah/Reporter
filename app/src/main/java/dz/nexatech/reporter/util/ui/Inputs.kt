@@ -1,17 +1,27 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
 package dz.nexatech.reporter.util.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Divider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.model.Variable
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.util.model.Localizer
-import kotlin.math.min
 
 @Composable
 fun VariableInput(variableState: VariableState) {
@@ -38,15 +48,28 @@ private fun TextInput(variableState: VariableState) {
             null
         }
     }
-    OutlinedTextField(
-        value = value,
-        onValueChange = variableState.setter,
-        label = { ThemedText(variable.label) },
-        prefix = { ThemedText(variable.prefix) },
-        suffix = { ThemedText(variable.suffix) },
-        isError = errorMessage != null,
-        supportingText = { errorMessage?.let { ThemedText(it) } },
-    )
+    var showInfo by rememberSaveable { mutableStateOf(false) }
+    PaddedColumn {
+        AnimatedVisibility(visible = showInfo) {
+            ThemedText(variable.desc, Modifier.fillMaxWidth())
+        }
+        CentredRow(Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                value = value,
+                onValueChange = variableState.setter,
+                label = { ThemedText(variable.label) },
+                prefix = { ThemedText(variable.prefix) },
+                suffix = { ThemedText(variable.suffix) },
+                isError = errorMessage != null,
+                supportingText = { errorMessage?.let { ThemedText(it) } },
+            )
+            IconButton(onClick = {
+                showInfo = showInfo.not()
+            }) {
+                InfoIcon(icon = R.drawable.outline_info_24, desc = R.string.input_description)
+            }
+        }
+    }
 }
 
 @Preview(name = "text_input", widthDp = 400, showBackground = true)

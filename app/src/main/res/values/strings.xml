@@ -76,4 +76,5 @@
     <string name="input_too_long">At most %d characters are permitted</string>
     <string name="input_too_short">At least %d characters are required</string>
     <string name="input_required">This input is required</string>
+    <string name="input_description">Show Input Description</string>
 </resources>
