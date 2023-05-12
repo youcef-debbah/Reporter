@@ -1,6 +1,7 @@
 package dz.nexatech.reporter.client.model
 
 import android.content.Context
+import androidx.compose.runtime.Stable
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSortedMap
 import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
@@ -81,6 +82,7 @@ fun fontPaths(fontNames: Collection<String>): List<String> {
     return result
 }
 
+@Stable
 class ResourcesRepository @Inject constructor(
     @ApplicationContext
     private val context: Context,

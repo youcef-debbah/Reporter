@@ -365,7 +365,8 @@ class TabsContext(val template: Template) {
                         destinationsRegistry,
                         tab,
                         section,
-                        sectionState
+                        sectionState,
+                        resourcesRepository
                     )
                 }
 
@@ -379,7 +380,8 @@ class TabsContext(val template: Template) {
                         destinationsRegistry,
                         tab,
                         record,
-                        recordState
+                        recordState,
+                        resourcesRepository,
                     )
                 }
             }
@@ -399,7 +401,8 @@ class TabsContext(val template: Template) {
         destinationsRegistry: DestinationsRegistry,
         tab: TemplateTab,
         record: Record,
-        recordState: RecordState
+        recordState: RecordState,
+        resourcesRepository: ResourcesRepository
     ) {
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
@@ -408,7 +411,7 @@ class TabsContext(val template: Template) {
                     ThemedText("Record label: " + record.label)
                     ThemedText("Record desc: " + record.desc)
                     for (variable in recordState.variables.values) {
-                        VariableInput(variable)
+                        VariableInput(variable, resourcesRepository)
                     }
                 }
             }
@@ -422,7 +425,8 @@ class TabsContext(val template: Template) {
         destinationsRegistry: DestinationsRegistry,
         tab: TemplateTab,
         section: Section,
-        sectionState: SectionState
+        sectionState: SectionState,
+        resourcesRepository: ResourcesRepository,
     ) {
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
@@ -430,7 +434,7 @@ class TabsContext(val template: Template) {
                     ThemedText("Section label: " + section.label)
                     ThemedText("Section desc: " + section.desc)
                     for (variable in sectionState.variables.values) {
-                        VariableInput(variable)
+                        VariableInput(variable, resourcesRepository)
                     }
                 }
             }

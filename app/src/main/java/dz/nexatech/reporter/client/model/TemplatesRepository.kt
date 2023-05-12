@@ -1,5 +1,6 @@
 package dz.nexatech.reporter.client.model
 
+import androidx.compose.runtime.Stable
 import com.google.common.collect.ImmutableMap
 import dagger.Lazy
 import dz.nexatech.reporter.client.common.ioLaunch
@@ -16,6 +17,7 @@ import java.util.function.Function
 import java.util.function.Predicate
 import javax.inject.Inject
 
+@Stable
 class TemplatesRepository @Inject constructor(
     private val resourcesRepository: ResourcesRepository,
     private val templatesDao: Lazy<TemplatesDAO>,

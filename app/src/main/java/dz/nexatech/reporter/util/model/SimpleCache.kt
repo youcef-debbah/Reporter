@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentMap
 class SimpleCache<T> {
 
     private val cache: ConcurrentMap<String, T> = MapMaker()
-        .weakValues()
         .concurrencyLevel(Runtime.getRuntime().availableProcessors() * 2)
         .makeMap()
 

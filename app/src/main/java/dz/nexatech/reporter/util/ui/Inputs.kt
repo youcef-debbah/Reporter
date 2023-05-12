@@ -3,10 +3,8 @@
 package dz.nexatech.reporter.util.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Divider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
@@ -16,19 +14,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import coil.compose.AsyncImage
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.client.model.ResourcesRepository
 import dz.nexatech.reporter.client.model.Variable
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.util.model.Localizer
 
 @Composable
-fun VariableInput(variableState: VariableState) {
-    PaddedColumn {
-        Divider()
-        TextInput(variableState)
-    }
+fun VariableInput(variableState: VariableState, resourcesRepository: ResourcesRepository) {
+    // TODO support icons
+    TextInput(variableState)
 }
 
 @Composable
@@ -48,6 +45,15 @@ private fun TextInput(variableState: VariableState) {
             null
         }
     }
+
+//    val painter = ImageVector.vectorResource()
+
+    AsyncImage(
+        model = "https://example.com/image.jpg",
+        contentDescription = null,
+    )
+
+
     var showInfo by rememberSaveable { mutableStateOf(false) }
     PaddedColumn {
         AnimatedVisibility(visible = showInfo) {
