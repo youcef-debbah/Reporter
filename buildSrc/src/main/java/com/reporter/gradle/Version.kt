@@ -18,9 +18,6 @@ object Version {
     const val GUAVA_JRE = "$GUAVA-jre"
     const val GUAVA_ANDROID = "$GUAVA-android"
 
-    // https://github.com/google/dagger/releases
-    const val HILT = "2.45"
-
     // https://developer.android.com/jetpack/androidx/releases/room
     const val ROOM = "2.5.1"
 
@@ -56,7 +53,7 @@ object Version {
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     // https://firebase.google.com/support/release-notes/android#latest_sdk_versions
-    const val FIREBASE_BOM = "31.5.0"
+    const val FIREBASE_BOM = "32.0.0"
 
     // https://github.com/material-components/material-components-android/releases
     const val GOOGLE_MATERIAL = "1.9.0"
@@ -74,19 +71,19 @@ object Version {
     const val LIFECYCLE_COMPOSE = "2.6.1"
 
     // https://github.com/alorma/Compose-Settings
-    const val COMPOSE_SETTINGS = "0.26.0"
+    const val COMPOSE_SETTINGS = "0.27.0"
 
     // https://github.com/google/accompanist
     const val COMPOSE_ACCOMPANIST = "0.30.1"
 
     // https://developer.android.com/jetpack/androidx/releases/compose
     object Compose {
-        const val ANIMATION = "1.4.2"
-        const val COMPILER = "1.4.6"
-        const val FOUNDATION = "1.4.2"
-        const val MATERIAL = "1.4.2"
-        const val MATERIAL3 = "1.1.0-rc01"
-        const val RUNTIME = "1.4.2"
-        const val UI = "1.4.2"
+        const val ANIMATION = "1.4.3"
+        const val COMPILER = "1.4.7"
+        const val FOUNDATION = "1.4.3"
+        const val MATERIAL = "1.4.3"
+        const val MATERIAL3 = "1.1.0"
+        const val RUNTIME = "1.4.3"
+        const val UI = "1.4.3"
     }
 }

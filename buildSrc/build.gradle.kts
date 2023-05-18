@@ -4,6 +4,7 @@ plugins {
     `kotlin-dsl`
 }
 
+val hiltVersion: String = property("build.version.hilt")!!.toString()
 val javaVersion: JavaVersion = JavaVersion.toVersion(property("build.version.java")!!)
 val javaVersionName: String = javaVersion.toString()
 val kotlinVersion: String = property("build.version.kotlin")!!.toString()
@@ -35,6 +36,6 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-gradle:2.9.5")
     implementation("com.google.firebase:perf-plugin:1.4.2")
 
-    implementation("com.google.dagger:hilt-android-gradle-plugin:2.45")
+    implementation("com.google.dagger:hilt-android-gradle-plugin:$hiltVersion")
     implementation("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
 }

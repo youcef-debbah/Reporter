@@ -5,6 +5,7 @@ import dz.nexatech.reporter.gradle.addHilt
 import dz.nexatech.reporter.gradle.addLifecycle
 import dz.nexatech.reporter.gradle.addRoomApi
 import dz.nexatech.reporter.gradle.addRoomCompiler
+import dz.nexatech.reporter.gradle.buildConfig
 import dz.nexatech.reporter.gradle.standardAndroidApp
 
 plugins {
@@ -30,7 +31,7 @@ dependencies {
     addCommonTestDependencies()
     addCommonAndroidTestDependencies()
 
-    addHilt()
+    addHilt(project.buildConfig.hiltVersion)
     addRoomCompiler()
 
     addRoomApi()

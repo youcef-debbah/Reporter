@@ -13,17 +13,17 @@ fun DependencyHandler.addRoomCompiler() {
     add("kapt", "androidx.room:room-compiler:${Version.ROOM}")
 }
 
-fun DependencyHandler.addHilt() {
-    addHiltDependencies()
-    addHiltCompiler()
+fun DependencyHandler.addHilt(version: String) {
+    addHiltDependencies(version)
+    addHiltCompiler(version)
 }
 
-fun DependencyHandler.addHiltDependencies(transient: Boolean = false) {
-    add(apiOrImpl(transient), "com.google.dagger:hilt-android:${Version.HILT}")
+fun DependencyHandler.addHiltDependencies(version: String, transient: Boolean = false) {
+    add(apiOrImpl(transient), "com.google.dagger:hilt-android:$version")
 }
 
-fun DependencyHandler.addHiltCompiler() {
-    add("kapt", "com.google.dagger:hilt-android-compiler:${Version.HILT}")
+fun DependencyHandler.addHiltCompiler(version: String) {
+    add("kapt", "com.google.dagger:hilt-android-compiler:$version")
 }
 
 fun DependencyHandler.addLifecycle(transient: Boolean = false) {

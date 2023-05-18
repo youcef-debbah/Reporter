@@ -42,12 +42,14 @@ val Project.buildConfig
         this.rootProject.file("buildSrc/gradle.properties").reader().use { properties.load(it) }
 
         Config(
+            properties["build.version.hilt"]!!.toString(),
             properties["build.version.kotlin"]!!.toString(),
             JavaVersion.toVersion(properties["build.version.java"]!!),
         )
     }
 
 data class Config(
+    val hiltVersion: String,
     val kotlinVersion: String,
     val javaVersion: JavaVersion,
     val javaVersionName: String = javaVersion.toString(),

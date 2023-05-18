@@ -15,7 +15,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import coil.compose.AsyncImage
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.model.ResourcesRepository
 import dz.nexatech.reporter.client.model.Variable
@@ -45,15 +44,6 @@ private fun TextInput(variableState: VariableState) {
             null
         }
     }
-
-//    val painter = ImageVector.vectorResource()
-
-    AsyncImage(
-        model = "https://example.com/image.jpg",
-        contentDescription = null,
-    )
-
-
     var showInfo by rememberSaveable { mutableStateOf(false) }
     PaddedColumn {
         AnimatedVisibility(visible = showInfo) {
