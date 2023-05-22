@@ -7,7 +7,7 @@ import java.util.*
 fun <T> Comparator<T>?.compareSortPosition(o1: T, o2: T): Int =
     this?.compare(o1, o2) ?: (o1 as Comparable<T>).compareTo(o2)
 
-fun <V> ImmutableMap.Builder<String, V>.putValue(value: V): ImmutableMap.Builder<String, V> =
+fun <V: Any> ImmutableMap.Builder<String, V>.putValue(value: V): ImmutableMap.Builder<String, V> =
     put(value.toString(), value)
 
 fun <V> MutableMap<String, V>.putValue(value: V): V? = put(value.toString(), value)
