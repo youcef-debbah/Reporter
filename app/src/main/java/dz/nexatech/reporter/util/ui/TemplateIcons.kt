@@ -1,6 +1,9 @@
 package dz.nexatech.reporter.util.ui
 
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import com.google.common.collect.ImmutableMap
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.putValue
@@ -13,6 +16,9 @@ class IconInfo(
     @DrawableRes val drawable: Int,
 ) {
     val path = "$TEMPLATES_ICONS_PATH$name.$TEMPLATES_ICONS_EXTENSION"
+
+    @Composable
+    fun painterResource(): Painter = painterResource(drawable)
 
     override fun toString() = name
 
@@ -29,4 +35,8 @@ class IconInfo(
 
 val templateIcons = ImmutableMap.Builder<String, IconInfo>()
     .putValue(IconInfo("info", R.drawable.ms_info))
+    .putValue(IconInfo("home", R.drawable.baseline_home_24))
     .build()
+
+@Composable
+fun painterResource(iconName: String) = templateIcons[iconName]!!.painterResource()
