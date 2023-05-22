@@ -102,7 +102,7 @@ class TabsContext(val template: Template) {
         template,
         resources.getString(R.string.template_tab_error_title),
         null,
-        R.drawable.baseline_error_24,
+        R.drawable.baseline_warning_amber_24,
         "error",
     )
 
@@ -251,7 +251,7 @@ class TabsContext(val template: Template) {
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
-                                DecorativeIcon(icon = R.drawable.baseline_error_24)
+                                DecorativeIcon(icon = R.drawable.baseline_warning_amber_24)
                                 ThemedText(
                                     resources.getString(
                                         R.string.template_tab_error_desc,
