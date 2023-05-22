@@ -56,15 +56,10 @@ class Resource(
 
     override fun asByteArray(): ByteArray = data
 
-    override fun equals(other: Any?) =
-        this === other || (other is Resource && this.path == other.path)
-
-    override fun hashCode() = path.hashCode()
-
     override fun toString() = "Resource(path='$path')"
 }
 
-class AssetResource(
+open class AssetResource(
     override val path: String,
     override val mimeType: String,
 ) : AbstractBinaryResource() {
