@@ -22,11 +22,6 @@ class TemplatesRepository @Inject constructor(
     private val resourcesRepository: ResourcesRepository,
     private val templatesDao: Lazy<TemplatesDAO>,
 ) {
-    private val mTemplates: MutableStateFlow<ImmutableMap<String, Template>?> =
-        MutableStateFlow(null)
-    private val firstRefreshJob: Job = ioLaunch { refresh() }
-
-    val templates = mTemplates.asStateFlow()
 
     private val loader: Function<String, InputStream?> = Function { templateName ->
         runBlocking {
@@ -38,9 +33,13 @@ class TemplatesRepository @Inject constructor(
             templateExists(templateName)
         }
     }
-    val pebbleEngine: PebbleEngine = PebbleEngine.Builder()
-        .loader(TemplateLoader(loader, checker))
-        .build()
+    private val templateLoader = TemplateLoader(loader, checker)
+    private var pebbleEngine: PebbleEngine? = null
+
+    private val mTemplates: MutableStateFlow<ImmutableMap<String, Template>?> =
+        MutableStateFlow(null)
+    private val firstRefreshJob: Job = ioLaunch { refresh() }
+    val templates = mTemplates.asStateFlow()
 
     private suspend fun refresh() {
         val builder: ImmutableMap.Builder<String, Template> = ImmutableMap.builder()
@@ -49,6 +48,7 @@ class TemplatesRepository @Inject constructor(
         }
         val result = builder.build()
         mTemplates.value = result
+        pebbleEngine = null
     }
 
     suspend fun loadedTemplates(): ImmutableMap<String, Template> {
@@ -71,13 +71,21 @@ class TemplatesRepository @Inject constructor(
         resourcesRepository.loadWithoutCache("$TEMPLATE_RESOURCE_PREFIX$templateName.$fileFormat")
             ?.asInputStream()
 
-    fun compileTemplateBlocking(templateName: String): PebbleTemplate? =
+    fun compileTemplateBlocking(templateName: String): PebbleTemplate? {
         try {
-            pebbleEngine.getTemplate(templateName)
+            val currentEngine = pebbleEngine
+            if (currentEngine == null) {
+                val newEngine = PebbleEngine.Builder().loader(templateLoader).build()
+                pebbleEngine = newEngine
+                return newEngine.getTemplate(templateName)
+            } else {
+                return currentEngine.getTemplate(templateName)
+            }
         } catch (e: Exception) {
             Teller.error("error while parsing template: $templateName", e)
-            null
+            return null
         }
+    }
 
     suspend fun updateTemplates(templates: List<Template>, resources: List<Resource>?) {
         templatesDao.get().updateAll(templates)

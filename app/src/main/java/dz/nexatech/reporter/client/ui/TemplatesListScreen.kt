@@ -87,7 +87,7 @@ object TemplatesListScreen : StaticScreenDestination(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             result.data?.data?.let { uri ->
-                viewModel.importTemplate(uri)
+                viewModel.importTemplate(uri, navController)
             }
         }
         SimpleScaffold(

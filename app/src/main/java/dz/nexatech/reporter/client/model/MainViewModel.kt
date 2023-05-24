@@ -11,6 +11,7 @@ import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.ioLaunch
+import dz.nexatech.reporter.client.common.mainLaunch
 import dz.nexatech.reporter.client.common.readAsString
 import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.common.withMain
@@ -24,6 +25,7 @@ import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.DestinationsRegistry
 import dz.nexatech.reporter.util.ui.Toasts
 import io.pebbletemplates.pebble.template.PebbleTemplate
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
@@ -79,9 +81,10 @@ class MainViewModel @Inject constructor(
     suspend fun compileTemplate(templateName: String): PebbleTemplate? =
         withIO { templatesRepository.compileTemplateBlocking(templateName) }
 
-    fun importTemplate(uri: Uri) {
+    fun importTemplate(uri: Uri, navController: NavHostController) {
         _templateImporting.value++
         ioLaunch {
+            var pendingJob: Job? = null
             try {
                 context.useInputStream(uri) {
                     val loaded = TemplateEncoder.readZipInput(it, Localizer)
@@ -90,6 +93,10 @@ class MainViewModel @Inject constructor(
                     if (templates.isEmpty()) {
                         Toasts.launchLong(R.string.no_templates_found, context)
                     } else {
+                        pendingJob = mainLaunch {
+                            currentTabsContext?.clear(activeDestinations, navController)
+                            currentTabsContext = null
+                        }
                         templatesRepository.updateTemplates(templates, resources)
                         Toasts.launchShort(
                             context.getString(
@@ -103,6 +110,7 @@ class MainViewModel @Inject constructor(
                 Teller.warn("template importing failure", e)
                 Toasts.launchShort(R.string.templates_importing_failed, context)
             } finally {
+                pendingJob?.join()
                 withMain {
                     _templateImporting.value--
                 }

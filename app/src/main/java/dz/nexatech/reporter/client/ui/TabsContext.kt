@@ -39,6 +39,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
 import com.google.accompanist.navigation.animation.composable
 import com.google.common.collect.ImmutableList
+import dagger.hilt.android.internal.ThreadUtil
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.AsyncConfig
 import dz.nexatech.reporter.client.common.backgroundLaunch
@@ -83,12 +84,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class TabsContext(val template: Template) {
 
-    val context: AbstractApplication = AbstractApplication.INSTANCE
-    val resources: Resources = context.resources
-    val tabsScope: CoroutineScope =
-        CoroutineScope(SupervisorJob() + AsyncConfig.backgroundDispatcher)
-    val loadingScope: CoroutineScope =
-        CoroutineScope(SupervisorJob() + AsyncConfig.backgroundDispatcher)
+    companion object {
+        val context: AbstractApplication = AbstractApplication.INSTANCE
+        val resources: Resources = context.resources
+    }
 
     private val loadingTab = TemplateTab(
         template,
@@ -106,15 +105,20 @@ class TabsContext(val template: Template) {
         "error",
     )
 
-    private val cleared = AtomicBoolean()
+    val tabsScope: CoroutineScope =
+        CoroutineScope(SupervisorJob() + AsyncConfig.backgroundDispatcher)
+    val loadingScope: CoroutineScope =
+        CoroutineScope(SupervisorJob() + AsyncConfig.backgroundDispatcher)
 
-    @Volatile
+    private var cleared: Boolean = false
     private var previewTabRoute: String? = null
 
-    fun navigablePreviewTabRoute(): String? = if (cleared.get()) null else previewTabRoute
+    fun navigablePreviewTabRoute(): String? = if (cleared) null else previewTabRoute
 
     fun clear(destinationsRegistry: DestinationsRegistry, navController: NavHostController) {
-        if (!cleared.getAndSet(true)) {
+        ThreadUtil.ensureMainThread()
+        if (!cleared) {
+            cleared = true
             // remove old screens
             navController.graph.iterator()
                 .removeIf(postRemove = { destinationsRegistry.remove(it.route) }) {
