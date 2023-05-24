@@ -73,6 +73,10 @@ class ResourcesRepository @Inject constructor(
         cache.load(path) { loadBinaryResource(path) }
 
     private suspend fun loadBinaryResource(path: String): AbstractBinaryResource? {
+        if (path == "" || path == "favicon.ico") {
+            return null
+        }
+
         if (path.startsWith(ICON_RESOURCE_PREFIX)) {
             val iconResource = iconsAssetsResources[path]
             if (iconResource != null) {
