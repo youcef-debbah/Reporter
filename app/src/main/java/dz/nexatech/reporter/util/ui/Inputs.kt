@@ -2,9 +2,11 @@
 
 package dz.nexatech.reporter.util.ui
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
@@ -14,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.model.ResourcesRepository
@@ -23,12 +26,17 @@ import dz.nexatech.reporter.util.model.Localizer
 
 @Composable
 fun VariableInput(variableState: VariableState, resourcesRepository: ResourcesRepository) {
-    // TODO support icons
-    TextInput(variableState)
+    TextInput(variableState) {
+        InputIcon(
+            resourcesRepository,
+            variableState.variable.icon,
+            R.drawable.baseline_keyboard_24
+        )
+    }
 }
 
 @Composable
-private fun TextInput(variableState: VariableState) {
+private fun TextInput(variableState: VariableState, leadingIcon: @Composable () -> Unit) {
     val value = variableState.state.value
     val variable = variableState.variable
     val length = value.length
@@ -54,6 +62,7 @@ private fun TextInput(variableState: VariableState) {
                 value = value,
                 onValueChange = variableState.setter,
                 label = { ThemedText(variable.label) },
+                leadingIcon = leadingIcon,
                 prefix = { ThemedText(variable.prefix) },
                 suffix = { ThemedText(variable.suffix) },
                 isError = errorMessage != null,
@@ -66,6 +75,17 @@ private fun TextInput(variableState: VariableState) {
             }
         }
     }
+}
+
+@Composable
+fun InputIcon(
+    resourcesRepository: ResourcesRepository,
+    icon: String,
+    @DrawableRes defaultIcon: Int,
+) {
+    val painter = iconsAssetsResources[icon]?.painterResource(resourcesRepository)
+        ?: painterResource(defaultIcon)
+    Icon(painter = painter, contentDescription = null)
 }
 
 @Preview(name = "text_input", widthDp = 400, showBackground = true)
@@ -97,6 +117,8 @@ private fun TextInputPreview() {
     val state = rememberSaveable { mutableStateOf(variable.default) }
     val variableState = remember { VariableState(variable, state) { state.value = it } }
     PaddedColumn {
-        TextInput(variableState)
+        TextInput(variableState) {
+            DecorativeIcon(icon = R.drawable.baseline_keyboard_24)
+        }
     }
 }
