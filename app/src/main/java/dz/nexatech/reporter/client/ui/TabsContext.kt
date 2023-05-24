@@ -484,11 +484,11 @@ class TabsContext(val template: Template) {
                                 }
                                 PaddedRow {
                                     Button(
-                                        enabled = templateOutput.pdfGenerating.value == 0,
+                                        enabled = TemplateOutput.pdfGenerating.value == 0,
                                         onClick = {
                                             pdfExportingLauncher.launch(templateOutput.newExportPdfIntent())
                                         }) {
-                                        if (templateOutput.pdfGenerating.value == 0) {
+                                        if (TemplateOutput.pdfGenerating.value == 0) {
                                             DecorativeIcon(icon = R.drawable.baseline_picture_as_pdf_24)
                                         } else {
                                             CircularProgressIndicator(Modifier.size(24.dp))
