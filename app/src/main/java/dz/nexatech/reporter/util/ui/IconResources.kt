@@ -7,19 +7,18 @@ import androidx.compose.ui.res.painterResource
 import com.google.common.collect.ImmutableMap
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.FilesExtension
+import dz.nexatech.reporter.client.common.MimeType
 import dz.nexatech.reporter.client.common.putValue
 import dz.nexatech.reporter.client.model.AssetResource
 import dz.nexatech.reporter.client.model.ResourcesRepository
 
 const val ICON_RESOURCE_PREFIX = "icons/"
 const val ICON_RESOURCE_EXTENSION = FilesExtension.SVG
+const val ICON_RESOURCE_MIME_TYPE = MimeType.SVG
 
 abstract class AbstractIconResource(
     val name: String,
-) : AssetResource(
-    "$ICON_RESOURCE_PREFIX$name.$ICON_RESOURCE_EXTENSION",
-    ICON_RESOURCE_EXTENSION
-) {
+) : AssetResource("$ICON_RESOURCE_PREFIX$name.$ICON_RESOURCE_EXTENSION", ICON_RESOURCE_MIME_TYPE) {
     @Composable
     abstract fun painterResource(resourcesRepository: ResourcesRepository): Painter
 
