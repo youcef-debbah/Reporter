@@ -35,6 +35,62 @@ private class DrawableIconResource(
 }
 
 val iconsAssetsResources = ImmutableMap.Builder<String, AbstractIconResource>()
-    .putValue(DrawableIconResource("info", R.drawable.ms_info))
-    .putValue(DrawableIconResource("home", R.drawable.baseline_home_24))
+    .putValue(DrawableIconResource("baseline_build_24", R.drawable.baseline_build_24))
+    .putValue(DrawableIconResource("baseline_call_24", R.drawable.baseline_call_24))
+    .putValue(DrawableIconResource("baseline_close_24", R.drawable.baseline_close_24))
+    .putValue(DrawableIconResource("baseline_color_lens_24", R.drawable.baseline_color_lens_24))
+    .putValue(DrawableIconResource("baseline_comment_24", R.drawable.baseline_comment_24))
+    .putValue(
+        DrawableIconResource(
+            "baseline_contact_emergency_24",
+            R.drawable.baseline_contact_emergency_24
+        )
+    )
+    .putValue(DrawableIconResource("baseline_contact_mail_24", R.drawable.baseline_contact_mail_24))
+    .putValue(
+        DrawableIconResource(
+            "baseline_contact_phone_24",
+            R.drawable.baseline_contact_phone_24
+        )
+    )
+    .putValue(
+        DrawableIconResource(
+            "baseline_corporate_fare_24",
+            R.drawable.baseline_corporate_fare_24
+        )
+    )
+    .putValue(DrawableIconResource("baseline_credit_card_24", R.drawable.baseline_credit_card_24))
+    .putValue(DrawableIconResource("baseline_dialpad_24", R.drawable.baseline_dialpad_24))
+    .putValue(DrawableIconResource("baseline_discount_24", R.drawable.baseline_discount_24))
+    .putValue(
+        DrawableIconResource(
+            "baseline_display_settings_24",
+            R.drawable.baseline_display_settings_24
+        )
+    )
+    .putValue(DrawableIconResource("baseline_done_24", R.drawable.baseline_done_24))
+    .putValue(DrawableIconResource("baseline_edit_24", R.drawable.baseline_edit_24))
+    .putValue(DrawableIconResource("baseline_email_24", R.drawable.baseline_email_24))
+    .putValue(DrawableIconResource("baseline_emergency_24", R.drawable.baseline_emergency_24))
+    .putValue(DrawableIconResource("baseline_euro_24", R.drawable.baseline_euro_24))
+    .putValue(DrawableIconResource("baseline_event_24", R.drawable.baseline_event_24))
+    .putValue(
+        DrawableIconResource(
+            "baseline_event_available_24",
+            R.drawable.baseline_event_available_24
+        )
+    )
+    .putValue(DrawableIconResource("baseline_event_busy_24", R.drawable.baseline_event_busy_24))
+    .putValue(DrawableIconResource("baseline_exposure_24", R.drawable.baseline_exposure_24))
+    .putValue(DrawableIconResource("baseline_grade_24", R.drawable.baseline_grade_24))
+    .putValue(DrawableIconResource("baseline_home_24", R.drawable.baseline_home_24))
+    .putValue(DrawableIconResource("baseline_info_24", R.drawable.baseline_info_24))
+    .putValue(DrawableIconResource("baseline_input_24", R.drawable.baseline_input_24))
+    .putValue(DrawableIconResource("baseline_keyboard_24", R.drawable.baseline_keyboard_24))
+    .putValue(DrawableIconResource("baseline_list_24", R.drawable.baseline_list_24))
+    .putValue(DrawableIconResource("baseline_percent_24", R.drawable.baseline_percent_24))
+    .putValue(DrawableIconResource("baseline_place_24", R.drawable.baseline_place_24))
+    .putValue(DrawableIconResource("baseline_text_fields_24", R.drawable.baseline_text_fields_24))
+    .putValue(DrawableIconResource("ms_height_24", R.drawable.ms_height_24))
+    .putValue(DrawableIconResource("ms_width_24", R.drawable.ms_width_24))
     .build()

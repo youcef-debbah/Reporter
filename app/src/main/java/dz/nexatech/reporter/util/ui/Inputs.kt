@@ -62,7 +62,7 @@ private fun TextInput(variableState: VariableState) {
             IconButton(onClick = {
                 showInfo = showInfo.not()
             }) {
-                InfoIcon(icon = R.drawable.ms_info, desc = R.string.input_description)
+                InfoIcon(icon = R.drawable.baseline_info_24, desc = R.string.input_description)
             }
         }
     }
