@@ -80,10 +80,12 @@ private fun TextInput(
                 isError = errorMessage != null,
                 supportingText = { errorMessage?.let { ThemedText(it) } },
             )
-            IconButton(onClick = {
-                showInfo = showInfo.not()
-            }) {
-                InfoIcon(icon = R.drawable.baseline_info_24, desc = R.string.input_description)
+            if (variable.desc.isNotBlank()) {
+                IconButton(onClick = {
+                    showInfo = showInfo.not()
+                }) {
+                    InfoIcon(icon = R.drawable.baseline_info_24, desc = R.string.input_description)
+                }
             }
         }
     }
