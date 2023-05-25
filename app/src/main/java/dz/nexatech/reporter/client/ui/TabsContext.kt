@@ -3,6 +3,7 @@
 package dz.nexatech.reporter.client.ui
 
 import android.content.res.Resources
+import android.os.PersistableBundle
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
@@ -26,18 +27,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.os.toPersistableBundle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
 import com.google.accompanist.navigation.animation.composable
+import com.google.common.collect.ImmutableCollection
 import com.google.common.collect.ImmutableList
 import dagger.hilt.android.internal.ThreadUtil
 import dz.nexatech.reporter.client.R
@@ -54,10 +61,13 @@ import dz.nexatech.reporter.client.model.SectionState
 import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.client.model.TemplateOutput
 import dz.nexatech.reporter.client.model.TemplateState
+import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.client.model.asWebResourceResponse
 import dz.nexatech.reporter.client.model.evaluateState
 import dz.nexatech.reporter.util.model.loadContent
 import dz.nexatech.reporter.util.model.newDynamicWebView
+import dz.nexatech.reporter.util.model.stringToStringSnapshotStateMapSaver
+import dz.nexatech.reporter.util.model.toStringSnapshotStateMap
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
 import dz.nexatech.reporter.util.ui.ContentCard
@@ -79,7 +89,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 class TabsContext(val template: Template) {
@@ -414,9 +423,7 @@ class TabsContext(val template: Template) {
                     ThemedText("Record name:" + record.name)
                     ThemedText("Record label: " + record.label)
                     ThemedText("Record desc: " + record.desc)
-                    for (variable in recordState.variables.values) {
-                        VariableInput(variable, resourcesRepository)
-                    }
+                    VariablesList(recordState.variables.values, resourcesRepository)
                 }
             }
             tab
@@ -437,12 +444,29 @@ class TabsContext(val template: Template) {
                 TabScaffold(destinationsRegistry, controller, tab) {
                     ThemedText("Section label: " + section.label)
                     ThemedText("Section desc: " + section.desc)
-                    for (variable in sectionState.variables.values) {
-                        VariableInput(variable, resourcesRepository)
-                    }
+                    VariablesList(sectionState.variables.values, resourcesRepository)
                 }
             }
             tab
+        }
+    }
+
+    @Composable
+    private fun VariablesList(
+        variableStates: ImmutableCollection<VariableState>,
+        resourcesRepository: ResourcesRepository
+    ) {
+        val errors = rememberSaveable(saver = stringToStringSnapshotStateMapSaver) {
+            mutableStateMapOf()
+        }
+        ThemedText("Errors: ${errors.size}")
+        for (variable in variableStates) {
+            VariableInput(variable, resourcesRepository) { key, error ->
+                if (error == null)
+                    errors.remove(key)
+                else
+                    errors[key] = error
+            }
         }
     }
 

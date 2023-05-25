@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,8 +26,12 @@ import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.util.model.Localizer
 
 @Composable
-fun VariableInput(variableState: VariableState, resourcesRepository: ResourcesRepository) {
-    TextInput(variableState) {
+fun VariableInput(
+    variableState: VariableState,
+    resourcesRepository: ResourcesRepository,
+    onError: (String, String?) -> Unit,
+) {
+    TextInput(variableState, onError) {
         InputIcon(
             resourcesRepository,
             variableState.variable.icon,
@@ -36,7 +41,11 @@ fun VariableInput(variableState: VariableState, resourcesRepository: ResourcesRe
 }
 
 @Composable
-private fun TextInput(variableState: VariableState, leadingIcon: @Composable () -> Unit) {
+private fun TextInput(
+    variableState: VariableState,
+    onError: (String, String?) -> Unit,
+    leadingIcon: @Composable () -> Unit,
+) {
     val value = variableState.state.value
     val variable = variableState.variable
     val length = value.length
@@ -51,6 +60,9 @@ private fun TextInput(variableState: VariableState, leadingIcon: @Composable () 
         } else {
             null
         }
+    }
+    LaunchedEffect(errorMessage) {
+        onError(variable.key, errorMessage)
     }
     var showInfo by rememberSaveable { mutableStateOf(false) }
     PaddedColumn {
@@ -117,7 +129,7 @@ private fun TextInputPreview() {
     val state = rememberSaveable { mutableStateOf(variable.default) }
     val variableState = remember { VariableState(variable, state) { state.value = it } }
     PaddedColumn {
-        TextInput(variableState) {
+        TextInput(variableState, { _, _ -> }) {
             DecorativeIcon(icon = R.drawable.baseline_keyboard_24)
         }
     }
