@@ -4,13 +4,16 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 
 /**
  * a destination can be a screen or a graph of screens
  */
-@Immutable
+@Stable
 abstract class AbstractDestination(
     /**
      * the destination's unique route
@@ -21,6 +24,11 @@ abstract class AbstractDestination(
      * also -if this destination is a screen- it may be shown at the top right next to the title
      */
     @DrawableRes val icon: Int?,
+
+    /**
+     * used as a budget on top of icon
+     */
+    val badgeText: MutableState<String> = mutableStateOf("")
 ) {
 
     /**
@@ -60,7 +68,7 @@ abstract class AbstractDestination(
     }
 }
 
-@Immutable
+@Stable
 open class StaticScreenDestination(
     route: String,
     @DrawableRes icon: Int?,

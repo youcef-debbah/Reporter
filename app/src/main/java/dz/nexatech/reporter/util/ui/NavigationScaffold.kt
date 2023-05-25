@@ -208,7 +208,16 @@ fun DefaultNavigationBar(
         NavigationBar {
             destinations.forEach { screen ->
                 NavigationBarItem(
-                    icon = { InfoIcon(screen.icon, screen.title()) },
+                    icon = {
+                        val badgeText = screen.badgeText.value
+                        if (badgeText == "") {
+                            InfoIcon(screen.icon, screen.title())
+                        } else {
+                            BadgedBox(badge = { Badge { Text(badgeText) } }) {
+                                InfoIcon(screen.icon, screen.title())
+                            }
+                        }
+                    },
                     label = screen.label()?.let { { ThemedText(it) } },
                     selected = screen == currentScreen,
                     onClick = {

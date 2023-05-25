@@ -423,7 +423,7 @@ class TabsContext(val template: Template) {
                     ThemedText("Record name:" + record.name)
                     ThemedText("Record label: " + record.label)
                     ThemedText("Record desc: " + record.desc)
-                    VariablesList(recordState.variables.values, resourcesRepository)
+                    VariablesList(recordState.variables.values, tab, resourcesRepository)
                 }
             }
             tab
@@ -444,7 +444,7 @@ class TabsContext(val template: Template) {
                 TabScaffold(destinationsRegistry, controller, tab) {
                     ThemedText("Section label: " + section.label)
                     ThemedText("Section desc: " + section.desc)
-                    VariablesList(sectionState.variables.values, resourcesRepository)
+                    VariablesList(sectionState.variables.values, tab, resourcesRepository)
                 }
             }
             tab
@@ -454,6 +454,7 @@ class TabsContext(val template: Template) {
     @Composable
     private fun VariablesList(
         variableStates: ImmutableCollection<VariableState>,
+        tab: TemplateTab,
         resourcesRepository: ResourcesRepository
     ) {
         val errors = rememberSaveable(saver = stringToStringSnapshotStateMapSaver) {
@@ -466,6 +467,13 @@ class TabsContext(val template: Template) {
                     errors.remove(key)
                 else
                     errors[key] = error
+
+                val errorsCount = errors.size
+                if (errorsCount > 0) {
+                    tab.badgeText.value = errorsCount.toString()
+                } else {
+                    tab.badgeText.value = ""
+                }
             }
         }
     }
