@@ -4,8 +4,10 @@ package dz.nexatech.reporter.util.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -20,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.model.ResourcesRepository
 import dz.nexatech.reporter.client.model.Variable
@@ -30,9 +33,10 @@ import dz.nexatech.reporter.util.model.Localizer
 fun VariableInput(
     variableState: VariableState,
     resourcesRepository: ResourcesRepository,
+    modifier: Modifier = Modifier,
     onError: (String, String?) -> Unit,
 ) {
-    TextInput(variableState, onError) {
+    TextInput(variableState, onError, modifier) {
         InputIcon(
             resourcesRepository,
             variableState.variable.icon,
@@ -45,6 +49,7 @@ fun VariableInput(
 private fun TextInput(
     variableState: VariableState,
     onError: (String, String?) -> Unit,
+    modifier: Modifier = Modifier,
     leadingIcon: @Composable () -> Unit,
 ) {
     val value = variableState.state.value
@@ -65,26 +70,27 @@ private fun TextInput(
     LaunchedEffect(errorMessage) {
         onError(variable.key, errorMessage)
     }
-    Column {
+    Column(
+        modifier = modifier.padding(Theme.dimens.content_padding.copy(bottom = 0.dp)),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         var showInfo by rememberSaveable { mutableStateOf(false) }
         AnimatedVisibility(visible = showInfo) {
             ThemedText(variable.desc)
         }
-        CentredRow(verticalAlignment = Alignment.Top) {
-            OutlinedTextField(
-                colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
-                modifier = Modifier.weight(1f),
-                value = value,
-                onValueChange = variableState.setter,
-                label = { ThemedText(variable.label) },
-                leadingIcon = leadingIcon,
-                trailingIcon = { InfoButton(variable) { showInfo = showInfo.not() } },
-                prefix = { ThemedText(variable.prefix) },
-                suffix = { ThemedText(variable.suffix) },
-                isError = errorMessage != null,
-                supportingText = { errorMessage?.let { ThemedText(it) } },
-            )
-        }
+        OutlinedTextField(
+            colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
+            value = value,
+            onValueChange = variableState.setter,
+            label = { ThemedText(variable.label) },
+            leadingIcon = leadingIcon,
+            trailingIcon = { InfoButton(variable) { showInfo = showInfo.not() } },
+            prefix = { ThemedText(variable.prefix) },
+            suffix = { ThemedText(variable.suffix) },
+            isError = errorMessage != null,
+            supportingText = { errorMessage?.let { ThemedText(it) } },
+        )
     }
 }
 

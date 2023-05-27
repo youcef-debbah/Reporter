@@ -12,14 +12,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -36,7 +37,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -69,7 +69,7 @@ import dz.nexatech.reporter.util.model.newDynamicWebView
 import dz.nexatech.reporter.util.model.stringToStringSnapshotStateMapSaver
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
-import dz.nexatech.reporter.util.ui.CentredRow
+import dz.nexatech.reporter.util.ui.CentredColumn
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
 import dz.nexatech.reporter.util.ui.DefaultNavigationBar
@@ -81,6 +81,7 @@ import dz.nexatech.reporter.util.ui.PaddedColumn
 import dz.nexatech.reporter.util.ui.ScrollableColumn
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
+import dz.nexatech.reporter.util.ui.Theme
 import dz.nexatech.reporter.util.ui.ThemedText
 import dz.nexatech.reporter.util.ui.VariableInput
 import dz.nexatech.reporter.util.ui.contentPadding
@@ -418,14 +419,14 @@ class TabsContext(val template: Template) {
         recordState: RecordState,
         resourcesRepository: ResourcesRepository
     ) {
-        val variableStateLists = recordState.variables.values.slice(1)
+        val variableStateRows = recordState.variables.values.slice(1)
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
                     ThemedText("Record name:" + record.name)
                     ThemedText("Record label: " + record.label)
                     ThemedText("Record desc: " + record.desc)
-                    VariablesListColumns(variableStateLists, tab, resourcesRepository)
+                    VariablesRows(variableStateRows, tab, resourcesRepository)
                 }
             }
             tab
@@ -441,13 +442,16 @@ class TabsContext(val template: Template) {
         sectionState: SectionState,
         resourcesRepository: ResourcesRepository,
     ) {
-        val variableStateLists = sectionState.variables.values.slice(1)
+        val variableStateRows = sectionState.variables.values.slice(1)
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
-                    ThemedText("Section label: " + section.label)
-                    ThemedText("Section desc: " + section.desc)
-                    VariablesListColumns(variableStateLists, tab, resourcesRepository)
+                    ThemedText(
+                        modifier = Modifier.contentPadding(),
+                        text = section.desc,
+                        style = Theme.typography.titleLarge,
+                        )
+                    VariablesRows(variableStateRows, tab, resourcesRepository)
                 }
             }
             tab
@@ -455,18 +459,21 @@ class TabsContext(val template: Template) {
     }
 
     @Composable
-    private fun VariablesListColumns(
-        variableStateLists: List<List<VariableState>>,
+    private fun VariablesRows(
+        variableStateRows: ImmutableList<ImmutableList<VariableState>>,
         tab: TemplateTab,
         resourcesRepository: ResourcesRepository
     ) {
-        CentredRow {
-            for (variableStateList in variableStateLists) {
-                VariablesList(
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(Color.Red),
-                    variableStates = variableStateList,
+        CentredColumn(
+            Modifier.padding(
+                start = Theme.dimens.content_padding.start,
+                end = Theme.dimens.content_padding.end,
+            )
+        ) {
+            for (variableStateRow in variableStateRows) {
+                VariablesRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    variableStateRow = variableStateRow,
                     tab = tab,
                     resourcesRepository = resourcesRepository
                 )
@@ -475,17 +482,21 @@ class TabsContext(val template: Template) {
     }
 
     @Composable
-    private fun VariablesList(
+    private fun VariablesRow(
         modifier: Modifier = Modifier,
-        variableStates: List<VariableState>,
+        variableStateRow: ImmutableList<VariableState>,
         tab: TemplateTab,
         resourcesRepository: ResourcesRepository
     ) {
         val errors = rememberSaveable(saver = stringToStringSnapshotStateMapSaver) {
             mutableStateMapOf()
         }
-        Column(modifier) {
-            for (variableState in variableStates) {
+        Row(
+            modifier,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            for (variableState in variableStateRow) {
                 VariableInput(
                     variableState = variableState,
                     resourcesRepository = resourcesRepository,
