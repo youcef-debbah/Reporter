@@ -1,6 +1,9 @@
 package dz.nexatech.reporter.gradle
 
 object Version {
+    // https://github.com/Kotlin/kotlinx.coroutines/releases
+    const val COROUTINES: String = "1.6.4"
+
     // https://github.com/junit-team/junit4/releases
     const val JUNIT4 = "4.13.2"
 
@@ -8,7 +11,7 @@ object Version {
     const val TRUTH = "1.1.3"
 
     // https://developer.android.com/jetpack/androidx/releases/core
-    const val ANDROIDX_CORE = "1.10.0"
+    const val ANDROIDX_CORE = "1.10.1"
 
     // https://developer.android.com/jetpack/androidx/releases/preference
     const val PREFERENCE = "1.2.0"

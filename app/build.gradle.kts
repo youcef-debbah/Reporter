@@ -1,6 +1,7 @@
 import dz.nexatech.reporter.gradle.Version
 import dz.nexatech.reporter.gradle.addCommonAndroidTestDependencies
 import dz.nexatech.reporter.gradle.addCommonTestDependencies
+import dz.nexatech.reporter.gradle.addCoroutines
 import dz.nexatech.reporter.gradle.addHilt
 import dz.nexatech.reporter.gradle.addLifecycle
 import dz.nexatech.reporter.gradle.addRoomApi
@@ -23,7 +24,7 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
-println("app build config...")
+logger.info("app build config...")
 
 standardAndroidApp("dz.nexatech.reporter.client", 8, "proguard-rules.pro")
 
@@ -36,6 +37,7 @@ dependencies {
 
     addRoomApi()
     addLifecycle()
+    addCoroutines()
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
@@ -78,10 +80,6 @@ dependencies {
 
     implementation("com.github.alorma:compose-settings-ui-m3:${Version.COMPOSE_SETTINGS}")
     implementation("com.tencent:mmkv:${Version.MMKV}")
-
-    val coroutinesVersion = "1.6.4"
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
 
     implementation(project(":core"))
 }

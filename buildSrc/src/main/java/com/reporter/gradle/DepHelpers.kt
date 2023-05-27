@@ -13,6 +13,11 @@ fun DependencyHandler.addRoomCompiler() {
     add("kapt", "androidx.room:room-compiler:${Version.ROOM}")
 }
 
+fun DependencyHandler.addCoroutines(version: String = Version.COROUTINES, transient: Boolean = false) {
+    add(apiOrImpl(transient), "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version")
+    add("testImplementation", "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version")
+}
+
 fun DependencyHandler.addHilt(version: String) {
     addHiltDependencies(version)
     addHiltCompiler(version)
@@ -42,15 +47,16 @@ fun DependencyHandler.addLifecycle(transient: Boolean = false) {
 fun apiOrImpl(transient: Boolean) = if (transient) "api" else "implementation"
 fun apiOrImpl(transient: Boolean, prefix: String) = if (transient) prefix + "Api" else prefix + "Implementation"
 
-fun DependencyHandler.addCommonTestDependencies() {
+fun DependencyHandler.addCommonTestDependencies(appModule: Boolean = true) {
 //    add("testImplementation","com.google.dagger:hilt-android-testing:${Version.HILT}")
 //    add("kaptTest","com.google.dagger:hilt-compiler:${Version.HILT}")
+//    add("testImplementation", "androidx.room:room-testing:${Version.ROOM}")
     add("testImplementation", "junit:junit:${Version.JUNIT4}")
-    add("testImplementation", "androidx.room:room-testing:${Version.ROOM}")
-    add("debugImplementation", "androidx.compose.ui:ui-test-manifest:${Version.Compose.UI}")
+    if (appModule) {
+        add("debugImplementation", "androidx.compose.ui:ui-test-manifest:${Version.Compose.UI}")
+    }
 
-    add("androidTestImplementation", "com.google.truth:truth:${Version.TRUTH}")
-    add("androidTestImplementation", "androidx.arch.core:core-testing:${Version.CORE_ARCH}")
+    add("testImplementation", "com.google.truth:truth:${Version.TRUTH}")
 }
 
 fun DependencyHandler.addCommonAndroidTestDependencies() {

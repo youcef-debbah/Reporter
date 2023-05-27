@@ -29,17 +29,3 @@ fun <V, K : Comparable<K>> NavigableMap<K, V>.closedRange(range: ClosedRange<K>)
 @ExperimentalStdlibApi
 fun <V, K : Comparable<K>> NavigableMap<K, V>.openEndRange(range: OpenEndRange<K>): NavigableMap<K, V> =
     subMap(range.start, true, range.endExclusive, false)
-
-fun <T> Collection<T>.slice(count: Int = 2): List<List<T>> {
-    val result = ArrayList<ArrayList<T>>(count)
-    val sliceSize = (size / count) + 1
-    for (i in 0 until count) {
-        result.add(ArrayList(sliceSize))
-    }
-
-    for ((index, value) in this.withIndex()) {
-        result[index % count].add(value)
-    }
-
-    return result
-}

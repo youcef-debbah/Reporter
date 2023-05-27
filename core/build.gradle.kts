@@ -1,5 +1,7 @@
 import dz.nexatech.reporter.gradle.buildConfig
 import dz.nexatech.reporter.gradle.Version
+import dz.nexatech.reporter.gradle.addCommonTestDependencies
+import dz.nexatech.reporter.gradle.addCoroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -7,6 +9,8 @@ plugins {
     kotlin("jvm")
     `maven-publish`
 }
+
+logger.info("core build config...")
 
 description = "a shared library that encapsulates pdf reports generation capabilities."
 group = "dz.nexatech"
@@ -52,6 +56,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${buildConfig.kotlinVersion}")
     implementation("com.google.guava:guava:${Version.GUAVA_JRE}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
+    addCoroutines()
+    addCommonTestDependencies(false)
 
     api("io.pebbletemplates:pebble:3.2.0")
     api("com.itextpdf:itext7-core:7.2.5")

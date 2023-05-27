@@ -3,7 +3,7 @@ pluginManagement {
     System.getenv("COMMON_LIB_LOCK")?.let {
         val lockFile = File(it)
         while (lockFile.exists()) {
-            println("gradle build locked...")
+            logger.warn("gradle build locked...")
             Thread.sleep(100)
         }
     }

@@ -1,5 +1,6 @@
 package dz.nexatech.reporter.client.common
 
+import com.google.common.collect.ImmutableList
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
@@ -66,4 +67,28 @@ fun <E : Any, T : E> List<E>?.filterByClass(type: KClass<T>): List<T>? {
         }
         return if (result.isEmpty()) null else result
     }
+}
+
+fun <T: Any> Iterable<T>.slice(count: Int = 2): ImmutableList<ImmutableList<T>> {
+    check(count > 0)
+    val result = ImmutableList.builder<ImmutableList<T>>()
+
+    if (count == 1) {
+        for (value in this) {
+            result.add(ImmutableList.of(value))
+        }
+    } else {
+        val iterator = iterator()
+        while (iterator.hasNext()) {
+            var i = 0
+            val sliceBuilder = ImmutableList.builder<T>()
+            while (i < count && iterator.hasNext()) {
+                sliceBuilder.add(iterator.next())
+                i++
+            }
+            result.add(sliceBuilder.build())
+        }
+    }
+
+    return result.build()
 }
