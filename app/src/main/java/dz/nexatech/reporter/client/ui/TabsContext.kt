@@ -3,7 +3,6 @@
 package dz.nexatech.reporter.client.ui
 
 import android.content.res.Resources
-import android.os.PersistableBundle
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
@@ -13,10 +12,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -29,28 +32,25 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.os.toPersistableBundle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
 import com.google.accompanist.navigation.animation.composable
-import com.google.common.collect.ImmutableCollection
 import com.google.common.collect.ImmutableList
 import dagger.hilt.android.internal.ThreadUtil
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.AsyncConfig
 import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.client.common.removeIf
+import dz.nexatech.reporter.client.common.slice
 import dz.nexatech.reporter.client.common.withMain
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.Record
@@ -67,17 +67,18 @@ import dz.nexatech.reporter.client.model.evaluateState
 import dz.nexatech.reporter.util.model.loadContent
 import dz.nexatech.reporter.util.model.newDynamicWebView
 import dz.nexatech.reporter.util.model.stringToStringSnapshotStateMapSaver
-import dz.nexatech.reporter.util.model.toStringSnapshotStateMap
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
+import dz.nexatech.reporter.util.ui.CentredRow
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
 import dz.nexatech.reporter.util.ui.DefaultNavigationBar
 import dz.nexatech.reporter.util.ui.DestinationsRegistry
 import dz.nexatech.reporter.util.ui.ErrorTheme
 import dz.nexatech.reporter.util.ui.InfoIcon
+import dz.nexatech.reporter.util.ui.LocalDimens
 import dz.nexatech.reporter.util.ui.PaddedColumn
-import dz.nexatech.reporter.util.ui.PaddedRow
+import dz.nexatech.reporter.util.ui.ScrollableColumn
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.ThemedText
@@ -417,13 +418,14 @@ class TabsContext(val template: Template) {
         recordState: RecordState,
         resourcesRepository: ResourcesRepository
     ) {
+        val variableStateLists = recordState.variables.values.slice(1)
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
                     ThemedText("Record name:" + record.name)
                     ThemedText("Record label: " + record.label)
                     ThemedText("Record desc: " + record.desc)
-                    VariablesList(recordState.variables.values, tab, resourcesRepository)
+                    VariablesListColumns(variableStateLists, tab, resourcesRepository)
                 }
             }
             tab
@@ -439,12 +441,13 @@ class TabsContext(val template: Template) {
         sectionState: SectionState,
         resourcesRepository: ResourcesRepository,
     ) {
+        val variableStateLists = sectionState.variables.values.slice(1)
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
                     ThemedText("Section label: " + section.label)
                     ThemedText("Section desc: " + section.desc)
-                    VariablesList(sectionState.variables.values, tab, resourcesRepository)
+                    VariablesListColumns(variableStateLists, tab, resourcesRepository)
                 }
             }
             tab
@@ -452,27 +455,52 @@ class TabsContext(val template: Template) {
     }
 
     @Composable
+    private fun VariablesListColumns(
+        variableStateLists: List<List<VariableState>>,
+        tab: TemplateTab,
+        resourcesRepository: ResourcesRepository
+    ) {
+        CentredRow {
+            for (variableStateList in variableStateLists) {
+                VariablesList(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(Color.Red),
+                    variableStates = variableStateList,
+                    tab = tab,
+                    resourcesRepository = resourcesRepository
+                )
+            }
+        }
+    }
+
+    @Composable
     private fun VariablesList(
-        variableStates: ImmutableCollection<VariableState>,
+        modifier: Modifier = Modifier,
+        variableStates: List<VariableState>,
         tab: TemplateTab,
         resourcesRepository: ResourcesRepository
     ) {
         val errors = rememberSaveable(saver = stringToStringSnapshotStateMapSaver) {
             mutableStateMapOf()
         }
-        ThemedText("Errors: ${errors.size}")
-        for (variable in variableStates) {
-            VariableInput(variable, resourcesRepository) { key, error ->
-                if (error == null)
-                    errors.remove(key)
-                else
-                    errors[key] = error
+        Column(modifier) {
+            for (variableState in variableStates) {
+                VariableInput(
+                    variableState = variableState,
+                    resourcesRepository = resourcesRepository,
+                ) { key, error ->
+                    if (error == null)
+                        errors.remove(key)
+                    else
+                        errors[key] = error
 
-                val errorsCount = errors.size
-                if (errorsCount > 0) {
-                    tab.badgeText.value = errorsCount.toString()
-                } else {
-                    tab.badgeText.value = ""
+                    val errorsCount = errors.size
+                    if (errorsCount > 0) {
+                        tab.badgeText.value = errorsCount.toString()
+                    } else {
+                        tab.badgeText.value = ""
+                    }
                 }
             }
         }
@@ -506,7 +534,7 @@ class TabsContext(val template: Template) {
                             DefaultNavigationBar(controller, destinationsRegistry)
                         }
                     }) {
-                    PaddedColumn {
+                    PaddedColumn(Modifier.contentPadding()) {
                         ContentCard(
                             Modifier.clickable(
                                 onClickLabel = stringRes(if (toolbarExpanded) R.string.collapse_template_preview_toolbar_desc else R.string.expand_template_preview_toolbar_desc),
@@ -518,7 +546,10 @@ class TabsContext(val template: Template) {
                                 AnimatedVisibility(toolbarExpanded) {
                                     ThemedText(previewTab.template.desc)
                                 }
-                                PaddedRow {
+                                Row(
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
                                     Button(
                                         enabled = TemplateOutput.pdfGenerating.value == 0,
                                         onClick = {
@@ -546,6 +577,12 @@ class TabsContext(val template: Template) {
                                 }
                             }
                         }
+
+                        Spacer(
+                            modifier = Modifier.height(
+                                LocalDimens.current.content_padding.top + LocalDimens.current.content_padding.bottom
+                            )
+                        )
 
                         ContentCard(shape = RectangleShape) {
                             AndroidView(
@@ -606,9 +643,11 @@ private fun TabScaffold(
         },
         bottomBar = {
         }) {
-        ContentCard {
-            PaddedColumn {
-                block()
+        ScrollableColumn {
+            ContentCard {
+                PaddedColumn {
+                    block()
+                }
             }
         }
     }

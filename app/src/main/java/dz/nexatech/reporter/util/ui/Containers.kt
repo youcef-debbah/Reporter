@@ -1,12 +1,14 @@
 package dz.nexatech.reporter.util.ui
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
@@ -24,9 +26,7 @@ fun ContentCard(
     elevation: CardElevation = CardDefaults.elevatedCardElevation(),
     content: @Composable ColumnScope.() -> Unit,
 ) = ElevatedCard(
-    modifier
-        .contentPadding()
-        .fillMaxWidth(),
+    modifier.fillMaxWidth(),
     shape,
     colors,
     elevation,
@@ -45,6 +45,26 @@ inline fun CentredColumn(
     horizontalAlignment = horizontalAlignment,
     content = content
 )
+
+@Composable
+inline fun ScrollableColumn(
+    modifier: Modifier = Modifier,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
+    scrollState: ScrollState = rememberScrollState(),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    PaddedColumn(
+        modifier = modifier
+            .drawVerticalScrollbar(scrollState)
+            .verticalScroll(scrollState)
+            .fillMaxWidth()
+            .contentPadding(),
+        verticalArrangement = verticalArrangement,
+        horizontalAlignment = horizontalAlignment,
+        content = content
+    )
+}
 
 @Composable
 inline fun PaddedColumn(

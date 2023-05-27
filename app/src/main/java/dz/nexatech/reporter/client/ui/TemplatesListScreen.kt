@@ -12,12 +12,9 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,7 +22,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -46,6 +42,7 @@ import dz.nexatech.reporter.util.ui.DecorativeIcon
 import dz.nexatech.reporter.util.ui.DropdownMenuTextItem
 import dz.nexatech.reporter.util.ui.ExternalLink
 import dz.nexatech.reporter.util.ui.RoundedCorner
+import dz.nexatech.reporter.util.ui.ScrollableColumn
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.StandardAppBarDropdownMenu
@@ -54,7 +51,6 @@ import dz.nexatech.reporter.util.ui.StaticScreenDestination
 import dz.nexatech.reporter.util.ui.ThemedText
 import dz.nexatech.reporter.util.ui.collectWithLifecycleAsState
 import dz.nexatech.reporter.util.ui.contentPadding
-import dz.nexatech.reporter.util.ui.drawVerticalScrollbar
 
 object TemplatesListScreen : StaticScreenDestination(
     route = "templates_list",
@@ -120,17 +116,7 @@ object TemplatesListScreen : StaticScreenDestination(
                 }
             },
         ) {
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .drawVerticalScrollbar(scrollState)
-                    .verticalScroll(
-                        state = scrollState,
-                        enabled = true,
-                    ),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
+            ScrollableColumn {
                 ContentCard(shape = RoundedCorner.Medium) {
                     if (viewModel.templateImporting.value > 0) {
                         LinearProgressIndicator(Modifier.fillMaxWidth())

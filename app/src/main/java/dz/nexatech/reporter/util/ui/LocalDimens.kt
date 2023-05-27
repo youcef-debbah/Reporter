@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 @Stable
-private val padding_unit = 3.dp
+val padding_unit = 2.dp
 
 @Stable
 val zero_padding = 0.dp

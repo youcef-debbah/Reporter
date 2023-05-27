@@ -4,11 +4,13 @@ package dz.nexatech.reporter.util.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,9 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.model.ResourcesRepository
 import dz.nexatech.reporter.client.model.Variable
@@ -64,29 +66,37 @@ private fun TextInput(
     LaunchedEffect(errorMessage) {
         onError(variable.key, errorMessage)
     }
-    var showInfo by rememberSaveable { mutableStateOf(false) }
-    PaddedColumn {
+    Column {
+        var showInfo by rememberSaveable { mutableStateOf(false) }
         AnimatedVisibility(visible = showInfo) {
-            ThemedText(variable.desc, Modifier.fillMaxWidth())
+            ThemedText(variable.desc)
         }
-        CentredRow(Modifier.fillMaxWidth()) {
+        CentredRow(verticalAlignment = Alignment.Top) {
             OutlinedTextField(
+                colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant),
+                modifier = Modifier.weight(1f),
                 value = value,
                 onValueChange = variableState.setter,
                 label = { ThemedText(variable.label) },
                 leadingIcon = leadingIcon,
+                trailingIcon = { InfoButton(variable) { showInfo = showInfo.not() } },
                 prefix = { ThemedText(variable.prefix) },
                 suffix = { ThemedText(variable.suffix) },
                 isError = errorMessage != null,
                 supportingText = { errorMessage?.let { ThemedText(it) } },
             )
-            if (variable.desc.isNotBlank()) {
-                IconButton(onClick = {
-                    showInfo = showInfo.not()
-                }) {
-                    InfoIcon(icon = R.drawable.baseline_info_24, desc = R.string.input_description)
-                }
-            }
+        }
+    }
+}
+
+@Composable
+private fun InfoButton(
+    variable: Variable,
+    onClick: () -> Unit
+) {
+    if (variable.desc.isNotBlank()) {
+        IconButton(onClick = onClick) {
+            InfoIcon(icon = R.drawable.baseline_info_24, desc = R.string.input_description)
         }
     }
 }
@@ -102,9 +112,9 @@ fun InputIcon(
     Icon(painter = painter, contentDescription = null)
 }
 
-@Preview(name = "text_input", widthDp = 400, showBackground = true)
+//@Preview(name = "input_preview", widthDp = 400, showBackground = true)
 @Composable
-private fun TextInputPreview() {
+private fun InputPreview() {
     val variable = Variable(
         namespace = "namespace",
         name = "varname",
