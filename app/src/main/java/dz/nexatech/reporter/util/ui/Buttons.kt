@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,7 +29,7 @@ fun ThemedLink(
         )
         ThemedText(
             text = text,
-            style = MaterialTheme.typography.bodyMedium,
+            style = Theme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
         )
     }

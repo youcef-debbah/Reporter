@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -73,7 +72,7 @@ private fun TextInput(
         }
         CentredRow(verticalAlignment = Alignment.Top) {
             OutlinedTextField(
-                colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant),
+                colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
                 modifier = Modifier.weight(1f),
                 value = value,
                 onValueChange = variableState.setter,

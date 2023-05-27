@@ -11,7 +11,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.TopAppBar
@@ -164,7 +163,7 @@ fun DropdownMenuTextItem(
     onClick: () -> Unit,
 ) {
     DropdownMenuItem(
-        text = { ThemedText(text = title, style = MaterialTheme.typography.titleMedium) },
+        text = { ThemedText(text = title, style = Theme.typography.titleMedium) },
         leadingIcon = { DecorativeIcon(icon) },
         modifier = modifier,
         enabled = enabled,

@@ -41,7 +41,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -250,7 +249,7 @@ private fun Modifier.drawScrollbar(
 }
 
 private val barColor: Color
-    @Composable get() = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+    @Composable get() = Theme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
 
 private val thickness = padding_unit * 2
 private val fadeOutAnimationSpec =

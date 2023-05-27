@@ -82,7 +82,7 @@ private fun StatelessNavigationScaffold(
     snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
-    containerColor: Color = MaterialTheme.colorScheme.background,
+    containerColor: Color = Theme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
     builder: NavGraphBuilder.(NavHostController) -> Unit
 ) {

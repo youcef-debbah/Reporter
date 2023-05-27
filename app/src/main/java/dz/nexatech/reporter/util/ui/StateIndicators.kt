@@ -1,8 +1,10 @@
 package dz.nexatech.reporter.util.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,7 +20,7 @@ private fun Preview() {
 fun LoadingErrorCard(onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+        colors = CardDefaults.cardColors(containerColor = Theme.colorScheme.errorContainer)
     ) {
         PaddedRow(Modifier.fillMaxWidth()) {
             InfoIcon(
@@ -43,7 +45,7 @@ fun LoadingErrorCard(onRetry: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
-    val color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+    val color = Theme.colorScheme.onSurface.copy(alpha = 0.7f)
     CentredRow(
         modifier
             .fillMaxWidth()
@@ -57,7 +59,7 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
         )
         ThemedText(
             text = stringRes(R.string.no_result_found),
-            style = MaterialTheme.typography.bodyLarge.copy(),
+            style = Theme.typography.bodyLarge.copy(),
             color = color,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Start,
@@ -82,7 +84,7 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
 //            )
 //            ThemedText(
 //                text = stringRes(R.string.no_result_found),
-//                style = MaterialTheme.typography.titleMedium,
+//                style = Theme.typography.titleMedium,
 //            )
 //        }
 //        ThemedButton(
