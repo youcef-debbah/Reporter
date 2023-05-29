@@ -128,10 +128,10 @@ object AppConfig {
         remoteConfig = config
 
         config.activate().addOnCompleteListener {
-            if (get(LOCAL_NO_CONFIG_CACHE) || BuildTypeSettings.DEBUG) {
+            if (get(NO_CONFIG_CACHE) || BuildTypeSettings.DEBUG) {
                 config.fetch(0).addOnCompleteListener { fetch ->
                     if (fetch.isSuccessful)
-                        set(LOCAL_NO_CONFIG_CACHE, false)
+                        set(NO_CONFIG_CACHE, false)
                 }
             } else {
                 config.fetch()
@@ -144,7 +144,7 @@ object AppConfig {
 
         config.setDefaultsAsync(allRemoteConfigDefaults.build()).addOnCompleteListener {
             Teller.debug {
-                "app config initialized with version: " + get(REMOTE_CONFIG_VERSION)
+                "app config initialized with version: " + get(CONFIG_VERSION)
             }
         }
     }

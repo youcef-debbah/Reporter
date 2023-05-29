@@ -51,7 +51,7 @@ class TemplateOutput(
             val htmlContent = mutableStateOf(initialContent)
             tabsContext.tabsScope.backgroundLaunch {
                 templateState.templateUpdates
-                    .debounce(AppConfig.get(LOCALE_TEMPLATE_PREVIEW_DEBOUNCE))
+                    .debounce(AppConfig.get(TEMPLATE_PREVIEW_DEBOUNCE))
                     .collect {
                         val html = compiledTemplate.evaluateState(templateState)
                         htmlContent.value = html
@@ -67,8 +67,8 @@ class TemplateOutput(
 
     val pdfConverter = PdfConverter(
         resourcesRepository,
-        AppConfig.get(REMOTE_PDF_RESOURCES_CACHING_ENABLED),
-        AppConfig.get(REMOTE_PDF_COMPRESSION_LEVEL),
+        AppConfig.get(PDF_RESOURCES_CACHING_ENABLED),
+        AppConfig.get(PDF_COMPRESSION_LEVEL),
     ) {
         resourcesRepository.loadFonts(templateState.fontsVariablesStates.values.map { it.state.value })
     }

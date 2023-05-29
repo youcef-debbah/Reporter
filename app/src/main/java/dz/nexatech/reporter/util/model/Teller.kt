@@ -275,7 +275,7 @@ object Teller : AbstractTeller() {
 
     private fun isRecordable(e: Throwable) =
         !e.isCausedBy(
-            AppConfig.get(REMOTE_UNRECORDED_EXCEPTIONS)
+            AppConfig.get(UNRECORDED_EXCEPTIONS)
                 .split(Texts.DATA_SEPARATOR)
         )
 

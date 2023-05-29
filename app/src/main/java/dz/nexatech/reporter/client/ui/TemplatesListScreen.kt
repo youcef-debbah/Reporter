@@ -31,12 +31,12 @@ import androidx.navigation.NavOptions
 import com.google.accompanist.navigation.animation.composable
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.MimeType
-import dz.nexatech.reporter.client.model.LOCAL_MIN_TEMPLATES_LIST_WIDTH
+import dz.nexatech.reporter.client.model.MIN_TEMPLATES_LIST_WIDTH
 import dz.nexatech.reporter.client.model.MainViewModel
-import dz.nexatech.reporter.client.model.REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
+import dz.nexatech.reporter.client.model.TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.util.model.AppConfig
-import dz.nexatech.reporter.util.model.REMOTE_TEMPLATES_DOWNLOADING_LINK
+import dz.nexatech.reporter.util.model.TEMPLATES_DOWNLOADING_LINK
 import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.CentredColumn
 import dz.nexatech.reporter.util.ui.ContentCard
@@ -111,7 +111,7 @@ object TemplatesListScreen : StaticScreenDestination(
                         ) {
                             menuOpened.value = false
                             ExternalLink.openLink(
-                                AppConfig.get(REMOTE_TEMPLATES_DOWNLOADING_LINK)
+                                AppConfig.get(TEMPLATES_DOWNLOADING_LINK)
                             )
                         }
                     }
@@ -120,14 +120,14 @@ object TemplatesListScreen : StaticScreenDestination(
         ) {
             ScrollableColumn {
                 ContentCard(
-                    modifier = Modifier.requiredWidth(AppConfig.intState(LOCAL_MIN_TEMPLATES_LIST_WIDTH).value.dp),
+                    modifier = Modifier.requiredWidth(AppConfig.intState(MIN_TEMPLATES_LIST_WIDTH).value.dp),
                     shape = RoundedCorner.Medium
                 ) {
                     if (viewModel.templateImporting.value > 0) {
                         LinearProgressIndicator(Modifier.weight(1f))
                     }
                     AnimatedLazyLoading(
-                        REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED,
+                        TEMPLATES_LIST_LOADING_ANIMATION_ENABLED,
                         templates
                     ) {
                         val items = templates?.values
@@ -148,7 +148,7 @@ object TemplatesListScreen : StaticScreenDestination(
                                     Button(modifier = Modifier.contentPadding(),
                                         onClick = {
                                             ExternalLink.openLink(
-                                                AppConfig.get(REMOTE_TEMPLATES_DOWNLOADING_LINK)
+                                                AppConfig.get(TEMPLATES_DOWNLOADING_LINK)
                                             )
                                         }) {
                                         DecorativeIcon(icon = R.drawable.baseline_open_in_browser_24)

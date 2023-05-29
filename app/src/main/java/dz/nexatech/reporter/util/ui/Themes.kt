@@ -14,9 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dz.nexatech.reporter.util.model.AppConfig
-import dz.nexatech.reporter.util.model.LOCAL_APPLICATION_THEME
+import dz.nexatech.reporter.util.model.APPLICATION_THEME
 import dz.nexatech.reporter.util.model.LocalConfig
-import dz.nexatech.reporter.util.model.REMOTE_DYNAMIC_TONAL_PALETTE_ENABLED
+import dz.nexatech.reporter.util.model.DYNAMIC_TONAL_PALETTE_ENABLED
 import dz.nexatech.reporter.util.model.Teller
 
 object DefaultColors {
@@ -42,7 +42,7 @@ fun loadColorScheme(
     themeNameConfig: LocalConfig<String>
 ): ColorScheme =
     if (useDynamicTonalPalette
-        && AppConfig.get(REMOTE_DYNAMIC_TONAL_PALETTE_ENABLED)
+        && AppConfig.get(DYNAMIC_TONAL_PALETTE_ENABLED)
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     ) {
         if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -78,7 +78,7 @@ fun ApplicationTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = loadColorScheme(LocalContext.current, true, isDarkTheme, LOCAL_APPLICATION_THEME)
+    val colorScheme = loadColorScheme(LocalContext.current, true, isDarkTheme, APPLICATION_THEME)
     val systemUiController = rememberSystemUiController()
 
     DisposableEffect(systemUiController, isDarkTheme) {

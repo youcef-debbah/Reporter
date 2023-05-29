@@ -25,9 +25,9 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import dz.nexatech.reporter.client.common.indexDiff
-import dz.nexatech.reporter.client.model.REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
+import dz.nexatech.reporter.client.model.TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import dz.nexatech.reporter.util.model.AppConfig
-import dz.nexatech.reporter.util.model.REMOTE_NAVIGATION_ANIMATION_DURATION
+import dz.nexatech.reporter.util.model.NAVIGATION_ANIMATION_DURATION
 
 @Composable
 fun NavigationScaffold(
@@ -105,7 +105,7 @@ private fun StatelessNavigationScaffold(
                     modifier = Modifier.padding(innerPadding),
                     builder = { builder.invoke(this, navController) },
                     enterTransition = {
-                        if (AppConfig.get(REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                        if (AppConfig.get(TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
                             val diff = destinations.iterator().indexDiff(
                                 initialState.destination::isLinkedTo,
                                 targetState.destination::isLinkedTo,
@@ -121,7 +121,7 @@ private fun StatelessNavigationScaffold(
                         }
                     },
                     exitTransition = {
-                        if (AppConfig.get(REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                        if (AppConfig.get(TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
                             val diff = destinations.iterator().indexDiff(
                                 initialState.destination::isLinkedTo,
                                 targetState.destination::isLinkedTo,
@@ -137,7 +137,7 @@ private fun StatelessNavigationScaffold(
                         }
                     },
                     popEnterTransition = {
-                        if (AppConfig.get(REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                        if (AppConfig.get(TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
                             val diff = destinations.iterator().indexDiff(
                                 initialState.destination::isLinkedTo,
                                 targetState.destination::isLinkedTo,
@@ -153,7 +153,7 @@ private fun StatelessNavigationScaffold(
                         }
                     },
                     popExitTransition = {
-                        if (AppConfig.get(REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
+                        if (AppConfig.get(TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)) {
                             val diff = destinations.iterator().indexDiff(
                                 initialState.destination::isLinkedTo,
                                 targetState.destination::isLinkedTo,
@@ -177,24 +177,24 @@ private fun StatelessNavigationScaffold(
 
 @Suppress("UNUSED_PARAMETER")
 private fun defaultInTransition(pop: Boolean): EnterTransition {
-    return fadeIn(animationSpec = tween(AppConfig.get(REMOTE_NAVIGATION_ANIMATION_DURATION)))
+    return fadeIn(animationSpec = tween(AppConfig.get(NAVIGATION_ANIMATION_DURATION)))
 }
 
 @Suppress("UNUSED_PARAMETER")
 private fun defaultOutTransition(pop: Boolean): ExitTransition {
-    return fadeOut(animationSpec = tween(AppConfig.get(REMOTE_NAVIGATION_ANIMATION_DURATION)))
+    return fadeOut(animationSpec = tween(AppConfig.get(NAVIGATION_ANIMATION_DURATION)))
 }
 
 private fun AnimatedContentScope<NavBackStackEntry>.inTransition(goingDeeper: Boolean): EnterTransition =
     slideIntoContainer(
         if (goingDeeper) AnimatedContentScope.SlideDirection.Start else AnimatedContentScope.SlideDirection.End,
-        animationSpec = tween(AppConfig.get(REMOTE_NAVIGATION_ANIMATION_DURATION))
+        animationSpec = tween(AppConfig.get(NAVIGATION_ANIMATION_DURATION))
     )
 
 private fun AnimatedContentScope<NavBackStackEntry>.outTransition(goingDeeper: Boolean): ExitTransition =
     slideOutOfContainer(
         if (goingDeeper) AnimatedContentScope.SlideDirection.End else AnimatedContentScope.SlideDirection.Start,
-        animationSpec = tween(AppConfig.get(REMOTE_NAVIGATION_ANIMATION_DURATION))
+        animationSpec = tween(AppConfig.get(NAVIGATION_ANIMATION_DURATION))
     )
 
 @Composable
