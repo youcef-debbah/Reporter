@@ -7,7 +7,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import dz.nexatech.reporter.client.common.PublicAPI
 import dz.nexatech.reporter.client.common.mainLaunch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -31,7 +30,6 @@ fun LifecycleOwner.whileResumed(block: suspend CoroutineScope.() -> Unit) =
 fun LifecycleOwner.whileCreated(block: suspend CoroutineScope.() -> Unit) =
     whileLifecycle(Lifecycle.State.CREATED, block)
 
-@PublicAPI
 fun onMain(block: () -> Unit): Unit {
     if (Looper.myLooper() == Looper.getMainLooper()) {
         block()

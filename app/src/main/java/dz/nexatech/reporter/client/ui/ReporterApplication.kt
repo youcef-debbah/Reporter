@@ -30,6 +30,7 @@ class ReporterApplication : AbstractApplication() {
 
     @Inject
     fun initAppConfig(firebaseApp: Lazy<FirebaseApp>) = AppConfig.init(
+        this,
         firebaseApp,
         ALL_REMOTE_GLOBAL_CONFIGS,
         ALL_REMOTE_REPORTER_CONFIGS

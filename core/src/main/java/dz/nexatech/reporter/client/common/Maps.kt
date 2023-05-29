@@ -1,27 +1,18 @@
 package dz.nexatech.reporter.client.common
 
 import com.google.common.collect.ImmutableMap
+import com.google.common.collect.MapMaker
 import java.util.*
-import kotlin.collections.ArrayList
+import java.util.concurrent.ConcurrentMap
 
 @Suppress("UNCHECKED_CAST")
-fun <T: Any> Comparator<T>?.compareSortPosition(o1: T, o2: T): Int =
+fun <T> Comparator<T>?.compareSortPosition(o1: T, o2: T): Int =
     this?.compare(o1, o2) ?: (o1 as Comparable<T>).compareTo(o2)
 
-fun <V: Any> ImmutableMap.Builder<String, V>.putValue(value: V): ImmutableMap.Builder<String, V> =
+fun <V : Any> ImmutableMap.Builder<String, V>.putValue(value: V): ImmutableMap.Builder<String, V> =
     put(value.toString(), value)
 
 fun <V> MutableMap<String, V>.putValue(value: V): V? = put(value.toString(), value)
-
-fun <K, V> MutableMap<K, V>.calcIfNull(
-    key: K,
-    mappingFunction: (K) -> V?,
-): V? = get(key) ?: mappingFunction.invoke(key)?.also { put(key, it) }
-
-fun <K, V> MutableMap<K, V>.calcIfAbsent(
-    key: K,
-    mappingFunction: (K) -> V,
-): V = get(key) ?: mappingFunction.invoke(key).also { put(key, it) }
 
 fun <V, K : Comparable<K>> NavigableMap<K, V>.closedRange(range: ClosedRange<K>): NavigableMap<K, V> =
     subMap(range.start, true, range.endInclusive, true)
@@ -29,3 +20,7 @@ fun <V, K : Comparable<K>> NavigableMap<K, V>.closedRange(range: ClosedRange<K>)
 @ExperimentalStdlibApi
 fun <V, K : Comparable<K>> NavigableMap<K, V>.openEndRange(range: OpenEndRange<K>): NavigableMap<K, V> =
     subMap(range.start, true, range.endExclusive, false)
+
+fun <K, V> concurrentMap(init: Int): ConcurrentMap<K, V> =
+    MapMaker().concurrencyLevel(64).initialCapacity(init)
+        .makeMap()

@@ -12,75 +12,63 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-@PublicAPI
 fun CoroutineScope.mainLaunch(
     block: suspend CoroutineScope.() -> Unit
 ): Job =
     this.launch(AsyncConfig.mainDispatcher, CoroutineStart.DEFAULT, block)
 
-@PublicAPI
 fun CoroutineScope.ioLaunch(
     block: suspend CoroutineScope.() -> Unit
 ): Job =
     this.launch(AsyncConfig.ioDispatcher, CoroutineStart.DEFAULT, block)
 
-@PublicAPI
 fun CoroutineScope.backgroundLaunch(
     block: suspend CoroutineScope.() -> Unit
 ): Job =
     this.launch(AsyncConfig.backgroundDispatcher, CoroutineStart.DEFAULT, block)
 
-@PublicAPI
 fun mainLaunch(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> Unit
 ): Job = mainScope().launch(context, start, block)
 
-@PublicAPI
 fun ioLaunch(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> Unit
 ): Job = ioScope().launch(context, start, block)
 
-@PublicAPI
 fun backgroundLaunch(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> Unit
 ): Job = backgroundScope().launch(context, start, block)
 
-@PublicAPI
 fun <T> mainAsync(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> T
 ): Deferred<T> = mainScope().async(context, start, block)
 
-@PublicAPI
 fun <T> ioAsync(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> T
 ): Deferred<T> = ioScope().async(context, start, block)
 
-@PublicAPI
 fun <T> backgroundAsync(
     context: CoroutineContext = EmptyCoroutineContext,
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> T
 ): Deferred<T> = backgroundScope().async(context, start, block)
 
-@PublicAPI
 suspend fun <T> withMain(block: suspend CoroutineScope.() -> T): T =
     withContext(AsyncConfig.mainDispatcher, block)
 
-@PublicAPI
 suspend fun <T> withIO(block: suspend CoroutineScope.() -> T): T =
     withContext(AsyncConfig.ioDispatcher, block)
 
-@PublicAPI
 suspend fun <T> withBackground(block: suspend CoroutineScope.() -> T): T =
     withContext(AsyncConfig.backgroundDispatcher, block)
 

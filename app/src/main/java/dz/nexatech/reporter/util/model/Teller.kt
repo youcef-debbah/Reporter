@@ -10,7 +10,6 @@ import dagger.Lazy
 import dz.nexatech.reporter.client.common.AbstractTeller
 import dz.nexatech.reporter.client.common.Chaos
 import dz.nexatech.reporter.client.common.ParamBuilder
-import dz.nexatech.reporter.client.common.PublicAPI
 import dz.nexatech.reporter.client.common.Texts
 import dz.nexatech.reporter.client.common.duration
 import dz.nexatech.reporter.client.common.ioLaunch
@@ -88,12 +87,10 @@ object Teller : AbstractTeller() {
     private class UnexpectedConditionException(message: String) : RuntimeException(message)
     private class RareConditionException(message: String) : RuntimeException(message)
 
-    @PublicAPI
     override fun logUnexpectedCondition(tag: String, msg: String) {
         logCondition(tag, msg) { UnexpectedConditionException(it) }
     }
 
-    @PublicAPI
     override fun logRareCondition(tag: String, msg: String) {
         logCondition(tag, msg) { RareConditionException(it) }
     }
@@ -131,17 +128,14 @@ object Teller : AbstractTeller() {
         }
     }
 
-    @PublicAPI
     override fun logEvent(event: String) {
         logEvent(event, null)
     }
 
-    @PublicAPI
     fun logEvent(event: String, bundle: Bundle?) {
         queueEvent(event) { bundle }
     }
 
-    @PublicAPI
     override fun logEvent(event: String, bundleBuilder: ParamBuilder.() -> Unit) {
         queueEvent(event) { BundleParamBuilder().apply(bundleBuilder).bundle }
     }
@@ -157,7 +151,6 @@ object Teller : AbstractTeller() {
         }
     }
 
-    @PublicAPI
     override fun test(msg: String) {
         val testMsg = "£££ $msg"
         queueLog("test: $testMsg") {
@@ -183,13 +176,11 @@ object Teller : AbstractTeller() {
         debug("Took ${startTime.duration(now)}: ${msg()}")
     }
 
-    @PublicAPI
     override fun debug(nanos: Long, msg: String) {
         val t0 = System.nanoTime()
         debug("Took ${nanos.duration(t0)} to: $msg")
     }
 
-    @PublicAPI
     override fun debug(msg: String) {
         queueLog("debug: $msg") {
             Log.d(LOG_TAG, msg)
@@ -197,7 +188,6 @@ object Teller : AbstractTeller() {
         }
     }
 
-    @PublicAPI
     override fun info(msg: String) {
         queueLog("info: $msg") {
             Log.i(LOG_TAG, msg)
@@ -205,7 +195,6 @@ object Teller : AbstractTeller() {
         }
     }
 
-    @PublicAPI
     override fun warn(msg: String) {
         queueLog("warn: $msg") {
             Log.w(LOG_TAG, msg)
@@ -213,7 +202,6 @@ object Teller : AbstractTeller() {
         }
     }
 
-    @PublicAPI
     override fun warn(msg: String, e: Throwable?) {
         if (e == null) {
             return warn(msg)
@@ -236,7 +224,6 @@ object Teller : AbstractTeller() {
         }
     }
 
-    @PublicAPI
     override fun error(msg: String, e: Throwable) {
         if (e is CancellationException) {
             throw e

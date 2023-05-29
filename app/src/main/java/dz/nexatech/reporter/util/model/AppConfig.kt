@@ -8,13 +8,11 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue
 import com.tencent.mmkv.MMKV
-import dz.nexatech.reporter.client.common.PublicAPI
-import dz.nexatech.reporter.client.common.calcIfAbsent
-import dz.nexatech.reporter.client.common.calcIfNull
 import dz.nexatech.reporter.client.common.ioLaunch
+import dz.nexatech.reporter.client.common.mainLaunch
 import dz.nexatech.reporter.util.BuildTypeSettings
 import dz.nexatech.reporter.util.ui.AbstractApplication
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicReference
 
 @AnyThread
 object AppConfig {
@@ -22,129 +20,177 @@ object AppConfig {
     @Volatile
     @SuppressLint("StaticFieldLeak")
     private var remoteConfig: FirebaseRemoteConfig? = null
-
-    //    private lateinit var context: AbstractApplication
     private lateinit var localConfig: MMKV
 
-    private val booleanStates = ConcurrentHashMap<String, MutableState<Boolean>>()
-    private val longStates = ConcurrentHashMap<String, MutableState<Long>>()
-    private val intStates = ConcurrentHashMap<String, MutableState<Int>>()
-    private val stringStates = ConcurrentHashMap<String, MutableState<String>>()
+    private val booleanStates: ImmutableMap<String, MutableState<Boolean>>
+    private val longStates: ImmutableMap<String, MutableState<Long>>
+    private val intStates: ImmutableMap<String, MutableState<Int>>
+    private val stringStates: ImmutableMap<String, MutableState<String>>
 
-    private val remoteConfigCache = ConcurrentHashMap<String, FirebaseRemoteConfigValue>()
+    private val remoteConfigCache: ImmutableMap<String, AtomicReference<FirebaseRemoteConfigValue?>>
+
+    init {
+        val localBooleans: ImmutableMap.Builder<String, MutableState<Boolean>> =
+            ImmutableMap.builder()
+        val localLongs: ImmutableMap.Builder<String, MutableState<Long>> = ImmutableMap.builder()
+        val localInts: ImmutableMap.Builder<String, MutableState<Int>> = ImmutableMap.builder()
+        val localStrings: ImmutableMap.Builder<String, MutableState<String>> =
+            ImmutableMap.builder()
+
+        for (entry in ALL_LOCAL_GLOBAL_CONFIGS) {
+            when (val config = entry.value) {
+                is LocalConfig.Boolean -> localBooleans.put(
+                    entry.key,
+                    mutableStateOf(config.default)
+                )
+
+                is LocalConfig.Long -> localLongs.put(
+                    entry.key,
+                    mutableStateOf(config.default)
+                )
+
+                is LocalConfig.Int -> localInts.put(
+                    entry.key,
+                    mutableStateOf(config.default)
+                )
+
+                is LocalConfig.String -> localStrings.put(
+                    entry.key,
+                    mutableStateOf(config.default)
+                )
+            }
+        }
+
+        booleanStates = localBooleans.build()
+        longStates = localLongs.build()
+        intStates = localInts.build()
+        stringStates = localStrings.build()
+    }
+
+    init {
+        val remoteConfigs =
+            ImmutableMap.Builder<String, AtomicReference<FirebaseRemoteConfigValue?>>()
+
+        for (entry in ALL_REMOTE_GLOBAL_CONFIGS) {
+            remoteConfigs.put(entry.key, AtomicReference<FirebaseRemoteConfigValue?>())
+        }
+
+        remoteConfigCache = remoteConfigs.build()
+    }
 
     fun init(
+        context: AbstractApplication,
         app: dagger.Lazy<FirebaseApp>,
         vararg remoteConfigDefaults: Map<String, Any>,
     ) {
-        val context = AbstractApplication.INSTANCE
-        MMKV.initialize(context)
-        localConfig = MMKV.mmkvWithID("local_config")
+        initLocalConfig(context)
 
         ioLaunch {
+            initRemoteConfig(app, remoteConfigDefaults)
+        }
+    }
 
-            val config = FirebaseRemoteConfig.getInstance(app.get())
-            remoteConfig = config
+    private fun initLocalConfig(context: AbstractApplication) {
+        MMKV.initialize(context)
+        val mmkv = MMKV.mmkvWithID("local_config")
+        for (entry in booleanStates) {
+            val state = entry.value
+            state.value = mmkv.getBoolean(entry.key, state.value)
+        }
+        for (entry in longStates) {
+            val state = entry.value
+            state.value = mmkv.getLong(entry.key, state.value)
+        }
+        for (entry in intStates) {
+            val state = entry.value
+            state.value = mmkv.getInt(entry.key, state.value)
+        }
+        for (entry in stringStates) {
+            val state = entry.value
+            state.value = mmkv.getString(entry.key, state.value)!!
+        }
+        localConfig = mmkv
+    }
 
-            config.activate().addOnCompleteListener {
-                if (get(LOCAL_NO_CONFIG_CACHE) || BuildTypeSettings.DEBUG) {
-                    config.fetch(0).addOnCompleteListener { fetch ->
-                        if (fetch.isSuccessful)
-                            set(LOCAL_NO_CONFIG_CACHE, false)
-                    }
-                } else {
-                    config.fetch()
+    private fun initRemoteConfig(
+        app: dagger.Lazy<FirebaseApp>,
+        remoteConfigDefaults: Array<out Map<String, Any>>
+    ) {
+        val config = FirebaseRemoteConfig.getInstance(app.get())
+        remoteConfig = config
+
+        config.activate().addOnCompleteListener {
+            if (get(LOCAL_NO_CONFIG_CACHE) || BuildTypeSettings.DEBUG) {
+                config.fetch(0).addOnCompleteListener { fetch ->
+                    if (fetch.isSuccessful)
+                        set(LOCAL_NO_CONFIG_CACHE, false)
                 }
-
+            } else {
+                config.fetch()
             }
 
-            val allRemoteConfigDefaults = ImmutableMap.Builder<String, Any>()
-            for (values in remoteConfigDefaults) {
-                allRemoteConfigDefaults.putAll(values)
-            }
+        }
 
-            config.setDefaultsAsync(allRemoteConfigDefaults.build()).addOnCompleteListener {
-                Teller.debug {
-                    "app config initialized with version: " + get(REMOTE_CONFIG_VERSION)
-                }
+        val allRemoteConfigDefaults = ImmutableMap.Builder<String, Any>()
+        for (values in remoteConfigDefaults) {
+            allRemoteConfigDefaults.putAll(values)
+        }
+
+        config.setDefaultsAsync(allRemoteConfigDefaults.build()).addOnCompleteListener {
+            Teller.debug {
+                "app config initialized with version: " + get(REMOTE_CONFIG_VERSION)
             }
         }
     }
 
     private fun getRemoteValue(key: String): FirebaseRemoteConfigValue? =
-        remoteConfigCache.calcIfNull(key) {
-            remoteConfig?.let {
-                it.getValue(key).let { value ->
-                    if (value.source == FirebaseRemoteConfig.VALUE_SOURCE_REMOTE)
-                        return@calcIfNull value
-                }
-            }
-            return@calcIfNull null
-        }
+        getRemoteValue(key, remoteConfigCache[key]!!)
 
-    @PublicAPI
+    private fun getRemoteValue(
+        key: String,
+        cacheRef: AtomicReference<FirebaseRemoteConfigValue?>,
+    ) = cacheRef.get() ?: cacheRef.updateAndGet {
+        remoteConfig?.let {
+            it.getValue(key).let { value ->
+                if (value.source == FirebaseRemoteConfig.VALUE_SOURCE_REMOTE)
+                    return@updateAndGet value
+            }
+        }
+        return@updateAndGet null
+    }
+
     fun get(remoteString: RemoteConfig<String>): String =
         getRemoteValue(remoteString.key)?.asString() ?: remoteString.default
 
-    @PublicAPI
     fun get(remoteInt: RemoteConfig<Int>): Int =
         getRemoteValue(remoteInt.key)?.asLong()?.toInt() ?: remoteInt.default
 
-    @PublicAPI
     fun get(remoteLong: RemoteConfig<Long>): Long =
         getRemoteValue(remoteLong.key)?.asLong() ?: remoteLong.default
 
-    @PublicAPI
     fun get(remoteBoolean: RemoteConfig<Boolean>): Boolean =
         getRemoteValue(remoteBoolean.key)?.asBoolean() ?: remoteBoolean.default
 
-    @PublicAPI
-    fun get(localString: LocalConfig<String>): String = get(localString, localString.default)
-
-    @PublicAPI
-    fun get(localInt: LocalConfig<Int>): Int = get(localInt, localInt.default)
-
-    @PublicAPI
-    fun get(localLong: LocalConfig<Long>): Long = get(localLong, localLong.default)
-
-    @PublicAPI
-    fun get(localBoolean: LocalConfig<Boolean>): Boolean = get(localBoolean, localBoolean.default)
-
-    @PublicAPI
     fun stringState(localString: LocalConfig<String>): State<String> =
         mutableStringState(localString)
 
     private fun mutableStringState(localString: LocalConfig<String>) =
-        stringStates.calcIfAbsent(localString.key) {
-            mutableStateOf(get(localString))
-        }
+        stringStates[localString.key]!!
 
-    @PublicAPI
     fun intState(localInt: LocalConfig<Int>): State<Int> = intMutableState(localInt)
 
-    private fun intMutableState(localInt: LocalConfig<Int>) =
-        intStates.calcIfAbsent(localInt.key) {
-            mutableStateOf(get(localInt))
-        }
+    private fun intMutableState(localInt: LocalConfig<Int>) = intStates[localInt.key]!!
 
-    @PublicAPI
     fun longState(localLong: LocalConfig<Long>): State<Long> = longMutableState(localLong)
 
-    private fun longMutableState(localLong: LocalConfig<Long>) =
-        longStates.calcIfAbsent(localLong.key) {
-            mutableStateOf(get(localLong))
-        }
+    private fun longMutableState(localLong: LocalConfig<Long>) = longStates[localLong.key]!!
 
-    @PublicAPI
     fun booleanState(localBoolean: LocalConfig<Boolean>): State<Boolean> =
         booleanMutableState(localBoolean)
 
     private fun booleanMutableState(localBoolean: LocalConfig<Boolean>) =
-        booleanStates.calcIfAbsent(localBoolean.key) {
-            mutableStateOf(get(localBoolean))
-        }
+        booleanStates[localBoolean.key]!!
 
-    @PublicAPI
     fun set(localString: LocalConfig<String>, value: String): String {
         val newValue = try {
             localConfig.putString(localString.key, value)
@@ -154,11 +200,12 @@ object AppConfig {
             get(localString)
         }
 
-        stringStates[localString.key]?.value = newValue
+        mainLaunch {
+            stringStates[localString.key]?.value = newValue
+        }
         return newValue
     }
 
-    @PublicAPI
     fun set(localInt: LocalConfig<Int>, value: Int): Int {
         val newValue = try {
             localConfig.putInt(localInt.key, value)
@@ -168,11 +215,12 @@ object AppConfig {
             get(localInt)
         }
 
-        intStates[localInt.key]?.value = newValue
+        mainLaunch {
+            intStates[localInt.key]?.value = newValue
+        }
         return newValue
     }
 
-    @PublicAPI
     fun set(localLong: LocalConfig<Long>, value: Long): Long {
         val newValue = try {
             localConfig.putLong(localLong.key, value)
@@ -182,11 +230,12 @@ object AppConfig {
             get(localLong)
         }
 
-        longStates[localLong.key]?.value = newValue
+        mainLaunch {
+            longStates[localLong.key]?.value = newValue
+        }
         return newValue
     }
 
-    @PublicAPI
     fun set(localBoolean: LocalConfig<Boolean>, value: Boolean): Boolean {
         val newValue = try {
             localConfig.putBoolean(localBoolean.key, value)
@@ -196,12 +245,13 @@ object AppConfig {
             get(localBoolean)
         }
 
-        booleanStates[localBoolean.key]?.value = newValue
+        mainLaunch {
+            booleanStates[localBoolean.key]?.value = newValue
+        }
         return newValue
     }
 
-    @PublicAPI
-    fun get(localString: LocalConfig<String>, defaultString: String): String {
+    fun get(localString: LocalConfig<String>, defaultString: String = localString.default): String {
         try {
             return localConfig.getString(localString.key, defaultString)!!
         } catch (e: Exception) { // not suspended
@@ -210,8 +260,7 @@ object AppConfig {
         return defaultString
     }
 
-    @PublicAPI
-    fun get(localInt: LocalConfig<Int>, defaultInt: Int): Int {
+    fun get(localInt: LocalConfig<Int>, defaultInt: Int = localInt.default): Int {
         try {
             return localConfig.getInt(localInt.key, defaultInt)
         } catch (e: Exception) { // not suspended
@@ -220,8 +269,7 @@ object AppConfig {
         return defaultInt
     }
 
-    @PublicAPI
-    fun get(localLong: LocalConfig<Long>, defaultLong: Long): Long {
+    fun get(localLong: LocalConfig<Long>, defaultLong: Long = localLong.default): Long {
         try {
             return localConfig.getLong(localLong.key, defaultLong)
         } catch (e: Exception) { // not suspended
@@ -230,8 +278,10 @@ object AppConfig {
         return defaultLong
     }
 
-    @PublicAPI
-    fun get(localBoolean: LocalConfig<Boolean>, defaultBoolean: Boolean): Boolean {
+    fun get(
+        localBoolean: LocalConfig<Boolean>,
+        defaultBoolean: Boolean = localBoolean.default
+    ): Boolean {
         try {
             return localConfig.getBoolean(localBoolean.key, defaultBoolean)
         } catch (e: Exception) { // not suspended
@@ -246,12 +296,28 @@ interface Config<T> {
     val default: T
 }
 
-class RemoteConfig<T>(override val key: String, override val default: T) : Config<T> {
+sealed class RemoteConfig<T>(override val key: kotlin.String, override val default: T) : Config<T> {
     override fun toString() = key
+    final override fun hashCode() = key.hashCode()
+    final override fun equals(other: Any?) =
+        this === other || other is RemoteConfig<*> && this.key == other.key
+
+    class Boolean(key: kotlin.String, default: kotlin.Boolean) : RemoteConfig<kotlin.Boolean>(key, default)
+    class Long(key: kotlin.String, default: kotlin.Long) : RemoteConfig<kotlin.Long>(key, default)
+    class Int(key: kotlin.String, default: kotlin.Int) : RemoteConfig<kotlin.Int>(key, default)
+    class String(key: kotlin.String, default: kotlin.String) : RemoteConfig<kotlin.String>(key, default)
 }
 
-class LocalConfig<T>(override val key: String, override val default: T) : Config<T> {
+sealed class LocalConfig<T>(override val key: kotlin.String, override val default: T) : Config<T> {
     override fun toString() = key
+    final override fun hashCode() = key.hashCode()
+    final override fun equals(other: Any?) =
+        this === other || other is LocalConfig<*> && this.key == other.key
+
+    class Boolean(key: kotlin.String, default: kotlin.Boolean) : LocalConfig<kotlin.Boolean>(key, default)
+    class Long(key: kotlin.String, default: kotlin.Long) : LocalConfig<kotlin.Long>(key, default)
+    class Int(key: kotlin.String, default: kotlin.Int) : LocalConfig<kotlin.Int>(key, default)
+    class String(key: kotlin.String, default: kotlin.String) : LocalConfig<kotlin.String>(key, default)
 }
 
 fun ImmutableMap.Builder<String, Any>.putRemoteConfig(config: RemoteConfig<out Any>): ImmutableMap.Builder<String, Any> =
