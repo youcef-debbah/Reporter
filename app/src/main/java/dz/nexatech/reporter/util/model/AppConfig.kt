@@ -175,21 +175,23 @@ object AppConfig {
         mutableStringState(localString)
 
     private fun mutableStringState(localString: LocalConfig<String>) =
-        stringStates[localString.key]!!
+        stringStates[localString.key]?: throw IllegalArgumentException("String state not found: ${localString.key}")
 
     fun intState(localInt: LocalConfig<Int>): State<Int> = intMutableState(localInt)
 
-    private fun intMutableState(localInt: LocalConfig<Int>) = intStates[localInt.key]!!
+    private fun intMutableState(localInt: LocalConfig<Int>) =
+        intStates[localInt.key]?: throw IllegalArgumentException("Int state not found: ${localInt.key}")
 
     fun longState(localLong: LocalConfig<Long>): State<Long> = longMutableState(localLong)
 
-    private fun longMutableState(localLong: LocalConfig<Long>) = longStates[localLong.key]!!
+    private fun longMutableState(localLong: LocalConfig<Long>) =
+        longStates[localLong.key]?: throw IllegalArgumentException("Long state not found: ${localLong.key}")
 
     fun booleanState(localBoolean: LocalConfig<Boolean>): State<Boolean> =
         booleanMutableState(localBoolean)
 
     private fun booleanMutableState(localBoolean: LocalConfig<Boolean>) =
-        booleanStates[localBoolean.key]!!
+        booleanStates[localBoolean.key]?: throw IllegalArgumentException("Boolean state not found: ${localBoolean.key}")
 
     fun set(localString: LocalConfig<String>, value: String): String {
         val newValue = try {
