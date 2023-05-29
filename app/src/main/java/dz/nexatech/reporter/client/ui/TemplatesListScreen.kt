@@ -14,7 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -30,6 +31,7 @@ import androidx.navigation.NavOptions
 import com.google.accompanist.navigation.animation.composable
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.MimeType
+import dz.nexatech.reporter.client.model.LOCAL_MIN_TEMPLATES_LIST_WIDTH
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import dz.nexatech.reporter.client.model.Template
@@ -117,9 +119,12 @@ object TemplatesListScreen : StaticScreenDestination(
             },
         ) {
             ScrollableColumn {
-                ContentCard(shape = RoundedCorner.Medium) {
+                ContentCard(
+                    modifier = Modifier.requiredWidth(AppConfig.intState(LOCAL_MIN_TEMPLATES_LIST_WIDTH).value.dp),
+                    shape = RoundedCorner.Medium
+                ) {
                     if (viewModel.templateImporting.value > 0) {
-                        LinearProgressIndicator(Modifier.fillMaxWidth())
+                        LinearProgressIndicator(Modifier.weight(1f))
                     }
                     AnimatedLazyLoading(
                         REMOTE_TEMPLATES_LIST_LOADING_ANIMATION_ENABLED,
@@ -178,9 +183,7 @@ fun TemplateCard(
     viewModel: MainViewModel,
 ) {
     Card(
-        Modifier
-            .contentPadding()
-            .fillMaxWidth()
+        Modifier.contentPadding()
     ) {
         CentredColumn(Modifier.clickable {
             viewModel.navigateToTemplateTabs(template, navController)
