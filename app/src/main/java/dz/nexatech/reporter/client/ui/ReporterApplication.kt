@@ -4,8 +4,6 @@ package dz.nexatech.reporter.client.ui
 import android.content.res.Resources
 import com.google.firebase.FirebaseApp
 import dz.nexatech.reporter.client.R
-import dz.nexatech.reporter.client.model.ALL_REMOTE_REPORTER_CONFIGS
-import dz.nexatech.reporter.util.model.ALL_REMOTE_GLOBAL_CONFIGS
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.StandardDestinations
@@ -29,10 +27,5 @@ class ReporterApplication : AbstractApplication() {
     }
 
     @Inject
-    fun initAppConfig(firebaseApp: Lazy<FirebaseApp>) = AppConfig.init(
-        this,
-        firebaseApp,
-        ALL_REMOTE_GLOBAL_CONFIGS,
-        ALL_REMOTE_REPORTER_CONFIGS
-    )
+    fun initAppConfig(firebaseApp: Lazy<FirebaseApp>) = AppConfig.init(this, firebaseApp)
 }
