@@ -18,9 +18,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -30,7 +30,6 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavGraphBuilder
@@ -56,7 +54,7 @@ import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.client.common.removeIf
 import dz.nexatech.reporter.client.common.slice
 import dz.nexatech.reporter.client.common.withMain
-import dz.nexatech.reporter.client.model.MIN_LAYOUT_COLUMN_WIDTH
+import dz.nexatech.reporter.client.model.MAX_LAYOUT_COLUMN_WIDTH
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.Record
 import dz.nexatech.reporter.client.model.RecordState
@@ -69,9 +67,10 @@ import dz.nexatech.reporter.client.model.TemplateState
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.client.model.asWebResourceResponse
 import dz.nexatech.reporter.client.model.evaluateState
-import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.loadContent
 import dz.nexatech.reporter.util.model.newDynamicWebView
+import dz.nexatech.reporter.util.model.rememberColumnsCount
+import dz.nexatech.reporter.util.model.rememberDpState
 import dz.nexatech.reporter.util.model.stringToStringSnapshotStateMapSaver
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
@@ -464,27 +463,24 @@ class TabsContext(val template: Template) {
 
     @Composable
     private fun VariablesRows(
-    variables: ImmutableMap<String, VariableState>,
-    tab: TemplateTab,
-    resourcesRepository: ResourcesRepository,
+        variables: ImmutableMap<String, VariableState>,
+        tab: TemplateTab,
+        resourcesRepository: ResourcesRepository,
     ) {
-        val config = LocalConfiguration.current
-        val variableStateRows by remember(config) {
-            val screenWidth = config.screenWidthDp
-            val columnWidth by AppConfig.intState(MIN_LAYOUT_COLUMN_WIDTH)
-            derivedStateOf {
-                variables.values.slice(screenWidth / columnWidth)
-            }
-        }
         CentredColumn(
             Modifier.padding(
                 start = Theme.dimens.content_padding.start,
                 end = Theme.dimens.content_padding.end,
             )
         ) {
+            val columnsCount by rememberColumnsCount()
+            val variableStateRows = remember(columnsCount) {
+                variables.values.slice(columnsCount)
+            }
+            val width by rememberDpState(MAX_LAYOUT_COLUMN_WIDTH)
             for (variableStateRow in variableStateRows) {
                 VariablesRow(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.requiredWidth(width),
                     variableStateRow = variableStateRow,
                     tab = tab,
                     resourcesRepository = resourcesRepository
@@ -558,12 +554,15 @@ class TabsContext(val template: Template) {
                         }
                     }) {
                     PaddedColumn(Modifier.contentPadding()) {
+                        val width by rememberDpState(MAX_LAYOUT_COLUMN_WIDTH)
                         ContentCard(
-                            Modifier.clickable(
-                                onClickLabel = stringRes(if (toolbarExpanded) R.string.collapse_template_preview_toolbar_desc else R.string.expand_template_preview_toolbar_desc),
-                            ) {
-                                toolbarExpanded = toolbarExpanded.not()
-                            }
+                            Modifier
+                                .clickable(
+                                    onClickLabel = stringRes(if (toolbarExpanded) R.string.collapse_template_preview_toolbar_desc else R.string.expand_template_preview_toolbar_desc),
+                                ) {
+                                    toolbarExpanded = toolbarExpanded.not()
+                                }
+                                .requiredWidth(width)
                         ) {
                             PaddedColumn {
                                 AnimatedVisibility(toolbarExpanded) {

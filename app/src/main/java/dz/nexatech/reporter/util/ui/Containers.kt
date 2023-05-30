@@ -2,6 +2,8 @@ package dz.nexatech.reporter.util.ui
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -26,7 +28,7 @@ fun ContentCard(
     elevation: CardElevation = CardDefaults.elevatedCardElevation(),
     content: @Composable ColumnScope.() -> Unit,
 ) = ElevatedCard(
-    modifier.fillMaxWidth(),
+    modifier,
     shape,
     colors,
     elevation,
@@ -40,7 +42,7 @@ inline fun CentredColumn(
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     content: @Composable ColumnScope.() -> Unit
 ) = Column(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier,
     verticalArrangement = verticalArrangement,
     horizontalAlignment = horizontalAlignment,
     content = content
@@ -73,12 +75,23 @@ inline fun PaddedColumn(
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     content: @Composable ColumnScope.() -> Unit
 ) = Column(
-    modifier = modifier
-        .fillMaxWidth()
-        .contentPadding(),
+    modifier = modifier.contentPadding(),
     verticalArrangement = verticalArrangement,
     horizontalAlignment = horizontalAlignment,
     content = content
+)
+
+@Composable
+inline fun PaddedBox(
+    modifier: Modifier = Modifier,
+    contentAlignment: Alignment = Alignment.Center,
+    propagateMinConstraints: Boolean = false,
+    content: @Composable BoxScope.() -> Unit
+) = Box(
+    modifier = modifier.contentPadding(),
+    contentAlignment = contentAlignment,
+    propagateMinConstraints = propagateMinConstraints,
+    content = content,
 )
 
 @Composable

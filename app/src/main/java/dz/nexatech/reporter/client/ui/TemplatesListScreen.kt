@@ -1,4 +1,8 @@
-@file:OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@file:OptIn(
+    ExperimentalAnimationApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalLayoutApi::class
+)
 
 package dz.nexatech.reporter.client.ui
 
@@ -10,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -17,13 +22,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -31,12 +32,12 @@ import androidx.navigation.NavOptions
 import com.google.accompanist.navigation.animation.composable
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.MimeType
-import dz.nexatech.reporter.client.model.MAX_LAYOUT_COLUMN_WIDTH
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.TEMPLATES_DOWNLOADING_LINK
+import dz.nexatech.reporter.util.model.rememberMaxLayoutColumnWidth
 import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.CentredColumn
 import dz.nexatech.reporter.util.ui.ContentCard
@@ -50,11 +51,9 @@ import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.StandardAppBarDropdownMenu
 import dz.nexatech.reporter.util.ui.StandardAppbarIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
-import dz.nexatech.reporter.util.ui.Theme
 import dz.nexatech.reporter.util.ui.ThemedText
 import dz.nexatech.reporter.util.ui.collectWithLifecycleAsState
 import dz.nexatech.reporter.util.ui.contentPadding
-import kotlin.math.min
 
 object TemplatesListScreen : StaticScreenDestination(
     route = "templates_list",
@@ -121,18 +120,9 @@ object TemplatesListScreen : StaticScreenDestination(
             },
         ) {
             ScrollableColumn {
-                val config = LocalConfiguration.current
-                val dimens = Theme.dimens
-                val cardWidth by remember(config, dimens) {
-                    val maxWidth by AppConfig.intState(MAX_LAYOUT_COLUMN_WIDTH)
-                    val screenWidth = config.screenWidthDp
-                    val horizontalPadding = dimens.content_padding.horizontal.value * 2
-                    derivedStateOf {
-                        Dp(min(maxWidth, screenWidth) - horizontalPadding)
-                    }
-                }
+                val width by rememberMaxLayoutColumnWidth()
                 ContentCard(
-                    modifier = Modifier.requiredWidth(cardWidth),
+                    modifier = Modifier.requiredWidth(width),
                     shape = RoundedCorner.Medium
                 ) {
                     if (viewModel.templateImporting.value > 0) {
@@ -197,9 +187,13 @@ fun TemplateCard(
     Card(
         Modifier.contentPadding()
     ) {
-        CentredColumn(Modifier.clickable {
-            viewModel.navigateToTemplateTabs(template, navController)
-        }) {
+        CentredColumn(
+            Modifier
+                .clickable {
+                    viewModel.navigateToTemplateTabs(template, navController)
+                }
+                .fillMaxWidth()
+        ) {
             ThemedText(text = template.label, style = MaterialTheme.typography.titleLarge)
             ThemedText(text = template.desc, style = MaterialTheme.typography.bodyLarge)
         }
