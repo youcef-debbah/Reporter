@@ -6,6 +6,7 @@
 package dz.nexatech.reporter.client.ui
 
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -21,9 +22,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -31,7 +36,7 @@ import androidx.navigation.NavOptions
 import com.google.accompanist.navigation.animation.composable
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.MimeType
-import dz.nexatech.reporter.client.model.MIN_TEMPLATES_LIST_WIDTH
+import dz.nexatech.reporter.client.model.MAX_TEMPLATES_LIST_WIDTH
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import dz.nexatech.reporter.client.model.Template
@@ -41,6 +46,7 @@ import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.CentredColumn
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
+import dz.nexatech.reporter.util.ui.Dimens
 import dz.nexatech.reporter.util.ui.DropdownMenuTextItem
 import dz.nexatech.reporter.util.ui.ExternalLink
 import dz.nexatech.reporter.util.ui.RoundedCorner
@@ -50,9 +56,11 @@ import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.StandardAppBarDropdownMenu
 import dz.nexatech.reporter.util.ui.StandardAppbarIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
+import dz.nexatech.reporter.util.ui.Theme
 import dz.nexatech.reporter.util.ui.ThemedText
 import dz.nexatech.reporter.util.ui.collectWithLifecycleAsState
 import dz.nexatech.reporter.util.ui.contentPadding
+import kotlin.math.min
 
 object TemplatesListScreen : StaticScreenDestination(
     route = "templates_list",
@@ -119,8 +127,17 @@ object TemplatesListScreen : StaticScreenDestination(
             },
         ) {
             ScrollableColumn {
+                val maxWidth by AppConfig.intState(MAX_TEMPLATES_LIST_WIDTH)
+                val config: Configuration = LocalConfiguration.current
+                val dimens: Dimens = Theme.dimens
+                val cardWidth by remember(config, dimens) {
+                    derivedStateOf {
+                        val horizontalPadding = dimens.content_padding.horizontal
+                        Dp(min(config.screenWidthDp, maxWidth) - horizontalPadding.value * 2)
+                    }
+                }
                 ContentCard(
-                    modifier = Modifier.requiredWidth(AppConfig.intState(MIN_TEMPLATES_LIST_WIDTH).value.dp),
+                    modifier = Modifier.requiredWidth(cardWidth),
                     shape = RoundedCorner.Medium
                 ) {
                     if (viewModel.templateImporting.value > 0) {

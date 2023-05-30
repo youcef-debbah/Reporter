@@ -98,6 +98,9 @@ class StaticPadding(
     val bottom: Dp = 0.dp
 ) : PaddingValues {
 
+    val horizontal = start + end
+    val vertical = top + bottom
+
     fun copy(
         start: Dp = Dp.Unspecified,
         top: Dp = Dp.Unspecified,
