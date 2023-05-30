@@ -1,16 +1,11 @@
-@file:OptIn(
-    ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalLayoutApi::class, ExperimentalFoundationApi::class
-)
+@file:OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 
 package dz.nexatech.reporter.client.ui
 
 import android.content.Intent
-import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -46,7 +41,6 @@ import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.CentredColumn
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
-import dz.nexatech.reporter.util.ui.Dimens
 import dz.nexatech.reporter.util.ui.DropdownMenuTextItem
 import dz.nexatech.reporter.util.ui.ExternalLink
 import dz.nexatech.reporter.util.ui.RoundedCorner
@@ -127,13 +121,14 @@ object TemplatesListScreen : StaticScreenDestination(
             },
         ) {
             ScrollableColumn {
-                val maxWidth by AppConfig.intState(MAX_TEMPLATES_LIST_WIDTH)
-                val config: Configuration = LocalConfiguration.current
-                val dimens: Dimens = Theme.dimens
+                val config = LocalConfiguration.current
+                val dimens = Theme.dimens
                 val cardWidth by remember(config, dimens) {
+                    val maxWidth by AppConfig.intState(MAX_TEMPLATES_LIST_WIDTH)
+                    val screenWidth = config.screenWidthDp
+                    val horizontalPadding = dimens.content_padding.horizontal.value * 2
                     derivedStateOf {
-                        val horizontalPadding = dimens.content_padding.horizontal
-                        Dp(min(config.screenWidthDp, maxWidth) - horizontalPadding.value * 2)
+                        Dp(min(maxWidth, screenWidth) - horizontalPadding)
                     }
                 }
                 ContentCard(
