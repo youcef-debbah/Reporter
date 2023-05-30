@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dz.nexatech.reporter.client.model.MAX_LAYOUT_COLUMN_WIDTH
 import dz.nexatech.reporter.client.model.MIN_LAYOUT_COLUMN_WIDTH
+import dz.nexatech.reporter.util.ui.Dimens
 import dz.nexatech.reporter.util.ui.Theme
 import kotlin.math.min
 
@@ -22,24 +23,22 @@ fun rememberDpState(intConfig: LocalConfig.Int): State<Dp> = remember {
 }
 
 @Composable
-fun rememberColumnsCount(config: Configuration = LocalConfiguration.current): State<Int> {
-    return remember(config) {
+fun rememberColumnsCount(config: Configuration = LocalConfiguration.current): State<Int> =
+    remember(config) {
         val screenWidth = config.screenWidthDp
         val columnWidth by AppConfig.intState(MIN_LAYOUT_COLUMN_WIDTH)
         derivedStateOf(structuralEqualityPolicy()) { screenWidth / columnWidth }
     }
-}
 
 @Composable
-fun rememberMaxLayoutColumnWidth(): State<Dp> {
-    val config = LocalConfiguration.current
-    val dimens = Theme.dimens
-    return remember(config, dimens) {
-        val maxWidth by AppConfig.intState(MAX_LAYOUT_COLUMN_WIDTH)
-        val screenWidth = config.screenWidthDp
-        val horizontalPadding = dimens.content_padding.horizontal.value * 2
-        derivedStateOf {
-            Dp(min(maxWidth, screenWidth) - horizontalPadding)
-        }
+fun rememberMaxLayoutColumnWidth(
+    config: Configuration = LocalConfiguration.current,
+    dimens: Dimens = Theme.dimens,
+): State<Dp> = remember(config, dimens) {
+    val maxWidth by AppConfig.intState(MAX_LAYOUT_COLUMN_WIDTH)
+    val screenWidth = config.screenWidthDp
+    val horizontalPadding = dimens.content_padding.horizontal.value * 2
+    derivedStateOf {
+        Dp(min(maxWidth, screenWidth) - horizontalPadding)
     }
 }
