@@ -20,10 +20,12 @@ val REPORTER_REMOTE_CONFIGS_DEFAULTS: ImmutableMap<String, Any> = ImmutableMap.b
     .build()
 
 val TEMPLATE_PREVIEW_DEBOUNCE = LocalConfig.Long("TEMPLATE_PREVIEW_DEBOUNCE", 500L)
-val MAX_TEMPLATES_LIST_WIDTH = LocalConfig.Int("MIN_TEMPLATES_LIST_WIDTH", 500)
+val MAX_LAYOUT_COLUMN_WIDTH = LocalConfig.Int("MAX_LAYOUT_COLUMN_WIDTH", 500)
+val MIN_LAYOUT_COLUMN_WIDTH = LocalConfig.Int("MIN_LAYOUT_COLUMN_WIDTH", 500)
 
 @Suppress("unused")
 val REPORTER_LOCAL_CONFIGS: ImmutableMap<String, LocalConfig<*>> = ImmutableMap.builder<String, LocalConfig<*>>()
     .putLocalConfig(TEMPLATE_PREVIEW_DEBOUNCE)
-    .putLocalConfig(MAX_TEMPLATES_LIST_WIDTH)
+    .putLocalConfig(MAX_LAYOUT_COLUMN_WIDTH)
+    .putLocalConfig(MIN_LAYOUT_COLUMN_WIDTH)
     .build()

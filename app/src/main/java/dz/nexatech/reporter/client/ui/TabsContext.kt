@@ -30,14 +30,17 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavGraphBuilder
@@ -45,6 +48,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
 import com.google.accompanist.navigation.animation.composable
 import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableMap
 import dagger.hilt.android.internal.ThreadUtil
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.AsyncConfig
@@ -52,6 +56,7 @@ import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.client.common.removeIf
 import dz.nexatech.reporter.client.common.slice
 import dz.nexatech.reporter.client.common.withMain
+import dz.nexatech.reporter.client.model.MIN_LAYOUT_COLUMN_WIDTH
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.Record
 import dz.nexatech.reporter.client.model.RecordState
@@ -64,6 +69,7 @@ import dz.nexatech.reporter.client.model.TemplateState
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.client.model.asWebResourceResponse
 import dz.nexatech.reporter.client.model.evaluateState
+import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.loadContent
 import dz.nexatech.reporter.util.model.newDynamicWebView
 import dz.nexatech.reporter.util.model.stringToStringSnapshotStateMapSaver
@@ -419,14 +425,13 @@ class TabsContext(val template: Template) {
         recordState: RecordState,
         resourcesRepository: ResourcesRepository
     ) {
-        val variableStateRows = recordState.variables.values.slice(1)
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
                     ThemedText("Record name:" + record.name)
                     ThemedText("Record label: " + record.label)
                     ThemedText("Record desc: " + record.desc)
-                    VariablesRows(variableStateRows, tab, resourcesRepository)
+                    VariablesRows(recordState.variables, tab, resourcesRepository)
                 }
             }
             tab
@@ -442,7 +447,6 @@ class TabsContext(val template: Template) {
         sectionState: SectionState,
         resourcesRepository: ResourcesRepository,
     ) {
-        val variableStateRows = sectionState.variables.values.slice(1)
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
@@ -450,8 +454,8 @@ class TabsContext(val template: Template) {
                         modifier = Modifier.contentPadding(),
                         text = section.desc,
                         style = Theme.typography.titleLarge,
-                        )
-                    VariablesRows(variableStateRows, tab, resourcesRepository)
+                    )
+                    VariablesRows(sectionState.variables, tab, resourcesRepository)
                 }
             }
             tab
@@ -460,10 +464,18 @@ class TabsContext(val template: Template) {
 
     @Composable
     private fun VariablesRows(
-        variableStateRows: ImmutableList<ImmutableList<VariableState>>,
-        tab: TemplateTab,
-        resourcesRepository: ResourcesRepository
+    variables: ImmutableMap<String, VariableState>,
+    tab: TemplateTab,
+    resourcesRepository: ResourcesRepository,
     ) {
+        val config = LocalConfiguration.current
+        val variableStateRows by remember(config) {
+            val screenWidth = config.screenWidthDp
+            val columnWidth by AppConfig.intState(MIN_LAYOUT_COLUMN_WIDTH)
+            derivedStateOf {
+                variables.values.slice(screenWidth / columnWidth)
+            }
+        }
         CentredColumn(
             Modifier.padding(
                 start = Theme.dimens.content_padding.start,

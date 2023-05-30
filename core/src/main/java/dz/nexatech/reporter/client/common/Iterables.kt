@@ -70,10 +70,8 @@ fun <E : Any, T : E> List<E>?.filterByClass(type: KClass<T>): List<T>? {
 }
 
 fun <T: Any> Iterable<T>.slice(count: Int = 2): ImmutableList<ImmutableList<T>> {
-    check(count > 0)
     val result = ImmutableList.builder<ImmutableList<T>>()
-
-    if (count == 1) {
+    if (count <= 1) {
         for (value in this) {
             result.add(ImmutableList.of(value))
         }

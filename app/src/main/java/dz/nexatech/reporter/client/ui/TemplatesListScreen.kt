@@ -31,7 +31,7 @@ import androidx.navigation.NavOptions
 import com.google.accompanist.navigation.animation.composable
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.MimeType
-import dz.nexatech.reporter.client.model.MAX_TEMPLATES_LIST_WIDTH
+import dz.nexatech.reporter.client.model.MAX_LAYOUT_COLUMN_WIDTH
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import dz.nexatech.reporter.client.model.Template
@@ -124,7 +124,7 @@ object TemplatesListScreen : StaticScreenDestination(
                 val config = LocalConfiguration.current
                 val dimens = Theme.dimens
                 val cardWidth by remember(config, dimens) {
-                    val maxWidth by AppConfig.intState(MAX_TEMPLATES_LIST_WIDTH)
+                    val maxWidth by AppConfig.intState(MAX_LAYOUT_COLUMN_WIDTH)
                     val screenWidth = config.screenWidthDp
                     val horizontalPadding = dimens.content_padding.horizontal.value * 2
                     derivedStateOf {
