@@ -101,9 +101,12 @@ fun ApplicationTheme(
         materialTypography.copy(
             titleMedium = materialTypography.titleMedium.copy(
                 fontSize = 19.sp,
-                lineHeight = 26.sp,
+                lineHeight = 24.sp,
             ),
-            titleSmall = materialTypography.titleMedium
+            titleSmall = materialTypography.titleSmall.copy (
+                fontSize = 17.sp,
+                lineHeight = 24.sp,
+            ),
         )
     }
     MaterialTheme(
