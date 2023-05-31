@@ -1,7 +1,6 @@
 package dz.nexatech.reporter.util.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,7 +33,7 @@ fun <T> AnimatedLazyLoading(
     content: @Composable (T) -> Unit
 ) {
     if (AppConfig.get(animationEnabled)) {
-        Column {
+        CentredColumn {
             AnimatedVisibility(data == null) {
                 loadingContent()
             }

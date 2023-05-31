@@ -120,9 +120,9 @@ object TemplatesListScreen : StaticScreenDestination(
             },
         ) {
             ScrollableColumn {
-                val width by rememberMaxLayoutColumnWidth()
+                val templatesListWidth by rememberMaxLayoutColumnWidth()
                 ContentCard(
-                    modifier = Modifier.requiredWidth(width),
+                    modifier = Modifier.requiredWidth(templatesListWidth),
                     shape = RoundedCorner.Medium
                 ) {
                     if (viewModel.templateImporting.value > 0) {

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.runtime.Composable
@@ -71,6 +73,7 @@ import dz.nexatech.reporter.util.model.loadContent
 import dz.nexatech.reporter.util.model.newDynamicWebView
 import dz.nexatech.reporter.util.model.rememberColumnsCount
 import dz.nexatech.reporter.util.model.rememberDpState
+import dz.nexatech.reporter.util.model.rememberMaxLayoutColumnWidth
 import dz.nexatech.reporter.util.model.stringToStringSnapshotStateMapSaver
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
@@ -548,13 +551,13 @@ class TabsContext(val template: Template) {
 
                 SimpleScaffold(
                     topBar = {
-                        Column {
+                        CentredColumn {
                             StandardAppBar(controller, previewTab.title())
                             DefaultNavigationBar(controller, destinationsRegistry)
                         }
                     }) {
                     PaddedColumn(Modifier.contentPadding()) {
-                        val width by rememberDpState(MAX_LAYOUT_COLUMN_WIDTH)
+                        val dashboardWidth by rememberMaxLayoutColumnWidth()
                         ContentCard(
                             Modifier
                                 .clickable(
@@ -562,13 +565,24 @@ class TabsContext(val template: Template) {
                                 ) {
                                     toolbarExpanded = toolbarExpanded.not()
                                 }
-                                .requiredWidth(width)
+                                .requiredWidth(dashboardWidth)
                         ) {
                             PaddedColumn {
                                 AnimatedVisibility(toolbarExpanded) {
-                                    ThemedText(previewTab.template.desc)
+                                    CentredColumn {
+                                        ThemedText(previewTab.template.desc)
+                                        Divider(
+                                            Modifier
+                                                .contentPadding(
+                                                    start = Theme.dimens.content_padding.start * 2,
+                                                    end = Theme.dimens.content_padding.end * 2,
+                                                )
+                                                .fillMaxWidth()
+                                        )
+                                    }
                                 }
                                 Row(
+                                    modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Center,
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
@@ -658,7 +672,7 @@ private fun TabScaffold(
 ) {
     SimpleScaffold(
         topBar = {
-            Column {
+            CentredColumn {
                 StandardAppBar(navController, tab.title())
                 DefaultNavigationBar(navController, destinationsRegistry)
             }
