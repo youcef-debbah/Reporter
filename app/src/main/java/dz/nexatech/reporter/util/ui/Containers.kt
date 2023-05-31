@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
 package dz.nexatech.reporter.util.ui
 
 import androidx.compose.foundation.ScrollState
@@ -6,7 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
@@ -95,27 +98,31 @@ inline fun PaddedBox(
 )
 
 @Composable
-inline fun CentredRow(
+fun CentredRow(
     modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceEvenly,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    maxItemsInEachRow: Int = Int.MAX_VALUE,
     content: @Composable RowScope.() -> Unit
-) = Row(
+) = FlowRow(
     modifier = modifier,
     horizontalArrangement = horizontalArrangement,
     verticalAlignment = verticalAlignment,
-    content = content
+    maxItemsInEachRow = maxItemsInEachRow,
+    content = content,
 )
 
 @Composable
-inline fun PaddedRow(
+fun PaddedRow(
     modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceEvenly,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    maxItemsInEachRow: Int = Int.MAX_VALUE,
     content: @Composable RowScope.() -> Unit
-) = Row(
+) = FlowRow(
     modifier = modifier.contentPadding(),
     horizontalArrangement = horizontalArrangement,
     verticalAlignment = verticalAlignment,
-    content = content
+    maxItemsInEachRow = maxItemsInEachRow,
+    content = content,
 )

@@ -3,10 +3,17 @@ package dz.nexatech.reporter.util.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.Divider
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.flowlayout.FlowMainAxisAlignment
@@ -50,7 +57,10 @@ fun ThemePicker(
                 }
             }
 
-            CentredRow {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
                 TextButton(onClick = { onThemeSelected.invoke(null) }) {
                     ThemePreviewIcon(selection, "", Theme.colorScheme)
                     ThemedText(R.string.default_theme)
@@ -63,7 +73,7 @@ fun ThemePicker(
 @Preview(showBackground = true)
 @Composable
 private fun ThemePreviewIconPreview() {
-    PaddedRow {
+    Row {
         ThemePreviewIcon("", "", ThemeColors.GREEN.colorScheme(false))
         ThemePreviewIcon("", " ", ThemeColors.RED.colorScheme(false))
     }
