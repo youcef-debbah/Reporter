@@ -83,7 +83,7 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
 //            )
 //            ThemedText(
 //                text = stringRes(R.string.no_result_found),
-//                style = Theme.typography.titleMedium,
+//                style = Theme.typography.titleSmall,
 //            )
 //        }
 //        ThemedButton(

@@ -102,7 +102,8 @@ fun ApplicationTheme(
             titleMedium = materialTypography.titleMedium.copy(
                 fontSize = 19.sp,
                 lineHeight = 26.sp,
-                )
+            ),
+            titleSmall = materialTypography.titleMedium
         )
     }
     MaterialTheme(

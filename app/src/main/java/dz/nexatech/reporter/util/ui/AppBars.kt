@@ -163,7 +163,7 @@ fun DropdownMenuTextItem(
     onClick: () -> Unit,
 ) {
     DropdownMenuItem(
-        text = { ThemedText(text = title, style = Theme.typography.titleMedium) },
+        text = { ThemedText(text = title, style = Theme.typography.titleSmall) },
         leadingIcon = { DecorativeIcon(icon) },
         modifier = modifier,
         enabled = enabled,
