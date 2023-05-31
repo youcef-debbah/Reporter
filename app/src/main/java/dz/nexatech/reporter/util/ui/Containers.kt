@@ -100,7 +100,7 @@ inline fun PaddedBox(
 @Composable
 fun CentredRow(
     modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceEvenly,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     maxItemsInEachRow: Int = Int.MAX_VALUE,
     content: @Composable RowScope.() -> Unit
@@ -115,7 +115,7 @@ fun CentredRow(
 @Composable
 fun PaddedRow(
     modifier: Modifier = Modifier,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceEvenly,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     maxItemsInEachRow: Int = Int.MAX_VALUE,
     content: @Composable RowScope.() -> Unit

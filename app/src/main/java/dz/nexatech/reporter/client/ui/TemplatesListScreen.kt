@@ -1,7 +1,6 @@
 @file:OptIn(
     ExperimentalAnimationApi::class,
     ExperimentalMaterial3Api::class,
-    ExperimentalLayoutApi::class
 )
 
 package dz.nexatech.reporter.client.ui
@@ -11,16 +10,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -40,6 +36,7 @@ import dz.nexatech.reporter.util.model.TEMPLATES_DOWNLOADING_LINK
 import dz.nexatech.reporter.util.model.rememberMaxLayoutColumnWidth
 import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.CentredColumn
+import dz.nexatech.reporter.util.ui.CentredRow
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
 import dz.nexatech.reporter.util.ui.DropdownMenuTextItem
@@ -51,6 +48,7 @@ import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.StandardAppBarDropdownMenu
 import dz.nexatech.reporter.util.ui.StandardAppbarIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
+import dz.nexatech.reporter.util.ui.Theme
 import dz.nexatech.reporter.util.ui.ThemedText
 import dz.nexatech.reporter.util.ui.collectWithLifecycleAsState
 import dz.nexatech.reporter.util.ui.contentPadding
@@ -135,8 +133,16 @@ object TemplatesListScreen : StaticScreenDestination(
                         val items = templates?.values
                         if (items != null) {
                             if (items.isEmpty()) {
-                                ThemedText(textRes = R.string.no_templates_found)
-                                FlowRow(horizontalArrangement = Arrangement.SpaceEvenly) {
+                                ThemedText(
+                                    textRes = R.string.no_templates_found,
+                                    modifier = Modifier.contentPadding(),
+                                    style = Theme.typography.titleMedium,
+                                )
+                                Divider(
+                                    Modifier
+                                        .contentPadding()
+                                        .fillMaxWidth())
+                                CentredRow(Modifier.fillMaxWidth()) {
                                     Button(
                                         modifier = Modifier.contentPadding(),
                                         onClick = {
@@ -194,8 +200,8 @@ fun TemplateCard(
                 }
                 .fillMaxWidth()
         ) {
-            ThemedText(text = template.label, style = MaterialTheme.typography.titleLarge)
-            ThemedText(text = template.desc, style = MaterialTheme.typography.bodyLarge)
+            ThemedText(text = template.label, style = Theme.typography.titleLarge)
+            ThemedText(text = template.desc)
         }
     }
 }

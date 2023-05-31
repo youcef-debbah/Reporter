@@ -59,7 +59,6 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
         )
         ThemedText(
             text = stringRes(R.string.no_result_found),
-            style = Theme.typography.bodyLarge.copy(),
             color = color,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Start,

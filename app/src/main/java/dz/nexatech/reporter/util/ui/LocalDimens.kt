@@ -42,6 +42,8 @@ data class Dimens(
     val drop_menu_min_width: Dp,
     @Stable
     val link_button_height: Dp,
+    @Stable
+    val main_icon_size: Dp,
 )
 
 val LocalDimens = staticCompositionLocalOf {
@@ -72,6 +74,7 @@ val LocalDimens = staticCompositionLocalOf {
         ),
         drop_menu_min_width = 150.dp,
         link_button_height = 30.dp,
+        main_icon_size = 48.dp,
     )
 }
 

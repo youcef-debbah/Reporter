@@ -10,13 +10,15 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.APPLICATION_THEME
-import dz.nexatech.reporter.util.model.LocalConfig
+import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.DYNAMIC_TONAL_PALETTE_ENABLED
+import dz.nexatech.reporter.util.model.LocalConfig
 import dz.nexatech.reporter.util.model.Teller
 
 object DefaultColors {
@@ -76,9 +78,12 @@ fun DynamicTheme(
 @Composable
 fun ApplicationTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
+    context: Context = LocalContext.current,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = loadColorScheme(LocalContext.current, true, isDarkTheme, APPLICATION_THEME)
+    val colorScheme = remember(context) {
+        loadColorScheme(context, true, isDarkTheme, APPLICATION_THEME)
+    }
     val systemUiController = rememberSystemUiController()
 
     DisposableEffect(systemUiController, isDarkTheme) {
@@ -91,8 +96,18 @@ fun ApplicationTheme(
         onDispose {}
     }
 
+    val materialTypography = MaterialTheme.typography
+    val typography = remember(materialTypography) {
+        materialTypography.copy(
+            titleMedium = materialTypography.titleMedium.copy(
+                fontSize = 19.sp,
+                lineHeight = 26.sp,
+                )
+        )
+    }
     MaterialTheme(
         colorScheme = colorScheme,
+        typography = typography,
         content = content,
     )
 }

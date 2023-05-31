@@ -78,6 +78,7 @@ import dz.nexatech.reporter.util.model.stringToStringSnapshotStateMapSaver
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
 import dz.nexatech.reporter.util.ui.CentredColumn
+import dz.nexatech.reporter.util.ui.CentredRow
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
 import dz.nexatech.reporter.util.ui.DefaultNavigationBar
@@ -221,11 +222,11 @@ class TabsContext(val template: Template) {
                 }
                 Column(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceEvenly,
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    ThemedText(R.string.template_tab_loading_desc, Modifier.contentPadding())
                     CircularProgressIndicator(Modifier.contentPadding())
-                    ThemedText(R.string.template_tab_loading_desc)
                 }
             }
 
@@ -270,16 +271,18 @@ class TabsContext(val template: Template) {
                     ) {
                         Card {
                             Column(
-                                modifier = Modifier.contentPadding(),
+                                modifier = Modifier.padding(Theme.dimens.content_padding * 2),
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
-                                DecorativeIcon(icon = R.drawable.baseline_warning_24)
+                                DecorativeIcon(
+                                    icon = R.drawable.baseline_warning_24,
+                                    modifier = Modifier.size(Theme.dimens.main_icon_size)
+                                )
+                                ThemedText(R.string.template_tab_error_desc)
                                 ThemedText(
-                                    resources.getString(
-                                        R.string.template_tab_error_desc,
-                                        template.label
-                                    )
+                                    text = template.label,
+                                    style = Theme.typography.titleMedium,
                                 )
                                 ThemedText(resources.getString(R.string.error_code, errorCode))
                             }
@@ -581,10 +584,8 @@ class TabsContext(val template: Template) {
                                         )
                                     }
                                 }
-                                Row(
+                                CentredRow(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Button(
                                         enabled = TemplateOutput.pdfGenerating.value == 0,

@@ -4,8 +4,6 @@ package dz.nexatech.reporter.util.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -19,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -70,10 +67,8 @@ private fun TextInput(
     LaunchedEffect(errorMessage) {
         onError(variable.key, errorMessage)
     }
-    Column(
+    CentredColumn(
         modifier = modifier.padding(Theme.dimens.content_padding.copy(bottom = 0.dp)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         var showInfo by rememberSaveable { mutableStateOf(false) }
         AnimatedVisibility(visible = showInfo) {
