@@ -56,7 +56,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.channels.BufferOverflow
@@ -255,7 +254,7 @@ private val thickness = padding_unit * 2
 private val fadeOutAnimationSpec =
     tween<Float>(durationMillis = ViewConfiguration.getScrollBarFadeDuration())
 
-@Preview(widthDp = 400, heightDp = 400, showBackground = true)
+//@Preview(widthDp = 400, heightDp = 400, showBackground = true)
 @Composable
 internal fun ScrollbarPreview() {
     val state = rememberScrollState()
@@ -275,7 +274,7 @@ internal fun ScrollbarPreview() {
     }
 }
 
-@Preview(widthDp = 400, heightDp = 400, showBackground = true)
+//@Preview(widthDp = 400, heightDp = 400, showBackground = true)
 @Composable
 internal fun LazyListScrollbarPreview() {
     val state = rememberLazyListState()
@@ -294,7 +293,7 @@ internal fun LazyListScrollbarPreview() {
     }
 }
 
-@Preview(widthDp = 400, showBackground = true)
+//@Preview(widthDp = 400, showBackground = true)
 @Composable
 internal fun HorizontalScrollbarPreview() {
     val state = rememberScrollState()
@@ -313,7 +312,7 @@ internal fun HorizontalScrollbarPreview() {
     }
 }
 
-@Preview(widthDp = 400, showBackground = true)
+//@Preview(widthDp = 400, showBackground = true)
 @Composable
 internal fun LazyListHorizontalScrollbarPreview() {
     val state = rememberLazyListState()

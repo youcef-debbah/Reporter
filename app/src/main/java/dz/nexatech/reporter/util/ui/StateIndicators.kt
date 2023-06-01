@@ -7,10 +7,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import dz.nexatech.reporter.client.R
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 private fun Preview() {
     NoResultFound({})
