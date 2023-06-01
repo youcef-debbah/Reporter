@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.runtime.Composable
@@ -87,6 +86,7 @@ import dz.nexatech.reporter.util.ui.ErrorTheme
 import dz.nexatech.reporter.util.ui.InfoIcon
 import dz.nexatech.reporter.util.ui.LocalDimens
 import dz.nexatech.reporter.util.ui.PaddedColumn
+import dz.nexatech.reporter.util.ui.PaddedDivider
 import dz.nexatech.reporter.util.ui.ScrollableColumn
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
@@ -574,14 +574,7 @@ class TabsContext(val template: Template) {
                                 AnimatedVisibility(toolbarExpanded) {
                                     CentredColumn {
                                         ThemedText(previewTab.template.desc)
-                                        Divider(
-                                            Modifier
-                                                .contentPadding(
-                                                    start = Theme.dimens.content_padding.start * 2,
-                                                    end = Theme.dimens.content_padding.end * 2,
-                                                )
-                                                .fillMaxWidth()
-                                        )
+                                        PaddedDivider()
                                     }
                                 }
                                 CentredRow(

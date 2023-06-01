@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.Divider
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -36,7 +35,7 @@ fun ThemePicker(
             modifier = Modifier.contentPadding(),
         )
 
-        Divider(Modifier.contentPadding())
+        PaddedDivider()
 
         CentredColumn(
             Modifier.padding(

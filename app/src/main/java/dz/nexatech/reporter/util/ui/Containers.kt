@@ -17,11 +17,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
 
 @Composable
 fun ContentCard(
@@ -126,3 +130,21 @@ fun PaddedRow(
     maxItemsInEachRow = maxItemsInEachRow,
     content = content,
 )
+
+@Composable
+fun PaddedDivider(
+    modifier: Modifier = Modifier,
+    thickness: Dp = DividerDefaults.Thickness,
+    color: Color = DividerDefaults.color,
+) {
+    Divider(
+        modifier = modifier
+            .contentPadding(
+                start = Theme.dimens.content_padding.start * 2,
+                end = Theme.dimens.content_padding.end * 2,
+            )
+            .fillMaxWidth(),
+        thickness = thickness,
+        color = color,
+    )
+}

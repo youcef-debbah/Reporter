@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
@@ -41,6 +40,7 @@ import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
 import dz.nexatech.reporter.util.ui.DropdownMenuTextItem
 import dz.nexatech.reporter.util.ui.ExternalLink
+import dz.nexatech.reporter.util.ui.PaddedDivider
 import dz.nexatech.reporter.util.ui.RoundedCorner
 import dz.nexatech.reporter.util.ui.ScrollableColumn
 import dz.nexatech.reporter.util.ui.SimpleScaffold
@@ -138,10 +138,7 @@ object TemplatesListScreen : StaticScreenDestination(
                                     modifier = Modifier.contentPadding(),
                                     style = Theme.typography.titleMedium,
                                 )
-                                Divider(
-                                    Modifier
-                                        .contentPadding()
-                                        .fillMaxWidth())
+                                PaddedDivider()
                                 CentredRow(Modifier.fillMaxWidth()) {
                                     Button(
                                         modifier = Modifier.contentPadding(),
