@@ -29,7 +29,7 @@ fun ThemePicker(
 ) {
     PaddedColumn(modifier) {
 
-        ThemedText(
+        Body(
             title,
             style = Theme.typography.titleLarge,
             modifier = Modifier.contentPadding(),
@@ -62,7 +62,7 @@ fun ThemePicker(
             ) {
                 TextButton(onClick = { onThemeSelected.invoke(null) }) {
                     ThemePreviewIcon(selection, "", Theme.colorScheme)
-                    ThemedText(R.string.default_theme)
+                    Body(R.string.default_theme)
                 }
             }
         }

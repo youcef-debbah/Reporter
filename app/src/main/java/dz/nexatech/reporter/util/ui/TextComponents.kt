@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 
 @Composable
-fun ThemedText(
+fun Body(
     textRes: Int,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
@@ -26,7 +26,7 @@ fun ThemedText(
     maxLines: Int = Int.MAX_VALUE,
     style: TextStyle = LocalTextStyle.current
 ) {
-    ThemedText(
+    Body(
         text = stringRes(textRes),
         modifier = modifier,
         color = color,
@@ -39,7 +39,7 @@ fun ThemedText(
 }
 
 @Composable
-fun ThemedText(
+fun Body(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
@@ -57,6 +57,70 @@ fun ThemedText(
     minLines: Int = 1,
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current
+) {
+    Text(
+        text,
+        modifier.textPadding(),
+        color,
+        fontSize,
+        fontStyle,
+        fontWeight,
+        fontFamily,
+        letterSpacing,
+        textDecoration,
+        textAlign,
+        lineHeight,
+        overflow,
+        softWrap,
+        maxLines,
+        minLines,
+        onTextLayout,
+        style,
+    )
+}
+
+@Composable
+fun Title(
+    textRes: Int,
+    modifier: Modifier = Modifier,
+    color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    textAlign: TextAlign? = TextAlign.Center,
+    lineHeight: TextUnit = TextUnit.Unspecified,
+    maxLines: Int = Int.MAX_VALUE,
+    style: TextStyle = Theme.typography.titleMedium,
+) {
+    Body(
+        text = stringRes(textRes),
+        modifier = modifier,
+        color = color,
+        fontSize = fontSize,
+        textAlign = textAlign,
+        lineHeight = lineHeight,
+        maxLines = maxLines,
+        style = style
+    )
+}
+
+@Composable
+fun Title(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
+    fontWeight: FontWeight? = null,
+    fontFamily: FontFamily? = null,
+    letterSpacing: TextUnit = TextUnit.Unspecified,
+    textDecoration: TextDecoration? = null,
+    textAlign: TextAlign? = TextAlign.Center,
+    lineHeight: TextUnit = TextUnit.Unspecified,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    softWrap: Boolean = true,
+    maxLines: Int = Int.MAX_VALUE,
+    minLines: Int = 1,
+    onTextLayout: (TextLayoutResult) -> Unit = {},
+    style: TextStyle = Theme.typography.titleMedium,
 ) {
     Text(
         text,

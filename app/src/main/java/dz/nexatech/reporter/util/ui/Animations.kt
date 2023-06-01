@@ -21,7 +21,7 @@ fun <T> AnimatedLazyLoading(
         val width by rememberMaxLayoutColumnWidth()
         PaddedBox(Modifier.requiredWidth(width)) {
             PaddedColumn {
-                ThemedText(R.string.content_loading_desc, Modifier.contentPadding())
+                Body(R.string.content_loading_desc, Modifier.contentPadding())
                 CircularProgressIndicator(
                     Modifier
                         .contentPadding()

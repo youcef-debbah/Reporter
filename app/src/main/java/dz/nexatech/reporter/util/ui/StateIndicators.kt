@@ -28,7 +28,7 @@ fun LoadingErrorCard(onRetry: () -> Unit, modifier: Modifier = Modifier) {
                 desc = R.string.icon_xdesc_bad_wifi_signal,
                 modifier = Modifier.contentPadding(),
             )
-            ThemedText(
+            Body(
                 text = stringRes(R.string.error_while_loading_content),
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Start,
@@ -57,7 +57,7 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
             modifier = Modifier.contentPadding(),
             tint = color,
         )
-        ThemedText(
+        Body(
             text = stringRes(R.string.no_result_found),
             color = color,
             modifier = Modifier.weight(1f),
@@ -70,7 +70,7 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
                 icon = R.drawable.baseline_refresh_24,
                 desc = R.string.icon_xdesc_no_search_result,
             )
-            ThemedText(
+            Body(
                 text = stringRes(R.string.retry),
             )
         }
@@ -81,7 +81,7 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
 //                icon = R.drawable.baseline_search_off_24,
 //                desc = R.string.icon_xdesc_refresh,
 //            )
-//            ThemedText(
+//            Body(
 //                text = stringRes(R.string.no_result_found),
 //                style = Theme.typography.titleSmall,
 //            )
@@ -93,7 +93,7 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
 //                icon = R.drawable.baseline_refresh_24,
 //                desc = R.string.icon_xdesc_no_search_result,
 //            )
-//            ThemedText(
+//            Body(
 //                text = stringRes(R.string.retry),
 //            )
 //        }

@@ -91,7 +91,8 @@ import dz.nexatech.reporter.util.ui.ScrollableColumn
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.Theme
-import dz.nexatech.reporter.util.ui.ThemedText
+import dz.nexatech.reporter.util.ui.Body
+import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.VariableInput
 import dz.nexatech.reporter.util.ui.contentPadding
 import dz.nexatech.reporter.util.ui.stringRes
@@ -225,7 +226,7 @@ class TabsContext(val template: Template) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    ThemedText(R.string.template_tab_loading_desc, Modifier.contentPadding())
+                    Body(R.string.template_tab_loading_desc, Modifier.contentPadding())
                     CircularProgressIndicator(Modifier.contentPadding())
                 }
             }
@@ -279,12 +280,9 @@ class TabsContext(val template: Template) {
                                     icon = R.drawable.baseline_warning_24,
                                     modifier = Modifier.size(Theme.dimens.main_icon_size)
                                 )
-                                ThemedText(R.string.template_tab_error_desc)
-                                ThemedText(
-                                    text = template.label,
-                                    style = Theme.typography.titleMedium,
-                                )
-                                ThemedText(resources.getString(R.string.error_code, errorCode))
+                                Body(R.string.template_tab_error_desc)
+                                Title(template.label)
+                                Body(resources.getString(R.string.error_code, errorCode))
                             }
                         }
                     }
@@ -433,9 +431,9 @@ class TabsContext(val template: Template) {
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
-                    ThemedText("Record name:" + record.name)
-                    ThemedText("Record label: " + record.label)
-                    ThemedText("Record desc: " + record.desc)
+                    Body("Record name:" + record.name)
+                    Body("Record label: " + record.label)
+                    Body("Record desc: " + record.desc)
                     VariablesRows(recordState.variables, tab, resourcesRepository)
                 }
             }
@@ -455,11 +453,7 @@ class TabsContext(val template: Template) {
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
-                    ThemedText(
-                        modifier = Modifier.contentPadding(),
-                        text = section.desc,
-                        style = Theme.typography.titleLarge,
-                    )
+                    Title(section.desc, Modifier.contentPadding())
                     VariablesRows(sectionState.variables, tab, resourcesRepository)
                 }
             }
@@ -573,7 +567,7 @@ class TabsContext(val template: Template) {
                             PaddedColumn {
                                 AnimatedVisibility(toolbarExpanded) {
                                     CentredColumn {
-                                        ThemedText(previewTab.template.desc)
+                                        Body(previewTab.template.desc)
                                         PaddedDivider()
                                     }
                                 }
@@ -590,7 +584,7 @@ class TabsContext(val template: Template) {
                                         } else {
                                             CircularProgressIndicator(Modifier.size(24.dp))
                                         }
-                                        ThemedText(R.string.export_pdf)
+                                        Body(R.string.export_pdf)
                                     }
                                     FilledIconButton({ webView.setInitialScale(0) }) {
                                         InfoIcon(

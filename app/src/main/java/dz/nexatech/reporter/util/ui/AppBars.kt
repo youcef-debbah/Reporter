@@ -35,7 +35,7 @@ fun SimpleAppBar(
 ) {
     TopAppBar(
         title = {
-            ThemedText(title)
+            Body(title)
         },
         navigationIcon = {
             SimpleScreenIcon(icon)
@@ -71,7 +71,7 @@ fun StandardAppBar(
 ) {
     TopAppBar(
         title = {
-            ThemedText(title)
+            Body(title)
         },
         navigationIcon = navigationIcon,
         actions = actions,
@@ -163,7 +163,7 @@ fun DropdownMenuTextItem(
     onClick: () -> Unit,
 ) {
     DropdownMenuItem(
-        text = { ThemedText(text = title, style = Theme.typography.titleSmall) },
+        text = { Body(text = title, style = Theme.typography.titleSmall) },
         leadingIcon = { DecorativeIcon(icon) },
         modifier = modifier,
         enabled = enabled,

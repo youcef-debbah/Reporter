@@ -27,7 +27,7 @@ fun ThemedLink(
             imageVector = ImageVector.vectorResource(icon),
             contentDescription = stringRes(desc),
         )
-        ThemedText(
+        Body(
             text = text,
             style = Theme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,

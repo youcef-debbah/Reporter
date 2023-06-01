@@ -72,19 +72,19 @@ private fun TextInput(
     ) {
         var showInfo by rememberSaveable { mutableStateOf(false) }
         AnimatedVisibility(visible = showInfo) {
-            ThemedText(variable.desc)
+            Body(variable.desc)
         }
         OutlinedTextField(
             colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
             value = value,
             onValueChange = variableState.setter,
-            label = { ThemedText(variable.label) },
+            label = { Body(variable.label) },
             leadingIcon = leadingIcon,
             trailingIcon = { InfoButton(variable) { showInfo = showInfo.not() } },
-            prefix = { ThemedText(variable.prefix) },
-            suffix = { ThemedText(variable.suffix) },
+            prefix = { Body(variable.prefix) },
+            suffix = { Body(variable.suffix) },
             isError = errorMessage != null,
-            supportingText = { errorMessage?.let { ThemedText(it) } },
+            supportingText = { errorMessage?.let { Body(it) } },
         )
     }
 }

@@ -34,6 +34,7 @@ import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.TEMPLATES_DOWNLOADING_LINK
 import dz.nexatech.reporter.util.model.rememberMaxLayoutColumnWidth
 import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
+import dz.nexatech.reporter.util.ui.Body
 import dz.nexatech.reporter.util.ui.CentredColumn
 import dz.nexatech.reporter.util.ui.CentredRow
 import dz.nexatech.reporter.util.ui.ContentCard
@@ -48,8 +49,7 @@ import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.StandardAppBarDropdownMenu
 import dz.nexatech.reporter.util.ui.StandardAppbarIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
-import dz.nexatech.reporter.util.ui.Theme
-import dz.nexatech.reporter.util.ui.ThemedText
+import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.collectWithLifecycleAsState
 import dz.nexatech.reporter.util.ui.contentPadding
 
@@ -133,11 +133,7 @@ object TemplatesListScreen : StaticScreenDestination(
                         val items = templates?.values
                         if (items != null) {
                             if (items.isEmpty()) {
-                                ThemedText(
-                                    textRes = R.string.no_templates_found,
-                                    modifier = Modifier.contentPadding(),
-                                    style = Theme.typography.titleMedium,
-                                )
+                                Title(R.string.no_templates_found, Modifier.contentPadding())
                                 PaddedDivider()
                                 CentredRow(Modifier.fillMaxWidth()) {
                                     Button(
@@ -148,7 +144,7 @@ object TemplatesListScreen : StaticScreenDestination(
                                             )
                                         }) {
                                         DecorativeIcon(icon = R.drawable.baseline_upload_file_24)
-                                        ThemedText(textRes = R.string.import_template)
+                                        Body(textRes = R.string.import_template)
                                     }
                                     Button(modifier = Modifier.contentPadding(),
                                         onClick = {
@@ -157,7 +153,7 @@ object TemplatesListScreen : StaticScreenDestination(
                                             )
                                         }) {
                                         DecorativeIcon(icon = R.drawable.baseline_open_in_browser_24)
-                                        ThemedText(textRes = R.string.download_templates)
+                                        Body(textRes = R.string.download_templates)
                                     }
                                 }
                             } else {
@@ -197,8 +193,8 @@ fun TemplateCard(
                 }
                 .fillMaxWidth()
         ) {
-            ThemedText(text = template.label, style = Theme.typography.titleLarge)
-            ThemedText(text = template.desc)
+            Title(text = template.label)
+            Body(text = template.desc)
         }
     }
 }

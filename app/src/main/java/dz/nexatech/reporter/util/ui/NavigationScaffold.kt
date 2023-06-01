@@ -218,7 +218,7 @@ fun DefaultNavigationBar(
                             }
                         }
                     },
-                    label = screen.label()?.let { { ThemedText(it) } },
+                    label = screen.label()?.let { { Body(it) } },
                     selected = screen == currentScreen,
                     onClick = {
                         navController.navigate(screen.route) {

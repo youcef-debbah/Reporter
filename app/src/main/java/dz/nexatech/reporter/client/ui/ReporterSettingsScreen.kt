@@ -13,7 +13,7 @@ import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.PaddedColumn
-import dz.nexatech.reporter.util.ui.ThemedText
+import dz.nexatech.reporter.util.ui.Body
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
 
 object ReporterSettingsScreen : StaticScreenDestination(
@@ -43,7 +43,7 @@ object ReporterSettingsScreen : StaticScreenDestination(
             },
         ) {
             PaddedColumn {
-                ThemedText("Settings Page")//TODO
+                Body("Settings Page")//TODO
             }
         }
     }
