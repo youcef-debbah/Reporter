@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+﻿@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 
 package dz.nexatech.reporter.client.ui
 
@@ -507,7 +507,7 @@ class TabsContext(val template: Template) {
             for (variableState in variableStateRow) {
                 VariableInput(
                     variableState = variableState,
-                    resourcesRepository = resourcesRepository,
+                    loader = resourcesRepository::load,
                 ) { key, error ->
                     if (error == null)
                         errors.remove(key)

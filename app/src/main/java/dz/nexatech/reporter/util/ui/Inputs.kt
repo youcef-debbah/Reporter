@@ -4,7 +4,9 @@ package dz.nexatech.reporter.util.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,11 +19,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dz.nexatech.reporter.client.R
-import dz.nexatech.reporter.client.model.ResourcesRepository
+import dz.nexatech.reporter.client.core.AbstractBinaryResource
 import dz.nexatech.reporter.client.model.Variable
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.util.model.Localizer
@@ -29,13 +33,13 @@ import dz.nexatech.reporter.util.model.Localizer
 @Composable
 fun VariableInput(
     variableState: VariableState,
-    resourcesRepository: ResourcesRepository,
+    loader: suspend (String) -> AbstractBinaryResource?,
     modifier: Modifier = Modifier,
     onError: (String, String?) -> Unit,
 ) {
     TextInput(variableState, onError, modifier) {
         InputIcon(
-            resourcesRepository,
+            loader,
             variableState.variable.icon,
             R.drawable.baseline_keyboard_24
         )
@@ -103,23 +107,42 @@ private fun InfoButton(
 
 @Composable
 fun InputIcon(
-    resourcesRepository: ResourcesRepository,
+    loader: suspend (String) -> AbstractBinaryResource?,
     icon: String,
     @DrawableRes defaultIcon: Int,
 ) {
-    val painter = iconsAssetsResources[icon]?.painterResource(resourcesRepository)
+    val painter = iconsAssetsResources[icon]?.painterResource(loader)
         ?: painterResource(defaultIcon)
     Icon(painter = painter, contentDescription = null)
 }
 
-//@Preview(name = "input_preview", widthDp = 400, showBackground = true)
+@Preview(name = "input_preview", widthDp = 410, showBackground = true)
 @Composable
 private fun InputPreview() {
-    val variable = Variable(
+    val variable = rememberFakeVar()
+    val state = rememberSaveable { mutableStateOf(variable.default) }
+    val variableState = remember { VariableState(variable, state) { state.value = it } }
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        repeat(2) {
+            VariableInput(
+                variableState = variableState,
+                loader = { null },
+                onError = { _, _ -> },
+            )
+        }
+    }
+}
+
+@Composable
+fun rememberFakeVar(name: String = "varname", type: String = Variable.Type.TEXT): Variable = remember {
+    Variable(
         namespace = "namespace",
-        name = "varname",
+        name = name,
         required = true,
-        type = Variable.Type.TEXT,
+        type = type,
         icon = "",
         min = 0,
         max = 1,
@@ -138,11 +161,4 @@ private fun InputPreview() {
         desc_en = "desc_en",
         localizer = Localizer
     )
-    val state = rememberSaveable { mutableStateOf(variable.default) }
-    val variableState = remember { VariableState(variable, state) { state.value = it } }
-    PaddedColumn {
-        TextInput(variableState, { _, _ -> }) {
-            DecorativeIcon(icon = R.drawable.baseline_keyboard_24)
-        }
-    }
 }

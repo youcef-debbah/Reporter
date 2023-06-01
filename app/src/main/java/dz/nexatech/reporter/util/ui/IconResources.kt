@@ -9,6 +9,7 @@ import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.FilesExtension
 import dz.nexatech.reporter.client.common.MimeType
 import dz.nexatech.reporter.client.common.putValue
+import dz.nexatech.reporter.client.core.AbstractBinaryResource
 import dz.nexatech.reporter.client.model.AssetResource
 import dz.nexatech.reporter.client.model.ResourcesRepository
 
@@ -20,7 +21,7 @@ abstract class AbstractIconResource(
     val name: String,
 ) : AssetResource("$ICON_RESOURCE_PREFIX$name.$ICON_RESOURCE_EXTENSION", ICON_RESOURCE_MIME_TYPE) {
     @Composable
-    abstract fun painterResource(resourcesRepository: ResourcesRepository): Painter
+    abstract fun painterResource(loader: suspend (String) -> AbstractBinaryResource?): Painter
 
     final override fun toString() = path
 }
@@ -30,7 +31,7 @@ private class DrawableIconResource(
     @DrawableRes val drawable: Int
 ) : AbstractIconResource(name) {
     @Composable
-    override fun painterResource(resourcesRepository: ResourcesRepository): Painter =
+    override fun painterResource(loader: suspend (String) -> AbstractBinaryResource?): Painter =
         painterResource(drawable)
 }
 
