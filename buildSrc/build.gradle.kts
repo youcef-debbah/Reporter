@@ -30,7 +30,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-    implementation("com.android.tools.build:gradle:8.1.0-beta01")
+    implementation("com.android.tools.build:gradle:8.1.0-beta04")
 
     implementation("com.google.gms:google-services:4.3.15")
     implementation("com.google.firebase:firebase-crashlytics-gradle:2.9.5")
