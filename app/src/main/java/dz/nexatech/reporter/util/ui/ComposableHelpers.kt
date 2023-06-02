@@ -13,11 +13,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import dz.nexatech.reporter.util.model.Teller
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.EmptyCoroutineContext
+
+val defaultDensity = AbstractApplication.INSTANCE.resources.displayMetrics.density
+
+fun Dp.toPixels(density: Float = defaultDensity) =
+    (value * density + 0.5f).toInt()
 
 @Composable
 @ReadOnlyComposable

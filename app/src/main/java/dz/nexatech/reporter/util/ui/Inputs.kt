@@ -1,13 +1,10 @@
-@file:OptIn(ExperimentalLayoutApi::class)
-
 package dz.nexatech.reporter.util.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -19,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -72,13 +68,14 @@ private fun TextInput(
         onError(variable.key, errorMessage)
     }
     CentredColumn(
-        modifier = modifier.padding(Theme.dimens.content_padding.copy(bottom = 0.dp)),
+        modifier = modifier.padding(Theme.dimens.content_padding.copy(bottom = 0.dp) * 2),
     ) {
         var showInfo by rememberSaveable { mutableStateOf(false) }
         AnimatedVisibility(visible = showInfo) {
             Body(variable.desc)
         }
         OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
             value = value,
             onValueChange = variableState.setter,
@@ -88,7 +85,7 @@ private fun TextInput(
             prefix = { Body(variable.prefix) },
             suffix = { Body(variable.suffix) },
             isError = errorMessage != null,
-            supportingText = { errorMessage?.let { Body(it) } },
+            supportingText = { Body(errorMessage ?: "") },
         )
     }
 }
@@ -116,49 +113,55 @@ fun InputIcon(
     Icon(painter = painter, contentDescription = null)
 }
 
-@Preview(name = "input_preview", widthDp = 410, showBackground = true)
+@Composable
+fun rememberFakeVar(name: String = "varname", type: String = Variable.Type.TEXT): Variable =
+    remember {
+        Variable(
+            namespace = "namespace",
+            name = name,
+            required = true,
+            type = type,
+            icon = "",
+            min = 0,
+            max = 1,
+            prefix_ar = "",
+            prefix_fr = "",
+            prefix_en = "",
+            suffix_ar = "دج",
+            suffix_fr = "DA",
+            suffix_en = "DZD",
+            default = "12345678",
+            label_ar = "label_ar",
+            label_fr = "label_fr",
+            label_en = "label_en",
+            desc_ar = "desc_ar",
+            desc_fr = "desc_fr",
+            desc_en = "desc_en",
+            localizer = Localizer
+        )
+    }
+
+@Preview(name = "input_preview", widthDp = 400, showBackground = true)
 @Composable
 private fun InputPreview() {
-    val variable = rememberFakeVar()
-    val state = rememberSaveable { mutableStateOf(variable.default) }
-    val variableState = remember { VariableState(variable, state) { state.value = it } }
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        repeat(2) {
-            VariableInput(
-                variableState = variableState,
-                loader = { null },
-                onError = { _, _ -> },
-            )
+    ScrollableColumn {
+        ContentCard(Modifier.width(500.dp)) {
+            val variable = rememberFakeVar()
+            val state = rememberSaveable { mutableStateOf(variable.default) }
+            val variableState = remember { VariableState(variable, state) { state.value = it } }
+            PaddedColumn {
+                repeat(2) {
+                    Line {
+                        repeat(1) {
+                            VariableInput(
+                                variableState = variableState,
+                                loader = { null },
+                                onError = { _, _ -> },
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
-}
-
-@Composable
-fun rememberFakeVar(name: String = "varname", type: String = Variable.Type.TEXT): Variable = remember {
-    Variable(
-        namespace = "namespace",
-        name = name,
-        required = true,
-        type = type,
-        icon = "",
-        min = 0,
-        max = 1,
-        prefix_ar = "",
-        prefix_fr = "",
-        prefix_en = "",
-        suffix_ar = "دج",
-        suffix_fr = "DA",
-        suffix_en = "DZD",
-        default = "joseph",
-        label_ar = "label_ar",
-        label_fr = "label_fr",
-        label_en = "label_en",
-        desc_ar = "desc_ar",
-        desc_fr = "desc_fr",
-        desc_en = "desc_en",
-        localizer = Localizer
-    )
 }

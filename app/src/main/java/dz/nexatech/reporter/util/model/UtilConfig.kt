@@ -18,6 +18,7 @@ val NAVIGATION_ANIMATION_DURATION = RemoteConfig.Int("NAVIGATION_ANIMATION_DURAT
 val CONFIG_SCREEN_NAVIGATION_ANIMATION_ENABLED = RemoteConfig.Boolean("NAVIGATION_ANIMATION_ENABLED", true)
 val DYNAMIC_TONAL_PALETTE_ENABLED = RemoteConfig.Boolean("DYNAMIC_TONAL_PALETTE_ENABLED", true)
 val TEMPLATES_DOWNLOADING_LINK = RemoteConfig.String("TEMPLATES_DOWNLOADING_LINK", "https://drive.google.com/drive/folders/17v9MWlNCxS1AUNLK7ZxZLpSMLmRxgOyy?usp=share_link")
+val DEFAULT_LINE_ELEMENT_WIDTH_LIMIT = RemoteConfig.Int("DEFAULT_LINE_ELEMENT_WIDTH_LIMIT", 380)
 
 val GLOBAL_REMOTE_CONFIG_DEFAULTS: ImmutableMap<String, Any> = ImmutableMap.builder<String, Any>()
     .putRemoteConfigDefault(UNRECORDED_EXCEPTIONS)
@@ -26,6 +27,7 @@ val GLOBAL_REMOTE_CONFIG_DEFAULTS: ImmutableMap<String, Any> = ImmutableMap.buil
     .putRemoteConfigDefault(CONFIG_SCREEN_NAVIGATION_ANIMATION_ENABLED)
     .putRemoteConfigDefault(DYNAMIC_TONAL_PALETTE_ENABLED)
     .putRemoteConfigDefault(TEMPLATES_DOWNLOADING_LINK)
+    .putRemoteConfigDefault(DEFAULT_LINE_ELEMENT_WIDTH_LIMIT)
     .build()
 
 val NO_CONFIG_CACHE = LocalConfig.Boolean("NO_CONFIG_CACHE", false)

@@ -92,6 +92,7 @@ import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.Theme
 import dz.nexatech.reporter.util.ui.Body
+import dz.nexatech.reporter.util.ui.Line
 import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.VariableInput
 import dz.nexatech.reporter.util.ui.contentPadding
@@ -499,11 +500,7 @@ class TabsContext(val template: Template) {
         val errors = rememberSaveable(saver = stringToStringSnapshotStateMapSaver) {
             mutableStateMapOf()
         }
-        Row(
-            modifier,
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        Line {
             for (variableState in variableStateRow) {
                 VariableInput(
                     variableState = variableState,

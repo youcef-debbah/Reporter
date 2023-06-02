@@ -23,9 +23,15 @@ fun rememberDpState(intConfig: LocalConfig.Int): State<Dp> = remember {
 }
 
 @Composable
-fun rememberColumnsCount(config: Configuration = LocalConfiguration.current): State<Int> =
+fun rememberColumnsCount(
+    dimens: Dimens = Theme.dimens,
+    config: Configuration = LocalConfiguration.current,
+    screenWidthMapper: (Int) -> Int = { screenWidth ->
+        (screenWidth - dimens.content_padding.horizontal.value * 2).toInt()
+    },
+): State<Int> =
     remember(config) {
-        val screenWidth = config.screenWidthDp
+        val screenWidth = screenWidthMapper(config.screenWidthDp)
         val columnWidth by AppConfig.intState(MIN_LAYOUT_COLUMN_WIDTH)
         derivedStateOf(structuralEqualityPolicy()) { screenWidth / columnWidth }
     }
