@@ -145,20 +145,25 @@ fun rememberFakeVar(name: String = "varname", type: String = Variable.Type.TEXT)
 @Composable
 private fun InputPreview() {
     ScrollableColumn {
-        ContentCard(Modifier.width(500.dp)) {
+        ContentCard(Modifier.width(700.dp)) {
             val variable = rememberFakeVar()
             val state = rememberSaveable { mutableStateOf(variable.default) }
             val variableState = remember { VariableState(variable, state) { state.value = it } }
             PaddedColumn {
                 repeat(2) {
                     Line {
-                        repeat(1) {
-                            VariableInput(
-                                variableState = variableState,
-                                loader = { null },
-                                onError = { _, _ -> },
-                            )
-                        }
+                        VariableInput(
+                            modifier = Modifier.widthLimit(150.dp),
+                            variableState = variableState,
+                            loader = { null },
+                            onError = { _, _ -> },
+                        )
+                        VariableInput(
+                            modifier = Modifier.widthLimit(250.dp),
+                            variableState = variableState,
+                            loader = { null },
+                            onError = { _, _ -> },
+                        )
                     }
                 }
             }
