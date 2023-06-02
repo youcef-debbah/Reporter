@@ -61,21 +61,6 @@ interface LineScope {
 }
 
 private object LineScopeImpl: LineScope {
-//    override fun Modifier.align(alignment: Alignment.Vertical): Modifier {
-//    }
-//
-//    override fun Modifier.alignBy(alignmentLineBlock: (Measured) -> Int): Modifier {
-//    }
-//
-//    override fun Modifier.alignBy(alignmentLine: HorizontalAlignmentLine): Modifier {
-//    }
-//
-//    override fun Modifier.alignByBaseline(): Modifier {
-//    }
-//
-//    override fun Modifier.weight(weight: Float, fill: Boolean): Modifier {
-//    }
-
     override fun Modifier.widthLimit(widthLimit: Dp): Modifier = then(WidthLimitModifier(widthLimit))
 }
 
