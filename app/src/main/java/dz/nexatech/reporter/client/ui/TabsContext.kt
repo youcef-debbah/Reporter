@@ -500,7 +500,7 @@ class TabsContext(val template: Template) {
         val errors = rememberSaveable(saver = stringToStringSnapshotStateMapSaver) {
             mutableStateMapOf()
         }
-        Line {
+        Line(modifier) {
             for (variableState in variableStateRow) {
                 VariableInput(
                     variableState = variableState,
