@@ -14,11 +14,12 @@ import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.PaddedColumn
 import dz.nexatech.reporter.util.ui.Body
+import dz.nexatech.reporter.util.ui.StaticIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
 
 object ReporterSettingsScreen : StaticScreenDestination(
     route = "settings",
-    icon = R.drawable.baseline_settings_24,
+    icon = StaticIcon.baseline_settings,
     titleRes = R.string.settings,
 ) {
     fun NavController.toSettingsScreen(navOptions: NavOptions? = null) {

@@ -20,6 +20,15 @@ fun DecorativeIcon(
 }
 
 @Composable
+fun DecorativeIcon(
+    icon: AbstractIcon?,
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current,
+) {
+    InfoIcon(icon = icon, desc = null, modifier, tint)
+}
+
+@Composable
 fun InfoIcon(
     @DrawableRes icon: Int?,
     desc: String?,
@@ -38,7 +47,39 @@ fun InfoIcon(
 
 @Composable
 fun InfoIcon(
+    icon: AbstractIcon?,
+    desc: String?,
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current,
+) {
+    if (icon != null) {
+        Icon(
+            painter = icon.painterResource(),
+            contentDescription = desc,
+            modifier = modifier,
+            tint = tint,
+        )
+    }
+}
+
+@Composable
+fun InfoIcon(
     @DrawableRes icon: Int?,
+    @StringRes desc: Int,
+    modifier: Modifier = Modifier,
+    tint: Color = LocalContentColor.current,
+) {
+    InfoIcon(
+        icon = icon,
+        desc = stringRes(desc),
+        modifier = modifier,
+        tint = tint,
+    )
+}
+
+@Composable
+fun InfoIcon(
+    icon: AbstractIcon?,
     @StringRes desc: Int,
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current,

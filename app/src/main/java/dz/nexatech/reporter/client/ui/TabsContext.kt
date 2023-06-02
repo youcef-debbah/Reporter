@@ -9,13 +9,11 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -76,6 +74,8 @@ import dz.nexatech.reporter.util.model.rememberMaxLayoutColumnWidth
 import dz.nexatech.reporter.util.model.stringToStringSnapshotStateMapSaver
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
+import dz.nexatech.reporter.util.ui.AbstractIcon
+import dz.nexatech.reporter.util.ui.Body
 import dz.nexatech.reporter.util.ui.CentredColumn
 import dz.nexatech.reporter.util.ui.CentredRow
 import dz.nexatech.reporter.util.ui.ContentCard
@@ -84,18 +84,19 @@ import dz.nexatech.reporter.util.ui.DefaultNavigationBar
 import dz.nexatech.reporter.util.ui.DestinationsRegistry
 import dz.nexatech.reporter.util.ui.ErrorTheme
 import dz.nexatech.reporter.util.ui.InfoIcon
+import dz.nexatech.reporter.util.ui.Line
 import dz.nexatech.reporter.util.ui.LocalDimens
 import dz.nexatech.reporter.util.ui.PaddedColumn
 import dz.nexatech.reporter.util.ui.PaddedDivider
 import dz.nexatech.reporter.util.ui.ScrollableColumn
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
+import dz.nexatech.reporter.util.ui.StaticIcon
 import dz.nexatech.reporter.util.ui.Theme
-import dz.nexatech.reporter.util.ui.Body
-import dz.nexatech.reporter.util.ui.Line
 import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.VariableInput
 import dz.nexatech.reporter.util.ui.contentPadding
+import dz.nexatech.reporter.util.ui.iconsAssetsResources
 import dz.nexatech.reporter.util.ui.stringRes
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.CoroutineScope
@@ -115,7 +116,7 @@ class TabsContext(val template: Template) {
         template,
         resources.getString(R.string.template_tab_loading_title, template.label),
         resources.getString(R.string.template_tab_loading_label),
-        R.drawable.baseline_downloading_24,
+        StaticIcon.baseline_downloading,
         "loading",
     )
 
@@ -123,9 +124,12 @@ class TabsContext(val template: Template) {
         template,
         resources.getString(R.string.template_tab_error_title),
         null,
-        R.drawable.baseline_warning_24,
+        StaticIcon.baseline_warning,
         "error",
     )
+
+    val previewTabLabel = resources.getString(R.string.template_tab_preview_label)
+    val previewTabIcon = StaticIcon.baseline_preview
 
     val tabsScope: CoroutineScope =
         CoroutineScope(SupervisorJob() + AsyncConfig.backgroundDispatcher)
@@ -306,8 +310,8 @@ class TabsContext(val template: Template) {
         val previewTab = TemplateTab(
             template,
             resources.getString(R.string.template_tab_preview_title, template.label),
-            resources.getString(R.string.template_tab_preview_label),
-            R.drawable.baseline_preview_24,
+            previewTabLabel,
+            previewTabIcon,
             "preview",
             tabsBuilder
         )
@@ -321,7 +325,7 @@ class TabsContext(val template: Template) {
                 template,
                 section.label,
                 section.label,
-                R.drawable.baseline_table_rows_24,
+                tabIcon(section.icon),
                 "section_$i",
                 tabsBuilder,
             )
@@ -337,7 +341,7 @@ class TabsContext(val template: Template) {
                 template,
                 record.label,
                 record.label,
-                R.drawable.baseline_table_rows_24,
+                tabIcon(record.icon),
                 "record_" + record.name,
                 tabsBuilder,
             )
@@ -391,7 +395,6 @@ class TabsContext(val template: Template) {
                         tab,
                         section,
                         sectionState,
-                        resourcesRepository
                     )
                 }
 
@@ -406,7 +409,6 @@ class TabsContext(val template: Template) {
                         tab,
                         record,
                         recordState,
-                        resourcesRepository,
                     )
                 }
             }
@@ -427,7 +429,6 @@ class TabsContext(val template: Template) {
         tab: TemplateTab,
         record: Record,
         recordState: RecordState,
-        resourcesRepository: ResourcesRepository
     ) {
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
@@ -435,7 +436,7 @@ class TabsContext(val template: Template) {
                     Body("Record name:" + record.name)
                     Body("Record label: " + record.label)
                     Body("Record desc: " + record.desc)
-                    VariablesRows(recordState.variables, tab, resourcesRepository)
+                    VariablesRows(recordState.variables, tab)
                 }
             }
             tab
@@ -449,13 +450,12 @@ class TabsContext(val template: Template) {
         tab: TemplateTab,
         section: Section,
         sectionState: SectionState,
-        resourcesRepository: ResourcesRepository,
     ) {
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
                     Title(section.desc, Modifier.contentPadding())
-                    VariablesRows(sectionState.variables, tab, resourcesRepository)
+                    VariablesRows(sectionState.variables, tab)
                 }
             }
             tab
@@ -466,7 +466,6 @@ class TabsContext(val template: Template) {
     private fun VariablesRows(
         variables: ImmutableMap<String, VariableState>,
         tab: TemplateTab,
-        resourcesRepository: ResourcesRepository,
     ) {
         CentredColumn(
             Modifier.padding(
@@ -484,7 +483,6 @@ class TabsContext(val template: Template) {
                     modifier = Modifier.requiredWidth(width),
                     variableStateRow = variableStateRow,
                     tab = tab,
-                    resourcesRepository = resourcesRepository
                 )
             }
         }
@@ -495,7 +493,6 @@ class TabsContext(val template: Template) {
         modifier: Modifier = Modifier,
         variableStateRow: ImmutableList<VariableState>,
         tab: TemplateTab,
-        resourcesRepository: ResourcesRepository
     ) {
         val errors = rememberSaveable(saver = stringToStringSnapshotStateMapSaver) {
             mutableStateMapOf()
@@ -504,7 +501,6 @@ class TabsContext(val template: Template) {
             for (variableState in variableStateRow) {
                 VariableInput(
                     variableState = variableState,
-                    loader = resourcesRepository::load,
                 ) { key, error ->
                     if (error == null)
                         errors.remove(key)
@@ -625,14 +621,13 @@ private class TemplateTab(
     val template: Template,
     val title: String,
     val label: String?,
-    @DrawableRes tabIcon: Int,
+    icon: AbstractIcon,
     tabName: String,
     tabsBuilder: ImmutableList.Builder<AbstractDestination> = ImmutableList.builder(),
 ) : AbstractDestination(
     TEMPLATE_ROUTE_PREFIX + template.name + '_' + tabName,
-    tabIcon,
+    icon,
 ) {
-
     @Composable
     override fun title() = title
 
@@ -647,6 +642,9 @@ private class TemplateTab(
         const val TEMPLATE_ROUTE_PREFIX = "template_"
     }
 }
+
+private fun tabIcon(icon: String): AbstractIcon =
+    iconsAssetsResources[icon] ?: StaticIcon.baseline_table_rows
 
 @Composable
 private fun TabScaffold(

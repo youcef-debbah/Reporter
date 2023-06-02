@@ -89,13 +89,13 @@ fun StandardBackButton(navController: NavController) {
 }
 
 @Composable
-fun StandardAppbarIcon(@DrawableRes icon: Int?) {
+fun StandardAppbarIcon(icon: AbstractIcon?) {
     if (icon != null) {
         IconButton(
             enabled = false,
             onClick = {},
         ) {
-            DecorativeIcon(icon = icon)
+            DecorativeIcon(icon)
         }
     }
 }
@@ -131,7 +131,7 @@ fun StandardAppBarDropdownMenu(
 @Composable
 fun DropdownMenuTextItem(
     @StringRes title: Int,
-    @DrawableRes icon: Int?,
+    icon: AbstractIcon?,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: MenuItemColors = MenuDefaults.itemColors(),
@@ -154,7 +154,7 @@ fun DropdownMenuTextItem(
 @Composable
 fun DropdownMenuTextItem(
     title: String,
-    @DrawableRes icon: Int?,
+    icon: AbstractIcon?,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: MenuItemColors = MenuDefaults.itemColors(),

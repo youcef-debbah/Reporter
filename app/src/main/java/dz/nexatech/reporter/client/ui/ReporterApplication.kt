@@ -9,6 +9,8 @@ import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.StandardDestinations
 import dagger.Lazy
 import dagger.hilt.android.HiltAndroidApp
+import dz.nexatech.reporter.client.model.ResourcesHandler
+import dz.nexatech.reporter.client.model.ResourcesRepository
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -27,5 +29,12 @@ class ReporterApplication : AbstractApplication() {
     }
 
     @Inject
-    fun initAppConfig(firebaseApp: Lazy<FirebaseApp>) = AppConfig.init(this, firebaseApp)
+    fun initAppConfig(firebaseApp: Lazy<FirebaseApp>) {
+        AppConfig.init(this, firebaseApp)
+    }
+
+    @Inject
+    fun initResourcesLoader(resourcesRepository: ResourcesRepository) {
+        ResourcesHandler.init(resourcesRepository)
+    }
 }

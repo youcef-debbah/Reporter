@@ -209,12 +209,15 @@ fun DefaultNavigationBar(
             destinations.forEach { screen ->
                 NavigationBarItem(
                     icon = {
-                        val badgeText = screen.badgeText.value
-                        if (badgeText == "") {
-                            InfoIcon(screen.icon, screen.title())
-                        } else {
-                            BadgedBox(badge = { Badge { Text(badgeText) } }) {
-                                InfoIcon(screen.icon, screen.title())
+                        val icon = screen.icon
+                        if (icon != null) {
+                            val badgeText = screen.badgeText.value
+                            if (badgeText == "") {
+                                DecorativeIcon(icon)
+                            } else {
+                                BadgedBox(badge = { Badge { Text(badgeText) } }) {
+                                    DecorativeIcon(icon)
+                                }
                             }
                         }
                     },

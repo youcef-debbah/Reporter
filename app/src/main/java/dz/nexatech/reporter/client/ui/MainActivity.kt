@@ -24,9 +24,9 @@ class MainActivity : AbstractActivity() {
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
+        val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        val destinations = viewModel.activeDestinations
         setContent {
-            val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-            val destinations = viewModel.activeDestinations
             NavigationScaffold(destinations, TemplatesListScreen) { navController ->
                 buildNavigationGraph(this, navController, destinations, viewModel)
             }

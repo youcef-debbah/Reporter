@@ -22,9 +22,8 @@ fun LoadingErrorCard(onRetry: () -> Unit, modifier: Modifier = Modifier) {
         colors = CardDefaults.cardColors(containerColor = Theme.colorScheme.errorContainer)
     ) {
         PaddedRow(Modifier.fillMaxWidth()) {
-            InfoIcon(
+            DecorativeIcon(
                 icon = R.drawable.round_signal_wifi_bad_24,
-                desc = R.string.icon_xdesc_bad_wifi_signal,
                 modifier = Modifier.contentPadding(),
             )
             Body(
@@ -36,7 +35,6 @@ fun LoadingErrorCard(onRetry: () -> Unit, modifier: Modifier = Modifier) {
                 text = stringRes(R.string.retry),
                 onClick = onRetry,
                 icon = R.drawable.baseline_refresh_24,
-                desc = R.string.icon_xdesc_refresh,
             )
         }
     }
@@ -50,9 +48,8 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .contentPadding(start = zero_padding, end = zero_padding)
     ) {
-        InfoIcon(
+        DecorativeIcon(
             icon = R.drawable.baseline_search_off_24,
-            desc = R.string.icon_xdesc_refresh,
             modifier = Modifier.contentPadding(),
             tint = color,
         )
@@ -65,36 +62,12 @@ fun NoResultFound(onRetry: () -> Unit, modifier: Modifier = Modifier) {
         Button(
             onClick = onRetry,
         ) {
-            InfoIcon(
+            DecorativeIcon(
                 icon = R.drawable.baseline_refresh_24,
-                desc = R.string.icon_xdesc_no_search_result,
             )
             Body(
                 text = stringRes(R.string.retry),
             )
         }
     }
-//    PaddedColumn {
-//        CentredRow {
-//            VectorIcon(
-//                icon = R.drawable.baseline_search_off_24,
-//                desc = R.string.icon_xdesc_refresh,
-//            )
-//            Body(
-//                text = stringRes(R.string.no_result_found),
-//                style = Theme.typography.titleSmall,
-//            )
-//        }
-//        ThemedButton(
-//            onClick = onRetry,
-//        ) {
-//            VectorIcon(
-//                icon = R.drawable.baseline_refresh_24,
-//                desc = R.string.icon_xdesc_no_search_result,
-//            )
-//            Body(
-//                text = stringRes(R.string.retry),
-//            )
-//        }
-//    }
 }

@@ -1,11 +1,9 @@
 package dz.nexatech.reporter.util.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -17,11 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dz.nexatech.reporter.client.R
-import dz.nexatech.reporter.client.core.AbstractBinaryResource
 import dz.nexatech.reporter.client.model.Variable
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.util.model.Localizer
@@ -29,15 +25,13 @@ import dz.nexatech.reporter.util.model.Localizer
 @Composable
 fun VariableInput(
     variableState: VariableState,
-    loader: suspend (String) -> AbstractBinaryResource?,
     modifier: Modifier = Modifier,
     onError: (String, String?) -> Unit,
 ) {
     TextInput(variableState, onError, modifier) {
         InputIcon(
-            loader,
             variableState.variable.icon,
-            R.drawable.baseline_keyboard_24
+            StaticIcon.baseline_keyboard,
         )
     }
 }
@@ -104,13 +98,10 @@ private fun InfoButton(
 
 @Composable
 fun InputIcon(
-    loader: suspend (String) -> AbstractBinaryResource?,
     icon: String,
-    @DrawableRes defaultIcon: Int,
+    defaultIcon: AbstractIcon,
 ) {
-    val painter = iconsAssetsResources[icon]?.painterResource(loader)
-        ?: painterResource(defaultIcon)
-    Icon(painter = painter, contentDescription = null)
+    DecorativeIcon(iconsAssetsResources[icon]?: defaultIcon)
 }
 
 @Composable
@@ -155,13 +146,11 @@ private fun InputPreview() {
                         VariableInput(
                             modifier = Modifier.widthLimit(150.dp),
                             variableState = variableState,
-                            loader = { null },
                             onError = { _, _ -> },
                         )
                         VariableInput(
                             modifier = Modifier.widthLimit(250.dp),
                             variableState = variableState,
-                            loader = { null },
                             onError = { _, _ -> },
                         )
                     }

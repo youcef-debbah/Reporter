@@ -48,6 +48,7 @@ import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.StandardAppBarDropdownMenu
 import dz.nexatech.reporter.util.ui.StandardAppbarIcon
+import dz.nexatech.reporter.util.ui.StaticIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
 import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.collectWithLifecycleAsState
@@ -55,7 +56,7 @@ import dz.nexatech.reporter.util.ui.contentPadding
 
 object TemplatesListScreen : StaticScreenDestination(
     route = "templates_list",
-    icon = R.drawable.baseline_home_24,
+    icon = StaticIcon.baseline_home,
     titleRes = R.string.templates_list_title,
     labelRes = R.string.templates_list_label,
 ) {
@@ -97,7 +98,7 @@ object TemplatesListScreen : StaticScreenDestination(
                     StandardAppBarDropdownMenu(navController) { menuOpened ->
                         DropdownMenuTextItem(
                             title = R.string.import_template_menu_item,
-                            icon = R.drawable.baseline_upload_file_24,
+                            icon = StaticIcon.baseline_upload_file,
                             enabled = viewModel.templateImporting.value == 0,
                         ) {
                             menuOpened.value = false
@@ -106,7 +107,7 @@ object TemplatesListScreen : StaticScreenDestination(
 
                         DropdownMenuTextItem(
                             title = R.string.download_template_menu_item,
-                            icon = R.drawable.baseline_open_in_browser_24,
+                            icon = StaticIcon.baseline_open_in_browser,
                         ) {
                             menuOpened.value = false
                             ExternalLink.openLink(

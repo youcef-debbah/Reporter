@@ -117,3 +117,16 @@ class ResourcesRepository @Inject constructor(
         resources?.let { resourcesDAO.get().updateAll(it) }
     }
 }
+
+object ResourcesHandler {
+
+    private lateinit var resourcesRepository: ResourcesRepository
+
+    suspend fun load(path: String?): AbstractBinaryResource? = withIO {
+        resourcesRepository.load(path)
+    }
+
+    fun init(resourcesRepository: ResourcesRepository) {
+        this.resourcesRepository = resourcesRepository
+    }
+}

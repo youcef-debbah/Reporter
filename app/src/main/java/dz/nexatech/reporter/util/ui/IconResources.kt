@@ -9,89 +9,108 @@ import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.FilesExtension
 import dz.nexatech.reporter.client.common.MimeType
 import dz.nexatech.reporter.client.common.putValue
-import dz.nexatech.reporter.client.core.AbstractBinaryResource
 import dz.nexatech.reporter.client.model.AssetResource
-import dz.nexatech.reporter.client.model.ResourcesRepository
 
 const val ICON_RESOURCE_PREFIX = "icons/"
 const val ICON_RESOURCE_EXTENSION = FilesExtension.SVG
 const val ICON_RESOURCE_MIME_TYPE = MimeType.SVG
 
-abstract class AbstractIconResource(
-    val name: String,
-) : AssetResource("$ICON_RESOURCE_PREFIX$name.$ICON_RESOURCE_EXTENSION", ICON_RESOURCE_MIME_TYPE) {
+interface AbstractIcon {
     @Composable
-    abstract fun painterResource(loader: suspend (String) -> AbstractBinaryResource?): Painter
-
-    final override fun toString() = path
+    fun painterResource(): Painter
 }
 
-private class DrawableIconResource(
-    name: String,
-    @DrawableRes val drawable: Int
-) : AbstractIconResource(name) {
+class StaticIcon private constructor(@DrawableRes val drawable: Int): AbstractIcon {
+
+    companion object {
+        val baseline_settings = StaticIcon(R.drawable.baseline_settings_24)
+        val baseline_downloading = StaticIcon(R.drawable.baseline_downloading_24)
+        val baseline_warning = StaticIcon(R.drawable.baseline_warning_24)
+        val baseline_preview = StaticIcon(R.drawable.baseline_preview_24)
+        val baseline_table_rows = StaticIcon(R.drawable.baseline_table_rows_24)
+        val baseline_keyboard = StaticIcon(R.drawable.baseline_keyboard_24)
+        val baseline_home = StaticIcon(R.drawable.baseline_home_24)
+        val baseline_upload_file = StaticIcon(R.drawable.baseline_upload_file_24)
+        val baseline_open_in_browser = StaticIcon(R.drawable.baseline_open_in_browser_24)
+    }
+
     @Composable
-    override fun painterResource(loader: suspend (String) -> AbstractBinaryResource?): Painter =
+    override fun painterResource(): Painter =
         painterResource(drawable)
 }
 
-val iconsAssetsResources = ImmutableMap.Builder<String, AbstractIconResource>()
-    .putValue(DrawableIconResource("baseline_build_24", R.drawable.baseline_build_24))
-    .putValue(DrawableIconResource("baseline_call_24", R.drawable.baseline_call_24))
-    .putValue(DrawableIconResource("baseline_close_24", R.drawable.baseline_close_24))
-    .putValue(DrawableIconResource("baseline_color_lens_24", R.drawable.baseline_color_lens_24))
-    .putValue(DrawableIconResource("baseline_comment_24", R.drawable.baseline_comment_24))
+abstract class AbstractPrintableIconResource(
+    val name: String,
+) : AssetResource("$ICON_RESOURCE_PREFIX$name.$ICON_RESOURCE_EXTENSION", ICON_RESOURCE_MIME_TYPE), AbstractIcon {
+    final override fun toString() = path
+}
+
+private class StaticPrintableIconResource(
+    name: String,
+    @DrawableRes val drawable: Int
+) : AbstractPrintableIconResource(name) {
+    @Composable
+    override fun painterResource(): Painter =
+        painterResource(drawable)
+}
+
+val iconsAssetsResources: ImmutableMap<String, AbstractPrintableIconResource> = ImmutableMap.Builder<String, AbstractPrintableIconResource>()
+    .putValue(StaticPrintableIconResource("baseline_build_24", R.drawable.baseline_build_24))
+    .putValue(StaticPrintableIconResource("baseline_call_24", R.drawable.baseline_call_24))
+    .putValue(StaticPrintableIconResource("baseline_close_24", R.drawable.baseline_close_24))
+    .putValue(StaticPrintableIconResource("baseline_color_lens_24", R.drawable.baseline_color_lens_24))
+    .putValue(StaticPrintableIconResource("baseline_comment_24", R.drawable.baseline_comment_24))
     .putValue(
-        DrawableIconResource(
+        StaticPrintableIconResource(
             "baseline_contact_emergency_24",
             R.drawable.baseline_contact_emergency_24
         )
     )
-    .putValue(DrawableIconResource("baseline_contact_mail_24", R.drawable.baseline_contact_mail_24))
+    .putValue(StaticPrintableIconResource("baseline_contact_mail_24", R.drawable.baseline_contact_mail_24))
     .putValue(
-        DrawableIconResource(
+        StaticPrintableIconResource(
             "baseline_contact_phone_24",
             R.drawable.baseline_contact_phone_24
         )
     )
     .putValue(
-        DrawableIconResource(
+        StaticPrintableIconResource(
             "baseline_corporate_fare_24",
             R.drawable.baseline_corporate_fare_24
         )
     )
-    .putValue(DrawableIconResource("baseline_credit_card_24", R.drawable.baseline_credit_card_24))
-    .putValue(DrawableIconResource("baseline_dialpad_24", R.drawable.baseline_dialpad_24))
-    .putValue(DrawableIconResource("baseline_discount_24", R.drawable.baseline_discount_24))
+    .putValue(StaticPrintableIconResource("baseline_credit_card_24", R.drawable.baseline_credit_card_24))
+    .putValue(StaticPrintableIconResource("baseline_dialpad_24", R.drawable.baseline_dialpad_24))
+    .putValue(StaticPrintableIconResource("baseline_discount_24", R.drawable.baseline_discount_24))
     .putValue(
-        DrawableIconResource(
+        StaticPrintableIconResource(
             "baseline_display_settings_24",
             R.drawable.baseline_display_settings_24
         )
     )
-    .putValue(DrawableIconResource("baseline_done_24", R.drawable.baseline_done_24))
-    .putValue(DrawableIconResource("baseline_edit_24", R.drawable.baseline_edit_24))
-    .putValue(DrawableIconResource("baseline_email_24", R.drawable.baseline_email_24))
-    .putValue(DrawableIconResource("baseline_emergency_24", R.drawable.baseline_emergency_24))
-    .putValue(DrawableIconResource("baseline_euro_24", R.drawable.baseline_euro_24))
-    .putValue(DrawableIconResource("baseline_event_24", R.drawable.baseline_event_24))
+    .putValue(StaticPrintableIconResource("baseline_done_24", R.drawable.baseline_done_24))
+    .putValue(StaticPrintableIconResource("baseline_edit_24", R.drawable.baseline_edit_24))
+    .putValue(StaticPrintableIconResource("baseline_email_24", R.drawable.baseline_email_24))
+    .putValue(StaticPrintableIconResource("baseline_emergency_24", R.drawable.baseline_emergency_24))
+    .putValue(StaticPrintableIconResource("baseline_euro_24", R.drawable.baseline_euro_24))
+    .putValue(StaticPrintableIconResource("baseline_event_24", R.drawable.baseline_event_24))
     .putValue(
-        DrawableIconResource(
+        StaticPrintableIconResource(
             "baseline_event_available_24",
             R.drawable.baseline_event_available_24
         )
     )
-    .putValue(DrawableIconResource("baseline_event_busy_24", R.drawable.baseline_event_busy_24))
-    .putValue(DrawableIconResource("baseline_exposure_24", R.drawable.baseline_exposure_24))
-    .putValue(DrawableIconResource("baseline_grade_24", R.drawable.baseline_grade_24))
-    .putValue(DrawableIconResource("baseline_home_24", R.drawable.baseline_home_24))
-    .putValue(DrawableIconResource("baseline_info_24", R.drawable.baseline_info_24))
-    .putValue(DrawableIconResource("baseline_input_24", R.drawable.baseline_input_24))
-    .putValue(DrawableIconResource("baseline_keyboard_24", R.drawable.baseline_keyboard_24))
-    .putValue(DrawableIconResource("baseline_list_24", R.drawable.baseline_list_24))
-    .putValue(DrawableIconResource("baseline_percent_24", R.drawable.baseline_percent_24))
-    .putValue(DrawableIconResource("baseline_place_24", R.drawable.baseline_place_24))
-    .putValue(DrawableIconResource("baseline_text_fields_24", R.drawable.baseline_text_fields_24))
-    .putValue(DrawableIconResource("ms_height_24", R.drawable.ms_height_24))
-    .putValue(DrawableIconResource("ms_width_24", R.drawable.ms_width_24))
+    .putValue(StaticPrintableIconResource("baseline_event_busy_24", R.drawable.baseline_event_busy_24))
+    .putValue(StaticPrintableIconResource("baseline_exposure_24", R.drawable.baseline_exposure_24))
+    .putValue(StaticPrintableIconResource("baseline_grade_24", R.drawable.baseline_grade_24))
+    .putValue(StaticPrintableIconResource("baseline_home_24", R.drawable.baseline_home_24))
+    .putValue(StaticPrintableIconResource("baseline_info_24", R.drawable.baseline_info_24))
+    .putValue(StaticPrintableIconResource("baseline_input_24", R.drawable.baseline_input_24))
+    .putValue(StaticPrintableIconResource("baseline_keyboard_24", R.drawable.baseline_keyboard_24))
+    .putValue(StaticPrintableIconResource("baseline_list_24", R.drawable.baseline_list_24))
+    .putValue(StaticPrintableIconResource("baseline_percent_24", R.drawable.baseline_percent_24))
+    .putValue(StaticPrintableIconResource("baseline_place_24", R.drawable.baseline_place_24))
+    .putValue(StaticPrintableIconResource("baseline_text_fields_24", R.drawable.baseline_text_fields_24))
+    .putValue(StaticPrintableIconResource("ms_height_24", R.drawable.ms_height_24))
+    .putValue(StaticPrintableIconResource("ms_width_24", R.drawable.ms_width_24))
     .build()
