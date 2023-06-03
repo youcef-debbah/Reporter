@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableMap
 import dz.nexatech.reporter.client.common.AbstractLocalizer
 import dz.nexatech.reporter.client.common.AbstractTeller
 import dz.nexatech.reporter.client.common.IntCounter
+import dz.nexatech.reporter.client.common.addHash
+import dz.nexatech.reporter.client.common.atomicLazy
 import org.json.JSONObject
 
 @Immutable
@@ -20,11 +22,8 @@ class TemplateMeta private constructor(
 ) {
     fun hasErrors() = errorCode != 0
 
-    private val hash by lazy {
-        var result = template.hashCode()
-        result = 31 * result + sections.hashCode()
-        result = 31 * result + records.hashCode()
-        return@lazy result
+    private val hash by atomicLazy {
+        records.values.hashCode().addHash(sections).addHash(template)
     }
 
     override fun hashCode() = hash
@@ -256,25 +255,24 @@ abstract class Form(
 
     val className: String = this.javaClass.simpleName
 
-    val label by lazy {
+    val label by atomicLazy {
         localizer.inPrimaryLang(label_en, label_fr, label_ar)
     }
 
-    val desc by lazy {
+    val desc by atomicLazy {
         localizer.inPrimaryLang(desc_en, desc_fr, desc_ar)
     }
 
-    private val hash: Int by lazy {
-        var result = namespace.hashCode()
-        result = 31 * result + icon.hashCode()
-        result = 31 * result + label_ar.hashCode()
-        result = 31 * result + label_fr.hashCode()
-        result = 31 * result + label_en.hashCode()
-        result = 31 * result + desc_ar.hashCode()
-        result = 31 * result + desc_fr.hashCode()
-        result = 31 * result + desc_en.hashCode()
-        result = 31 * result + variables.hashCode()
-        return@lazy result
+    private val hash: Int by atomicLazy {
+        variables.hashCode()
+            .addHash(label_ar)
+            .addHash(label_fr)
+            .addHash(label_en)
+            .addHash(desc_ar)
+            .addHash(desc_fr)
+            .addHash(desc_en)
+            .addHash(namespace)
+            .addHash(icon)
     }
 
     final override fun hashCode(): Int = hash
@@ -399,39 +397,39 @@ class Variable internal constructor(
 
     val key = key(namespace, name)
 
-    val label by lazy {
+    val label by atomicLazy {
         localizer.inPrimaryLang(label_en, label_fr, label_ar)
     }
 
-    val desc by lazy {
+    val desc by atomicLazy {
         localizer.inPrimaryLang(desc_en, desc_fr, desc_ar)
     }
-    
-    val prefix by lazy {
-        localizer.inPrimaryLang(prefix_en ,prefix_fr, prefix_ar)
+
+    val prefix by atomicLazy {
+        localizer.inPrimaryLang(prefix_en, prefix_fr, prefix_ar)
     }
 
-    val suffix by lazy {
-        localizer.inPrimaryLang(suffix_en ,suffix_fr, suffix_ar)
+    val suffix by atomicLazy {
+        localizer.inPrimaryLang(suffix_en, suffix_fr, suffix_ar)
     }
 
-    private val hash by lazy {
-        var result = key.hashCode()
-        result = 31 * result + required.hashCode()
-        result = 31 * result + type.hashCode()
-        result = 31 * result + icon.hashCode()
-        result = 31 * result + min
-        result = 31 * result + max
-        result = 31 * result + prefix.hashCode()
-        result = 31 * result + suffix.hashCode()
-        result = 31 * result + default.hashCode()
-        result = 31 * result + label_ar.hashCode()
-        result = 31 * result + label_fr.hashCode()
-        result = 31 * result + label_en.hashCode()
-        result = 31 * result + desc_ar.hashCode()
-        result = 31 * result + desc_fr.hashCode()
-        result = 31 * result + desc_en.hashCode()
-        return@lazy result
+    private val hash by atomicLazy {
+        required.hashCode()
+            .addHash(type)
+            .addHash(icon)
+            .addHash(min)
+            .addHash(max)
+            .addHash(prefix)
+            .addHash(suffix)
+            .addHash(default)
+            .addHash(label_ar)
+            .addHash(label_fr)
+            .addHash(label_en)
+            .addHash(desc_ar)
+            .addHash(desc_fr)
+            .addHash(desc_en)
+            .addHash(namespace)
+            .addHash(name)
     }
 
     override fun hashCode() = hash

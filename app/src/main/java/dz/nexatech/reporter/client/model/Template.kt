@@ -5,6 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import dz.nexatech.reporter.client.common.atomicLazy
 import dz.nexatech.reporter.client.core.AbstractTemplate
 import dz.nexatech.reporter.client.core.TEMPLATE_COLUMN_DESC_AR
 import dz.nexatech.reporter.client.core.TEMPLATE_COLUMN_DESC_EN
@@ -59,12 +60,12 @@ class Template(
     }
 
     @delegate:Ignore
-    override val label by lazy {
+    override val label by atomicLazy {
         Localizer.inPrimaryLang(label_en, label_fr, label_ar)
     }
 
     @delegate:Ignore
-    override val desc by lazy {
+    override val desc by atomicLazy {
         Localizer.inPrimaryLang(desc_en, desc_fr, desc_ar)
     }
 }

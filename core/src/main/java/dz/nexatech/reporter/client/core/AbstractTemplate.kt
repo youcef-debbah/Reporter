@@ -1,6 +1,7 @@
 package dz.nexatech.reporter.client.core
 
 import dz.nexatech.reporter.client.common.AbstractLocalizer
+import dz.nexatech.reporter.client.common.atomicLazy
 
 const val TEMPLATE_TABLE = "template"
 const val TEMPLATE_COLUMN_NAME = TEMPLATE_TABLE + "_name"
@@ -46,10 +47,10 @@ class SimpleTemplate(
     override val lastUpdate: Long,
     private val localizer: AbstractLocalizer,
 ): AbstractTemplate() {
-    override val label by lazy {
+    override val label by atomicLazy {
         localizer.inPrimaryLang(label_en, label_fr, label_ar)
     }
-    override val desc by lazy {
+    override val desc by atomicLazy {
         localizer.inPrimaryLang(desc_en, desc_fr, desc_ar)
     }
 }

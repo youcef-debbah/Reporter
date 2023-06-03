@@ -90,3 +90,7 @@ object AsyncConfig {
     var backgroundDispatcher = Dispatchers.Default
 
 }
+
+fun <T> atomicLazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.PUBLICATION, initializer)
+
+fun <T> fastLazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NONE, initializer)

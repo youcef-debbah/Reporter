@@ -7,6 +7,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.client.common.atomicLazy
 
 @Stable
 enum class ThemeColors(
@@ -483,7 +484,7 @@ enum class ThemeColors(
 
     ;
 
-    val lightColors by lazy {
+    val lightColors by atomicLazy {
         lightColorScheme(
             primary = lightMain,
             onPrimary = lightOnMain,
@@ -517,7 +518,7 @@ enum class ThemeColors(
         )
     }
 
-    val darkColors by lazy {
+    val darkColors by atomicLazy {
         darkColorScheme(
             primary = darkMain,
             onPrimary = darkOnMain,

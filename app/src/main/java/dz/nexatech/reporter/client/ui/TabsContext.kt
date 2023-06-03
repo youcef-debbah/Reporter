@@ -49,6 +49,7 @@ import com.google.common.collect.ImmutableMap
 import dagger.hilt.android.internal.ThreadUtil
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.AsyncConfig
+import dz.nexatech.reporter.client.common.atomicLazy
 import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.client.common.removeIf
 import dz.nexatech.reporter.client.common.slice
@@ -634,7 +635,7 @@ private class TemplateTab(
     @Composable
     override fun label() = label
 
-    override val destinations: List<AbstractDestination> by lazy {
+    override val destinations: List<AbstractDestination> by atomicLazy {
         tabsBuilder.build()
     }
 

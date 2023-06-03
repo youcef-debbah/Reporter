@@ -480,3 +480,5 @@ object Formatters {
 
     fun asHttpDate(date: Date): String = httpDateFormatter.format(date)
 }
+
+fun Int.addHash(instance: Any): Int = (31 * this) xor instance.hashCode()

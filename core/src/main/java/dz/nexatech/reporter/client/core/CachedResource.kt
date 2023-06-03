@@ -1,12 +1,13 @@
 package dz.nexatech.reporter.client.core
 
 import com.google.common.collect.ImmutableMap
+import dz.nexatech.reporter.client.common.atomicLazy
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 
 class CachedResource(private val resource: AbstractBinaryResource): AbstractBinaryResource() {
 
-    override val headers: ImmutableMap<String, String> by lazy { headersBuilder().build() }
+    override val headers: ImmutableMap<String, String> by atomicLazy { headersBuilder().build() }
 
     val data = lazy {
         resource.asByteArray()

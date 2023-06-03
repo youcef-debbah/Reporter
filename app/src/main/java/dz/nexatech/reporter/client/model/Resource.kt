@@ -7,6 +7,7 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.common.collect.ImmutableMap
 import dz.nexatech.reporter.client.common.Texts
+import dz.nexatech.reporter.client.common.atomicLazy
 import dz.nexatech.reporter.client.common.readAsBytes
 import dz.nexatech.reporter.client.core.AbstractBinaryResource
 import dz.nexatech.reporter.util.ui.AbstractApplication
@@ -48,7 +49,7 @@ class Resource(
     }
 
     @delegate:Ignore
-    override val headers: ImmutableMap<String, String> by lazy { headersBuilder().build() }
+    override val headers: ImmutableMap<String, String> by atomicLazy { headersBuilder().build() }
 
     override fun size(): Int = data.size
 
@@ -68,7 +69,7 @@ open class AssetResource(
         val buildEpoch: Long = application.config.buildEpoch
     }
 
-    override val headers: ImmutableMap<String, String> by lazy { headersBuilder().build() }
+    override val headers: ImmutableMap<String, String> by atomicLazy { headersBuilder().build() }
     override val lastModified: Long = buildEpoch
     override fun size(): Int? = null
     override fun asInputStream(): InputStream = application.assets.open(path)

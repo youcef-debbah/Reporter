@@ -3,6 +3,7 @@ package dz.nexatech.reporter.client.core
 import com.google.common.collect.ImmutableMap
 import dz.nexatech.reporter.client.common.Formatters
 import dz.nexatech.reporter.client.common.Texts
+import dz.nexatech.reporter.client.common.atomicLazy
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 
@@ -45,7 +46,7 @@ class SimpleBinaryResource(
     override val mimeType: String,
     override val lastModified: Long,
 ) : AbstractBinaryResource() {
-    override val headers: ImmutableMap<String, String> by lazy { headersBuilder().build() }
+    override val headers: ImmutableMap<String, String> by atomicLazy { headersBuilder().build() }
     override fun asInputStream() = ByteArrayInputStream(data)
     override fun asByteArray() = data
     override fun size() = data.size

@@ -4,12 +4,13 @@ import android.os.Build
 import com.google.common.collect.ImmutableList
 import dz.nexatech.reporter.client.common.AbstractLocalizer
 import dz.nexatech.reporter.client.common.Texts
+import dz.nexatech.reporter.client.common.atomicLazy
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import java.util.*
 
 object Localizer : AbstractLocalizer() {
 
-    private val preferredLanguages: ImmutableList<String> by lazy {
+    private val preferredLanguages: ImmutableList<String> by atomicLazy {
         val result = LinkedList<String>()
         try {
             val configuration = AbstractApplication.INSTANCE.resources.configuration
@@ -39,7 +40,7 @@ object Localizer : AbstractLocalizer() {
         if (!result.contains(Texts.LANG_AR))
             result.add(Texts.LANG_AR)
 
-        return@lazy ImmutableList.copyOf(result)
+        return@atomicLazy ImmutableList.copyOf(result)
     }
 
     override fun inPrimaryLang(

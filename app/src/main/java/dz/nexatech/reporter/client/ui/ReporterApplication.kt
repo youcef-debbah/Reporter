@@ -1,6 +1,5 @@
 package dz.nexatech.reporter.client.ui
 
-//import dz.nexatech.reporter.client.BuildConfig
 import android.content.res.Resources
 import com.google.firebase.FirebaseApp
 import dz.nexatech.reporter.client.R
@@ -9,6 +8,7 @@ import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.StandardDestinations
 import dagger.Lazy
 import dagger.hilt.android.HiltAndroidApp
+import dz.nexatech.reporter.client.common.atomicLazy
 import dz.nexatech.reporter.client.model.ResourcesHandler
 import dz.nexatech.reporter.client.model.ResourcesRepository
 import javax.inject.Inject
@@ -24,7 +24,7 @@ class ReporterApplication : AbstractApplication() {
         override val standardDestinations: StandardDestinations = ReporterStandardDestinations
     }
 
-    override val config: Config by lazy {
+    override val config: Config by atomicLazy {
         Config(resources)
     }
 
