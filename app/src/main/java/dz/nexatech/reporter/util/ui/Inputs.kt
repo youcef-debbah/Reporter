@@ -8,7 +8,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,9 +25,8 @@ import dz.nexatech.reporter.util.model.Localizer
 fun VariableInput(
     variableState: VariableState,
     modifier: Modifier = Modifier,
-    onError: (String, String?) -> Unit,
 ) {
-    TextInput(variableState, onError, modifier) {
+    TextInput(variableState, modifier) {
         InputIcon(
             variableState.variable.icon,
             StaticIcon.baseline_keyboard,
@@ -39,27 +37,13 @@ fun VariableInput(
 @Composable
 private fun TextInput(
     variableState: VariableState,
-    onError: (String, String?) -> Unit,
     modifier: Modifier = Modifier,
     leadingIcon: @Composable () -> Unit,
 ) {
-    val value = variableState.state.value
     val variable = variableState.variable
-    val length = value.length
-    val errorMessage: String? = remember(variable.required, variable.max, variable.min, length) {
-        val context = AbstractApplication.INSTANCE
-        if (variable.required && length == 0) {
-            context.getString(R.string.input_required)
-        } else if (length > variable.max) {
-            context.getString(R.string.input_too_long, variable.max)
-        } else if (length < variable.min) {
-            context.getString(R.string.input_too_short, variable.min)
-        } else {
-            null
-        }
-    }
-    LaunchedEffect(errorMessage) {
-        onError(variable.key, errorMessage)
+    val value = variableState.state.value
+    val errorMessage: String? = remember(variable, value) {
+        Variable.Type.Text.checker.check(variable, value)?.asString(value)
     }
     CentredColumn(
         modifier = modifier.padding(Theme.dimens.content_padding.copy(bottom = 0.dp) * 2),
@@ -101,11 +85,11 @@ fun InputIcon(
     icon: String,
     defaultIcon: AbstractIcon,
 ) {
-    DecorativeIcon(iconsAssetsResources[icon]?: defaultIcon)
+    DecorativeIcon(iconsAssetsResources[icon] ?: defaultIcon)
 }
 
 @Composable
-fun rememberFakeVar(name: String = "varname", type: String = Variable.Type.TEXT): Variable =
+fun rememberFakeVar(name: String = "varname", type: String = Variable.Type.Text.name): Variable =
     remember {
         Variable(
             namespace = "namespace",
@@ -146,12 +130,10 @@ private fun InputPreview() {
                         VariableInput(
                             modifier = Modifier.widthLimit(150.dp),
                             variableState = variableState,
-                            onError = { _, _ -> },
                         )
                         VariableInput(
                             modifier = Modifier.widthLimit(250.dp),
                             variableState = variableState,
-                            onError = { _, _ -> },
                         )
                     }
                 }

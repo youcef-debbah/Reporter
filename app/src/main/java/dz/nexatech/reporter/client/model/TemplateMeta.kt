@@ -3,11 +3,15 @@ package dz.nexatech.reporter.client.model
 import androidx.compose.runtime.Immutable
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
+import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.AbstractLocalizer
 import dz.nexatech.reporter.client.common.AbstractTeller
 import dz.nexatech.reporter.client.common.IntCounter
 import dz.nexatech.reporter.client.common.addHash
 import dz.nexatech.reporter.client.common.atomicLazy
+import dz.nexatech.reporter.client.model.Variable.ErrorMessage
+import dz.nexatech.reporter.client.model.Variable.ErrorMessageChecker
+import dz.nexatech.reporter.util.ui.AbstractApplication
 import org.json.JSONObject
 
 @Immutable
@@ -383,16 +387,126 @@ class Variable internal constructor(
     val desc_en: String,
     val localizer: AbstractLocalizer,
 ) {
+
+    companion object {
+        private val resources = AbstractApplication.INSTANCE.resources
+        fun key(namespace: String, name: String) = "${namespace}.$name"
+    }
+
+    private val inputRequiredMessage =
+        ErrorMessage { resources.getString(R.string.input_required) }
+    private val inputTooLongMessage =
+        ErrorMessage { resources.getString(R.string.input_too_long, max) }
+    private val inputTooShortMessage =
+        ErrorMessage { resources.getString(R.string.input_too_short, min) }
+
+//    private val errorMessageChecker = ErrorMessageChecker.forType(type)
+    private val errorMessageChecker = Type.Text.checker  // TODO remove
+
+    fun errorMessage(value: String) = errorMessageChecker.check(this, value)
+
+    fun interface ErrorMessage {
+        fun asString(input: String): String
+    }
+
+    fun interface ErrorMessageChecker {
+        fun check(variable: Variable, value: String): ErrorMessage?
+
+        companion object {
+            fun forType(type: String) = when (type) {
+                Type.Text.name -> Type.Text.checker
+                Type.Number.name -> Type.Number.checker
+                Type.Counter.name -> Type.Counter.checker
+                Type.Decimal.name -> Type.Decimal.checker
+                Type.Date.name -> Type.Date.checker
+                Type.Switch.name -> Type.Switch.checker
+                Type.Color.name -> Type.Color.checker
+                Type.Font.name -> Type.Font.checker
+                Type.Options.name -> Type.Options.checker
+                else -> Type.Unknown.checker
+            }
+        }
+    }
+
     object Type {
-        const val TEXT: String = "text"
-        const val NUMBER: String = "number"
-        const val COUNTER: String = "counter"
-        const val DECIMAL: String = "decimal"
-        const val DATE: String = "date"
-        const val SWITCH: String = "switch"
-        const val COLOR: String = "color"
-        const val FONT: String = "font"
-        const val OPTIONS: String = "options"
+        object Text {
+            const val name: String = "text"
+            val checker = ErrorMessageChecker { variable, value ->
+                val length = value.length
+                if (variable.required && length == 0) {
+                    variable.inputRequiredMessage
+                } else if (length > variable.max) {
+                    variable.inputTooLongMessage
+                } else if (length < variable.min) {
+                    variable.inputTooShortMessage
+                } else {
+                    null
+                }
+            }
+        }
+
+        object Number {
+            const val name: String = "number"
+            val checker = ErrorMessageChecker { variable, value ->
+                null // TODO
+            }
+        }
+
+        object Counter {
+            const val name: String = "counter"
+            val checker = ErrorMessageChecker { variable, value ->
+                null // TODO
+            }
+        }
+
+        object Decimal {
+            const val name: String = "decimal"
+            val checker = ErrorMessageChecker { variable, value ->
+                null // TODO
+            }
+        }
+
+        object Date {
+            const val name: String = "date"
+            val checker = ErrorMessageChecker { variable, value ->
+                null // TODO
+            }
+        }
+
+        object Switch {
+            const val name: String = "switch"
+            val checker = ErrorMessageChecker { variable, value ->
+                null // TODO
+            }
+        }
+
+        object Color {
+            const val name: String = "color"
+            val checker = ErrorMessageChecker { variable, value ->
+                null // TODO
+            }
+        }
+
+        object Font {
+            const val name: String = "font"
+            val checker = ErrorMessageChecker { variable, value ->
+                null // TODO
+            }
+        }
+
+        object Options {
+            const val name: String = "options"
+            val checker: ErrorMessageChecker = ErrorMessageChecker { variable, value ->
+                null // TODO
+            }
+        }
+
+        object Unknown {
+            const val name: String = "unknown"
+            val checker = ErrorMessageChecker { _, _ ->
+                null
+            }
+        }
     }
 
     val key = key(namespace, name)
@@ -465,8 +579,4 @@ class Variable internal constructor(
     @Suppress("unused")
     fun debug() =
         "Variable(key='$key', required=$required, type='$type', icon='$icon', min=$min, max=$max, prefix='$prefix', suffix='$suffix', default='$default', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', label='$label', desc='$desc')"
-
-    companion object {
-        fun key(namespace: String, name: String) = "${namespace}.$name"
-    }
 }

@@ -2,11 +2,14 @@ package dz.nexatech.reporter.client.model
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.common.withIO
+import dz.nexatech.reporter.client.common.withMain
 import dz.nexatech.reporter.client.core.AbstractValue
 import dz.nexatech.reporter.client.core.AbstractValuesDAO
 import dz.nexatech.reporter.client.core.ValueUpdate
@@ -84,8 +87,10 @@ class TemplateState private constructor(
             valuesDaoSupplier: () -> AbstractValuesDAO,
         ): TemplateState {
             val environmentBuilder: ImmutableMap.Builder<String, Any> = ImmutableMap.builder()
-            val variablesBuilder: ImmutableMap.Builder<String, VariableState> = ImmutableMap.builder()
-            val fontVariablesBuilder: ImmutableMap.Builder<String, VariableState> = ImmutableMap.builder()
+            val variablesBuilder: ImmutableMap.Builder<String, VariableState> =
+                ImmutableMap.builder()
+            val fontVariablesBuilder: ImmutableMap.Builder<String, VariableState> =
+                ImmutableMap.builder()
             val sectionsBuilder: ImmutableList.Builder<SectionState> = ImmutableList.builder()
             val recordsBuilder: ImmutableMap.Builder<String, RecordState> = ImmutableMap.builder()
             val templateUpdates = MutableSharedFlow<ValueUpdate>(
@@ -133,7 +138,7 @@ class TemplateState private constructor(
             )
         }
 
-        private fun buildEmptyState(
+        private suspend fun buildEmptyState(
             meta: TemplateMeta,
             variablesBuilder: ImmutableMap.Builder<String, VariableState>,
             fontVariablesBuilder: ImmutableMap.Builder<String, VariableState>,
@@ -149,39 +154,76 @@ class TemplateState private constructor(
                 val varsBuilder: ImmutableMap.Builder<String, VariableState> =
                     ImmutableMap.builder()
                 for (variable in section.variables.values) {
-                    val variableState = addVariableState(variablesBuilder, fontVariablesBuilder, variable, templateUpdates)
+                    val variableState = addVariableState(
+                        variablesBuilder,
+                        fontVariablesBuilder,
+                        variable,
+                        templateUpdates
+                    )
                     varsBuilder.put(variable.key, variableState)
                     environmentBuilder.put(variable.name, variableState)
                 }
-                sectionsBuilder.add(SectionState(section, varsBuilder.build()))
+
+                val variableStates = varsBuilder.build()
+                sectionsBuilder.add(
+                    SectionState(
+                        section,
+                        variableStates,
+                        budgetTextState(variableStates.values)
+                    )
+                )
             }
 
             for (record in declaredRecords.values) {
                 val varsBuilder: ImmutableMap.Builder<String, VariableState> =
                     ImmutableMap.builder()
                 val recordEnvironment = ImmutableMap.builder<String, VariableState>()
+
                 for (variable in record.variables.values) {
-                    val variableState = addVariableState(variablesBuilder, fontVariablesBuilder, variable, templateUpdates)
+                    val variableState = addVariableState(
+                        variablesBuilder,
+                        fontVariablesBuilder,
+                        variable,
+                        templateUpdates
+                    )
                     varsBuilder.put(variable.key, variableState)
                     recordEnvironment.put(variable.name, variableState)
                 }
-                recordsBuilder.put(record.name, RecordState(record, varsBuilder.build()))
+
+                val variableStates = varsBuilder.build()
+                recordsBuilder.put(
+                    record.name,
+                    RecordState(record, variableStates, budgetTextState(variableStates.values))
+                )
                 environmentBuilder.put(record.name, recordEnvironment)
             }
         }
+
+        private suspend fun budgetTextState(variableStates: Collection<VariableState>): State<String> =
+            withMain {
+                derivedStateOf {
+                    var errorsCount = 0
+                    for (variableState in variableStates) {
+                        if (variableState.variable.errorMessage(variableState.state.value) != null) {
+                            errorsCount++
+                        }
+                    }
+                    if (errorsCount > 0) errorsCount.toString() else ""
+                }
+            }
 
         private fun addVariableState(
             variablesBuilder: ImmutableMap.Builder<String, VariableState>,
             fontVariablesBuilder: ImmutableMap.Builder<String, VariableState>,
             variable: Variable,
-            templateUpdates: MutableSharedFlow<ValueUpdate>
+            templateUpdates: MutableSharedFlow<ValueUpdate>,
         ): VariableState {
             val state: MutableState<String> = mutableStateOf(variable.default)
             val variableState = VariableState(variable, state) {
                 setState(variable, state, it, templateUpdates)
             }
             variablesBuilder.put(variable.key, variableState)
-            if (variable.type == Variable.Type.FONT) {
+            if (variable.type == Variable.Type.Font.name) {
                 fontVariablesBuilder.put(variable.key, variableState)
             }
             return variableState
@@ -228,6 +270,7 @@ class VariableState(
 class RecordState(
     val record: Record,
     val variables: ImmutableMap<String, VariableState>,
+    val badgeText: State<String>,
 ) {
     override fun toString(): String {
         return "RecordState(record=$record)"
@@ -238,6 +281,7 @@ class RecordState(
 class SectionState(
     val section: Section,
     val variables: ImmutableMap<String, VariableState>,
+    val badgeText: State<String>,
 ) {
     override fun toString(): String {
         return "SectionState(section=$section)"
@@ -245,7 +289,7 @@ class SectionState(
 }
 
 fun PebbleTemplate.evaluateState(
-    templateState: TemplateState
+    templateState: TemplateState,
 ): String = try {
     val writer = StringWriter()
     evaluate(writer, templateState.environment)

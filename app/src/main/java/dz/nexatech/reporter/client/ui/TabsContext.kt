@@ -29,8 +29,8 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -329,6 +329,7 @@ class TabsContext(val template: Template) {
                 tabIcon(section.icon),
                 "section_$i",
                 tabsBuilder,
+                sectionState.badgeText,
             )
             tabsBuilder.add(tab)
             sectionTabs.add(Pair(tab, sectionState))
@@ -345,6 +346,7 @@ class TabsContext(val template: Template) {
                 tabIcon(record.icon),
                 "record_" + record.name,
                 tabsBuilder,
+                recordState.badgeText,
             )
             tabsBuilder.add(tab)
             recordsTabs.add(Pair(tab, recordState))
@@ -495,26 +497,9 @@ class TabsContext(val template: Template) {
         variableStateRow: ImmutableList<VariableState>,
         tab: TemplateTab,
     ) {
-        val errors = rememberSaveable(saver = stringToStringSnapshotStateMapSaver) {
-            mutableStateMapOf()
-        }
         Line(modifier) {
             for (variableState in variableStateRow) {
-                VariableInput(
-                    variableState = variableState,
-                ) { key, error ->
-                    if (error == null)
-                        errors.remove(key)
-                    else
-                        errors[key] = error
-
-                    val errorsCount = errors.size
-                    if (errorsCount > 0) {
-                        tab.badgeText.value = errorsCount.toString()
-                    } else {
-                        tab.badgeText.value = ""
-                    }
-                }
+                VariableInput(variableState)
             }
         }
     }
@@ -625,10 +610,8 @@ private class TemplateTab(
     icon: AbstractIcon,
     tabName: String,
     tabsBuilder: ImmutableList.Builder<AbstractDestination> = ImmutableList.builder(),
-) : AbstractDestination(
-    TEMPLATE_ROUTE_PREFIX + template.name + '_' + tabName,
-    icon,
-) {
+    badgeText: State<String> = mutableStateOf(""),
+) : AbstractDestination(TEMPLATE_ROUTE_PREFIX + template.name + '_' + tabName, icon, badgeText) {
     @Composable
     override fun title() = title
 

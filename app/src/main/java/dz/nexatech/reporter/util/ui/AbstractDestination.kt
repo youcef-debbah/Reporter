@@ -2,9 +2,9 @@ package dz.nexatech.reporter.util.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 
@@ -26,7 +26,7 @@ abstract class AbstractDestination(
     /**
      * used as a budget on top of icon
      */
-    val badgeText: MutableState<String> = mutableStateOf("")
+    val badgeText: State<String> = mutableStateOf("")
 ) {
 
     /**
