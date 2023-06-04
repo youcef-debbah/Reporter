@@ -28,7 +28,7 @@ class TemplateState private constructor(
     val sectionStates: ImmutableList<SectionState>,
     val recordsStates: ImmutableMap<String, RecordState>,
     val environment: ImmutableMap<String, Any>,
-    val templateUpdates: MutableSharedFlow<ValueUpdate>,
+    val lastUpdate: MutableSharedFlow<ValueUpdate>,
     val fontsVariablesStates: ImmutableMap<String, VariableState>,
 ) {
     operator fun get(key: String): MutableState<String> = variablesStates[key]!!.state
@@ -45,15 +45,15 @@ class TemplateState private constructor(
     fun setter(namespace: String, name: String): (String) -> Unit =
         setter(Variable.key(namespace, name))
 
-    operator fun set(key: String, newContent: String?) {
+    operator fun set(key: String, newContent: String) {
         val variableState = variablesStates[key]
         if (variableState != null) {
-            setState(variableState.variable, variableState.state, newContent, templateUpdates)
+            setState(variableState.variable, variableState.state, newContent, lastUpdate)
         }
     }
 
-    operator fun set(variableState: VariableState, newContent: String?) {
-        setState(variableState.variable, variableState.state, newContent, templateUpdates)
+    operator fun set(variableState: VariableState, newContent: String) {
+        setState(variableState.variable, variableState.state, newContent, lastUpdate)
     }
 
     override fun equals(other: Any?) =
@@ -93,12 +93,12 @@ class TemplateState private constructor(
                 ImmutableMap.builder()
             val sectionsBuilder: ImmutableList.Builder<SectionState> = ImmutableList.builder()
             val recordsBuilder: ImmutableMap.Builder<String, RecordState> = ImmutableMap.builder()
-            val templateUpdates = MutableSharedFlow<ValueUpdate>(
+            val lastUpdate = MutableSharedFlow<ValueUpdate>(
                 replay = 1,
                 extraBufferCapacity = 0,
                 onBufferOverflow = BufferOverflow.DROP_OLDEST
             )
-            templateUpdates.tryEmit(ValueUpdate(templateName, "", null))
+            lastUpdate.tryEmit(ValueUpdate(templateName, "", null))
 
             buildEmptyState(
                 meta,
@@ -107,7 +107,7 @@ class TemplateState private constructor(
                 sectionsBuilder,
                 recordsBuilder,
                 environmentBuilder,
-                templateUpdates
+                lastUpdate
             )
             val variablesStates = variablesBuilder.build()
 
@@ -133,7 +133,7 @@ class TemplateState private constructor(
                 sectionsBuilder.build(),
                 recordsBuilder.build(),
                 environmentBuilder.build(),
-                templateUpdates,
+                lastUpdate,
                 fontVariablesBuilder.build()
             )
         }
@@ -145,7 +145,7 @@ class TemplateState private constructor(
             sectionsBuilder: ImmutableList.Builder<SectionState>,
             recordsBuilder: ImmutableMap.Builder<String, RecordState>,
             environmentBuilder: ImmutableMap.Builder<String, Any>,
-            templateUpdates: MutableSharedFlow<ValueUpdate>,
+            lastUpdate: MutableSharedFlow<ValueUpdate>,
         ) {
             val declaredSections: ImmutableList<Section> = meta.sections
             val declaredRecords: ImmutableMap<String, Record> = meta.records
@@ -158,7 +158,7 @@ class TemplateState private constructor(
                         variablesBuilder,
                         fontVariablesBuilder,
                         variable,
-                        templateUpdates
+                        lastUpdate
                     )
                     varsBuilder.put(variable.key, variableState)
                     environmentBuilder.put(variable.name, variableState)
@@ -184,7 +184,7 @@ class TemplateState private constructor(
                         variablesBuilder,
                         fontVariablesBuilder,
                         variable,
-                        templateUpdates
+                        lastUpdate
                     )
                     varsBuilder.put(variable.key, variableState)
                     recordEnvironment.put(variable.name, variableState)
@@ -216,11 +216,11 @@ class TemplateState private constructor(
             variablesBuilder: ImmutableMap.Builder<String, VariableState>,
             fontVariablesBuilder: ImmutableMap.Builder<String, VariableState>,
             variable: Variable,
-            templateUpdates: MutableSharedFlow<ValueUpdate>,
+            lastUpdate: MutableSharedFlow<ValueUpdate>,
         ): VariableState {
             val state: MutableState<String> = mutableStateOf(variable.default)
             val variableState = VariableState(variable, state) {
-                setState(variable, state, it, templateUpdates)
+                setState(variable, state, it, lastUpdate)
             }
             variablesBuilder.put(variable.key, variableState)
             if (variable.type == Variable.Type.Font.name) {
@@ -232,24 +232,18 @@ class TemplateState private constructor(
         private fun setState(
             variable: Variable,
             state: MutableState<String>,
-            newContent: String?,
-            templateUpdates: MutableSharedFlow<ValueUpdate>,
+            newContent: String,
+            lastUpdate: MutableSharedFlow<ValueUpdate>,
         ) {
             val currentContent = state.value
             if (newContent != currentContent) {
                 val namespace = variable.namespace
                 val name = variable.name
-                val update: ValueUpdate = if (newContent != null) {
-                    state.value = newContent
-                    ValueUpdate(namespace, name, newContent)
+                val update = ValueUpdate(namespace, name, newContent)
 
-                } else {
-                    state.value = variable.default
-                    ValueUpdate(namespace, name, null)
-                }
-
+                state.value = newContent
                 pendingUpdates.trySend(update)
-                templateUpdates.tryEmit(update)
+                lastUpdate.tryEmit(update)
             }
         }
     }

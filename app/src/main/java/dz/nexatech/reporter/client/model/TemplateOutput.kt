@@ -50,7 +50,7 @@ class TemplateOutput(
         ): TemplateOutput {
             val htmlContent = mutableStateOf(initialContent)
             tabsContext.tabsScope.backgroundLaunch {
-                templateState.templateUpdates
+                templateState.lastUpdate
                     .debounce(AppConfig.get(TEMPLATE_PREVIEW_DEBOUNCE))
                     .collect {
                         val html = compiledTemplate.evaluateState(templateState)
