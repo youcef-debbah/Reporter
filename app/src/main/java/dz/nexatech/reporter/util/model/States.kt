@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.platform.LocalConfiguration
@@ -18,8 +17,8 @@ import kotlin.math.min
 
 @Composable
 fun rememberDpState(intConfig: LocalConfig.Int): State<Dp> = remember {
-    val dimen by AppConfig.intState(intConfig)
-    derivedStateOf { dimen.dp }
+    val dimen = AppConfig.intState(intConfig)
+    derivedStateOf { dimen.value.dp }
 }
 
 @Composable
@@ -32,8 +31,8 @@ fun rememberColumnsCount(
 ): State<Int> =
     remember(config) {
         val screenWidth = screenWidthMapper(config.screenWidthDp)
-        val columnWidth by AppConfig.intState(MIN_LAYOUT_COLUMN_WIDTH)
-        derivedStateOf(structuralEqualityPolicy()) { screenWidth / columnWidth }
+        val columnWidth = AppConfig.intState(MIN_LAYOUT_COLUMN_WIDTH)
+        derivedStateOf(structuralEqualityPolicy()) { screenWidth / columnWidth.value }
     }
 
 @Composable
@@ -41,10 +40,10 @@ fun rememberMaxLayoutColumnWidth(
     config: Configuration = LocalConfiguration.current,
     dimens: Dimens = Theme.dimens,
 ): State<Dp> = remember(config, dimens) {
-    val maxWidth by AppConfig.intState(MAX_LAYOUT_COLUMN_WIDTH)
+    val maxWidth = AppConfig.intState(MAX_LAYOUT_COLUMN_WIDTH)
     val screenWidth = config.screenWidthDp
     val horizontalPadding = dimens.content_padding.horizontal.value * 2
     derivedStateOf {
-        Dp(min(maxWidth, screenWidth) - horizontalPadding)
+        Dp(min(maxWidth.value, screenWidth) - horizontalPadding)
     }
 }
