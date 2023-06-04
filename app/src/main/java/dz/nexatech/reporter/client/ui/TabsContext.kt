@@ -438,7 +438,7 @@ class TabsContext(val template: Template) {
                     Body("Record name:" + record.name)
                     Body("Record label: " + record.label)
                     Body("Record desc: " + record.desc)
-                    VariablesRows(recordState.variables, tab)
+                    VariablesRows(recordState.variables)
                 }
             }
             tab
@@ -457,7 +457,7 @@ class TabsContext(val template: Template) {
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
                     Title(section.desc, Modifier.contentPadding())
-                    VariablesRows(sectionState.variables, tab)
+                    VariablesRows(sectionState.variables)
                 }
             }
             tab
@@ -467,7 +467,6 @@ class TabsContext(val template: Template) {
     @Composable
     private fun VariablesRows(
         variables: ImmutableMap<String, VariableState>,
-        tab: TemplateTab,
     ) {
         CentredColumn(
             Modifier.padding(
@@ -481,24 +480,11 @@ class TabsContext(val template: Template) {
             }
             val width by rememberDpState(MAX_LAYOUT_COLUMN_WIDTH)
             for (variableStateRow in variableStateRows) {
-                VariablesRow(
-                    modifier = Modifier.requiredWidth(width),
-                    variableStateRow = variableStateRow,
-                    tab = tab,
-                )
-            }
-        }
-    }
-
-    @Composable
-    private fun VariablesRow(
-        modifier: Modifier = Modifier,
-        variableStateRow: ImmutableList<VariableState>,
-        tab: TemplateTab,
-    ) {
-        Line(modifier) {
-            for (variableState in variableStateRow) {
-                VariableInput(variableState)
+                Line(modifier = Modifier.requiredWidth(width)) {
+                    for (variableState in variableStateRow) {
+                        VariableInput(variableState)
+                    }
+                }
             }
         }
     }
