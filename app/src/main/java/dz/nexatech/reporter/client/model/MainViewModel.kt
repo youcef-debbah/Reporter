@@ -7,7 +7,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import dagger.Lazy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.ioLaunch
@@ -15,7 +14,6 @@ import dz.nexatech.reporter.client.common.mainLaunch
 import dz.nexatech.reporter.client.common.readAsString
 import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.common.withMain
-import dz.nexatech.reporter.client.core.AbstractValuesDAO
 import dz.nexatech.reporter.client.core.TemplateEncoder
 import dz.nexatech.reporter.client.ui.TabsContext
 import dz.nexatech.reporter.util.model.Localizer
@@ -34,7 +32,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     val resourcesRepository: ResourcesRepository,
     private val templatesRepository: TemplatesRepository,
-    private val valuesDAO: Lazy<AbstractValuesDAO>,
+    private val inputRepository: InputRepository,
 ) : ViewModel() {
     private val context = AbstractApplication.INSTANCE
 
@@ -67,8 +65,8 @@ class MainViewModel @Inject constructor(
 
     fun templates(): StateFlow<Map<String, Template>?> = templatesRepository.templates
 
-    suspend fun newTemplateState(templateName: String, meta: TemplateMeta) =
-        TemplateState.from(templateName, meta, valuesDAO::get)
+    suspend fun newTemplateState(meta: TemplateMeta) =
+        TemplateState.from(meta, inputRepository)
 
     suspend fun loadTemplateMeta(templateName: String): TemplateMeta {
         var metaInput = ""

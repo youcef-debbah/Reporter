@@ -72,7 +72,6 @@ import dz.nexatech.reporter.util.model.newDynamicWebView
 import dz.nexatech.reporter.util.model.rememberColumnsCount
 import dz.nexatech.reporter.util.model.rememberDpState
 import dz.nexatech.reporter.util.model.rememberMaxLayoutColumnWidth
-import dz.nexatech.reporter.util.model.stringToStringSnapshotStateMapSaver
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
 import dz.nexatech.reporter.util.ui.AbstractIcon
@@ -170,7 +169,7 @@ class TabsContext(val template: Template) {
                     )
                 }
             } else {
-                val templateStateJob = async { viewModel.newTemplateState(template.name, meta) }
+                val templateStateJob = async { viewModel.newTemplateState(meta) }
                 val compiledTemplateJob = async { viewModel.compileTemplate(template.name) }
                 val templateState = templateStateJob.await()
                 val compiledTemplate = compiledTemplateJob.await()

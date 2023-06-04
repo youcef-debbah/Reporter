@@ -24,19 +24,8 @@ abstract class AbstractValue protected constructor() {
     override fun toString() = "Value(name='$key', content='$content')"
 }
 
-interface AbstractValuesDAO {
-
-    suspend fun findByNamespacePrefix(namespacePrefix: String): List<AbstractValue>
-    suspend fun delete(namespace: String, name: String)
-    suspend fun insert(namespace: String, name: String, newContent: String)
-
-    suspend fun execute(update: ValueUpdate) {
-        if (update.newContent == null) {
-            delete(update.namespace, update.name)
-        } else {
-            insert(update.namespace, update.name, update.newContent)
-        }
-    }
+abstract class AbstractInputRepository {
+    abstract fun execute(update: ValueUpdate)
 }
 
 class ValueUpdate(

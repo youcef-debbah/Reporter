@@ -7,17 +7,15 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
-import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.common.withMain
 import dz.nexatech.reporter.client.core.AbstractValue
-import dz.nexatech.reporter.client.core.AbstractValuesDAO
 import dz.nexatech.reporter.client.core.ValueUpdate
+import dz.nexatech.reporter.client.ui.InputHandler
 import dz.nexatech.reporter.util.model.Teller
 import dz.nexatech.reporter.util.model.errorHtmlPage
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import java.io.StringWriter
 
@@ -65,27 +63,11 @@ class TemplateState private constructor(
 
     companion object {
 
-        @Volatile
-        private var globalValuesDAO: AbstractValuesDAO? = null
-        private val pendingUpdates = Channel<ValueUpdate>(capacity = Channel.UNLIMITED)
-
-        init {
-            ioLaunch {
-                val firstUpdate = pendingUpdates.receive()
-                val dao = globalValuesDAO!!
-                dao.execute(firstUpdate)
-                while (true) {
-                    val update = pendingUpdates.receive()
-                    dao.execute(update)
-                }
-            }
-        }
-
         suspend fun from(
-            templateName: String,
             meta: TemplateMeta,
-            valuesDaoSupplier: () -> AbstractValuesDAO,
+            inputRepository: InputRepository,
         ): TemplateState {
+            val templateName = meta.template
             val environmentBuilder: ImmutableMap.Builder<String, Any> = ImmutableMap.builder()
             val variablesBuilder: ImmutableMap.Builder<String, VariableState> =
                 ImmutableMap.builder()
@@ -112,19 +94,15 @@ class TemplateState private constructor(
             val variablesStates = variablesBuilder.build()
 
             withIO {
-                val dao: AbstractValuesDAO = valuesDaoSupplier.invoke()
-                val loadedValues: List<AbstractValue> = dao.findByNamespacePrefix(templateName)
-
+                val loadedValues: List<AbstractValue> = inputRepository.findValuesByNamespacePrefix(templateName)
                 for (loadedValue in loadedValues) {
                     val variableState = variablesStates[loadedValue.key]
                     if (variableState != null) {
                         variableState.state.value = loadedValue.content
                     } else {
-                        dao.delete(loadedValue.namespace, loadedValue.name)
+                        inputRepository.delete(loadedValue.namespace, loadedValue.name)
                     }
                 }
-
-                globalValuesDAO = dao
             }
 
             return TemplateState(
@@ -242,7 +220,7 @@ class TemplateState private constructor(
                 val update = ValueUpdate(namespace, name, newContent)
 
                 state.value = newContent
-                pendingUpdates.trySend(update)
+                InputHandler.execute(update)
                 lastUpdate.tryEmit(update)
             }
         }
