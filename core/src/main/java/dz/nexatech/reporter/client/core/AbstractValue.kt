@@ -2,7 +2,7 @@ package dz.nexatech.reporter.client.core
 
 const val VALUE_TABLE = "value"
 const val VALUE_COLUMN_NAMESPACE = VALUE_TABLE + "_namespace"
-const val VALUE_COLUMN_NAME = "value_name"
+const val VALUE_COLUMN_NAME = VALUE_TABLE + "_name"
 const val VALUE_COLUMN_LAST_UPDATE = "last_update"
 const val VALUE_COLUMN_CONTENT = "content"
 
