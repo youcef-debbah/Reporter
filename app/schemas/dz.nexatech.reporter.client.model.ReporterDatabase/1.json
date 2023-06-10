@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a8f3e5d4a1df00e868667c62a3c53578",
+    "identityHash": "b7ccffea048c8f2d8c4fecd91b654de5",
     "entities": [
       {
         "tableName": "template",
@@ -68,12 +68,18 @@
       },
       {
         "tableName": "value",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`value_namespace` TEXT NOT NULL, `value_name` TEXT NOT NULL, `last_update` INTEGER NOT NULL, `content` TEXT NOT NULL, PRIMARY KEY(`value_namespace`, `value_name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`value_namespace` TEXT NOT NULL, `value_index` INTEGER NOT NULL, `value_name` TEXT NOT NULL, `last_update` INTEGER NOT NULL, `content` TEXT NOT NULL, PRIMARY KEY(`value_namespace`, `value_index`, `value_name`))",
         "fields": [
           {
             "fieldPath": "namespace",
             "columnName": "value_namespace",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "index",
+            "columnName": "value_index",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
@@ -99,6 +105,7 @@
           "autoGenerate": false,
           "columnNames": [
             "value_namespace",
+            "value_index",
             "value_name"
           ]
         },
@@ -179,7 +186,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a8f3e5d4a1df00e868667c62a3c53578')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b7ccffea048c8f2d8c4fecd91b654de5')"
     ]
   }
 }

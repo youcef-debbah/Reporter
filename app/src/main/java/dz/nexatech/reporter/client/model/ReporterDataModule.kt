@@ -73,7 +73,7 @@ private fun SupportSQLiteDatabase.runTransaction(transaction: SupportSQLiteDatab
 abstract class ReporterDatabase : RoomDatabase(), StandardDatabase {
 
     companion object {
-        const val NAME = "reporter_db"
+        const val NAME = "dz.nexatech.reporter.client.model.ReporterDatabase"
     }
 
     abstract override fun logDAO(): LogDAO

@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
@@ -45,7 +46,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
 import com.google.accompanist.navigation.animation.composable
 import com.google.common.collect.ImmutableList
-import com.google.common.collect.ImmutableMap
 import dagger.hilt.android.internal.ThreadUtil
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.AsyncConfig
@@ -54,6 +54,7 @@ import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.client.common.removeIf
 import dz.nexatech.reporter.client.common.slice
 import dz.nexatech.reporter.client.common.withMain
+import dz.nexatech.reporter.client.core.ValueOperation
 import dz.nexatech.reporter.client.model.MAX_LAYOUT_COLUMN_WIDTH
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.Record
@@ -156,7 +157,7 @@ class TabsContext(val template: Template) {
 
     fun loadTemplateAndNavigateToPreviewTab(
         viewModel: MainViewModel,
-        navController: NavHostController
+        navController: NavHostController,
     ) {
         loadingScope.backgroundLaunch {
             val meta = viewModel.loadTemplateMeta(template.name)
@@ -202,7 +203,7 @@ class TabsContext(val template: Template) {
 
     private fun buildAndNavigateToLoadingTab(
         destinationsRegistry: DestinationsRegistry,
-        navController: NavHostController
+        navController: NavHostController,
     ) {
         val newGraph =
             navController.createGraph(
@@ -217,7 +218,7 @@ class TabsContext(val template: Template) {
     private fun buildLoadingTab(
         navGraphBuilder: NavGraphBuilder,
         destinationsRegistry: DestinationsRegistry,
-        navController: NavHostController
+        navController: NavHostController,
     ) {
         destinationsRegistry.register(navGraphBuilder, navController) {
             composable(loadingTab.route) {
@@ -336,7 +337,7 @@ class TabsContext(val template: Template) {
 
         val recordsTabs =
             ArrayList<Pair<TemplateTab, RecordState>>(templateState.recordsStates.size)
-        for (recordState in templateState.recordsStates.values) {
+        for (recordState in templateState.recordsStates) {
             val record = recordState.record
             val tab = TemplateTab(
                 template,
@@ -367,7 +368,7 @@ class TabsContext(val template: Template) {
         webView.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(
                 view: WebView?,
-                request: WebResourceRequest?
+                request: WebResourceRequest?,
             ): WebResourceResponse? =
                 resourcesRepository.loadBlocking(request?.url?.path)?.asWebResourceResponse()
         }
@@ -411,6 +412,7 @@ class TabsContext(val template: Template) {
                         tab,
                         record,
                         recordState,
+                        templateState,
                     )
                 }
             }
@@ -431,14 +433,38 @@ class TabsContext(val template: Template) {
         tab: TemplateTab,
         record: Record,
         recordState: RecordState,
+        templateState: TemplateState,
     ) {
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
-            composable(tab.route) {
+            composable(tab.route) {// TODO impl UI
                 TabScaffold(destinationsRegistry, controller, tab) {
-                    Body("Record name:" + record.name)
+                    CentredRow(Modifier.fillMaxWidth()) {
+                        Body("Record name:" + record.name)
+                        IconButton(onClick = {
+                            templateState.createTuple(recordState)
+                        }) {
+                            Body("+")
+                        }
+                        IconButton(onClick = {
+                            templateState.reloadTuples(recordState)
+                        }) {
+                            Body("*")
+                        }
+                    }
                     Body("Record label: " + record.label)
-                    Body("Record desc: " + record.desc)
-                    VariablesRows(recordState.variables)
+
+                    val tuples = recordState.tuples
+                    for (tuple in tuples) {
+                        CentredRow(Modifier.fillMaxWidth()) {
+                            Title("listIndex: " + tuple.values.firstOrNull()?.index)
+                            IconButton(onClick = {
+                                templateState.deleteTuple(recordState, tuple)
+                            }) {
+                                Body("-")
+                            }
+                        }
+                        VariablesRows(tuple.values)
+                    }
                 }
             }
             tab
@@ -466,7 +492,7 @@ class TabsContext(val template: Template) {
 
     @Composable
     private fun VariablesRows(
-        variables: ImmutableMap<String, VariableState>,
+        variables: Iterable<VariableState>,
     ) {
         CentredColumn(
             Modifier.padding(
@@ -476,7 +502,7 @@ class TabsContext(val template: Template) {
         ) {
             val columnsCount by rememberColumnsCount()
             val variableStateRows = remember(columnsCount) {
-                variables.values.slice(columnsCount)
+                variables.slice(columnsCount)
             }
             val width by rememberDpState(MAX_LAYOUT_COLUMN_WIDTH)
             for (variableStateRow in variableStateRows) {
@@ -495,7 +521,7 @@ class TabsContext(val template: Template) {
         destinationsRegistry: DestinationsRegistry,
         previewTab: TemplateTab,
         templateOutput: TemplateOutput,
-        webView: WebView
+        webView: WebView,
     ) {
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(previewTab.route) {
@@ -620,7 +646,7 @@ private fun TabScaffold(
     destinationsRegistry: DestinationsRegistry,
     navController: NavHostController,
     tab: TemplateTab,
-    block: @Composable () -> Unit
+    block: @Composable () -> Unit,
 ) {
     SimpleScaffold(
         topBar = {

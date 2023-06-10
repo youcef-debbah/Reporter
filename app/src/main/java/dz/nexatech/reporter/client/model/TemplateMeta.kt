@@ -18,9 +18,7 @@ import org.json.JSONObject
 class TemplateMeta private constructor(
     val template: String,
     val errorCode: Int,
-    val sectionsVariables: ImmutableMap<String, Variable> = ImmutableMap.of(),
     val sections: ImmutableList<Section> = ImmutableList.of(),
-    val recordsVariables: ImmutableMap<String, Variable> = ImmutableMap.of(),
     val records: ImmutableMap<String, Record> = ImmutableMap.of(),
     val teller: AbstractTeller,
 ) {
@@ -53,7 +51,7 @@ class TemplateMeta private constructor(
             templateName: String,
             json: String,
             teller: AbstractTeller,
-            localizer: AbstractLocalizer
+            localizer: AbstractLocalizer,
         ): TemplateMeta {
             if (json.isEmpty())
                 return TemplateMeta(template = templateName, errorCode = 404, teller = teller)
@@ -68,10 +66,8 @@ class TemplateMeta private constructor(
                 return TemplateMeta(
                     templateName,
                     errorCode.value,
-                    sections.first,
-                    sections.second,
-                    records.first,
-                    records.second,
+                    sections,
+                    records,
                     teller,
                 )
             } catch (e: Exception) {
@@ -87,16 +83,15 @@ class TemplateMeta private constructor(
             errorCode: IntCounter,
             teller: AbstractTeller,
             localizer: AbstractLocalizer,
-        ): Pair<ImmutableMap<String, Variable>, ImmutableList<Section>> {
+        ): ImmutableList<Section> {
             try {
                 val sectionsJsonArray = jsonObject.getJSONArray("sections")
                 val sectionsBuilder = ImmutableList.builder<Section>()
-                val sectionsVariablesBuilder = ImmutableMap.builder<String, Variable>()
                 for (i in 0 until sectionsJsonArray.length()) {
                     try {
                         val sectionJsonObject = sectionsJsonArray.getJSONObject(i)
                         val variablesJsonArray = sectionJsonObject.getJSONArray("variables")
-                        val variablesBuilder = ImmutableMap.builder<String, Variable>()
+                        val variablesBuilder: ImmutableList.Builder<Variable> = ImmutableList.builder()
 
                         for (j in 0 until variablesJsonArray.length()) {
                             val variableJsonObject = variablesJsonArray.getJSONObject(j)
@@ -125,8 +120,7 @@ class TemplateMeta private constructor(
                                 localizer,
                             )
 
-                            variablesBuilder.put(name, variable)
-                            sectionsVariablesBuilder.put(name, variable)
+                            variablesBuilder.add(variable)
                         }
 
                         sectionsBuilder.add(
@@ -149,11 +143,11 @@ class TemplateMeta private constructor(
                         errorCode.addFlag(1)
                     }
                 }
-                return Pair(sectionsVariablesBuilder.build(), sectionsBuilder.build())
+                return sectionsBuilder.build()
             } catch (e: Exception) {
                 teller.warn("invalid template sections for '$templateName': $json", e)
                 errorCode.addFlag(1)
-                return Pair(ImmutableMap.of(), ImmutableList.of())
+                return ImmutableList.of()
             }
         }
 
@@ -164,23 +158,22 @@ class TemplateMeta private constructor(
             errorCode: IntCounter,
             teller: AbstractTeller,
             localizer: AbstractLocalizer,
-        ): Pair<ImmutableMap<String, Variable>, ImmutableMap<String, Record>> {
+        ): ImmutableMap<String, Record> {
             try {
                 val recordsJsonArray = jsonObject.optJSONArray("records")
                 if (recordsJsonArray != null) {
-                    val recordsVariablesBuilder = ImmutableMap.builder<String, Variable>()
                     val recordsBuilder = ImmutableMap.builder<String, Record>()
-                    for (i in 0 until recordsJsonArray.length()) {
+                    for (recordIndex in 0 until recordsJsonArray.length()) {
                         try {
-                            val recordJsonObject = recordsJsonArray.getJSONObject(i)
+                            val recordJsonObject = recordsJsonArray.getJSONObject(recordIndex)
                             val variablesJsonArray = recordJsonObject.getJSONArray("variables")
-                            val variablesBuilder = ImmutableMap.builder<String, Variable>()
+                            val variablesBuilder: ImmutableList.Builder<Variable> = ImmutableList.builder()
 
                             val recordName = recordJsonObject.getString("name")
                             val recordNamespace = Record.namespace(templateName, recordName)
 
-                            for (j in 0 until variablesJsonArray.length()) {
-                                val variableJsonObject = variablesJsonArray.getJSONObject(j)
+                            for (varIndex in 0 until variablesJsonArray.length()) {
+                                val variableJsonObject = variablesJsonArray.getJSONObject(varIndex)
                                 val name = variableJsonObject.getString("name")
                                 val variable = Variable(
                                     recordNamespace,
@@ -205,15 +198,14 @@ class TemplateMeta private constructor(
                                     variableJsonObject.getString("desc_en"),
                                     localizer,
                                 )
-                                variablesBuilder.put(name, variable)
-                                recordsVariablesBuilder.put("$recordName.$name", variable)
+                                variablesBuilder.add(variable)
                             }
 
                             recordsBuilder.put(
-                                recordNamespace,
+                                recordName,
                                 Record(
-                                    recordNamespace,
                                     recordName,
+                                    recordNamespace,
                                     recordJsonObject.optString("icon"),
                                     recordJsonObject.getString("label_ar"),
                                     recordJsonObject.getString("label_fr"),
@@ -226,19 +218,19 @@ class TemplateMeta private constructor(
                                 )
                             )
                         } catch (e: Exception) {
-                            teller.warn("invalid template record#$i for '$templateName': $json", e)
+                            teller.warn("invalid template record#$recordIndex for '$templateName': $json", e)
                             errorCode.dec()
                             errorCode.addFlag(2)
                         }
                     }
-                    return Pair(recordsVariablesBuilder.build(), recordsBuilder.build())
+                    return recordsBuilder.build()
                 }
             } catch (e: Exception) {
                 teller.warn("invalid template records for '$templateName': $json", e)
                 errorCode.addFlag(2)
             }
 
-            return Pair(ImmutableMap.of(), ImmutableMap.of())
+            return ImmutableMap.of()
         }
     }
 }
@@ -253,7 +245,7 @@ abstract class Form(
     val desc_ar: String,
     val desc_fr: String,
     val desc_en: String,
-    val variables: ImmutableMap<String, Variable>,
+    val variables: ImmutableList<Variable>,
     val localizer: AbstractLocalizer,
 ) {
 
@@ -310,8 +302,8 @@ abstract class Form(
 
 @Immutable
 class Record(
-    namespace: String,
     val name: String,
+    namespace: String,
     icon: String,
     label_ar: String,
     label_fr: String,
@@ -319,7 +311,7 @@ class Record(
     desc_ar: String,
     desc_fr: String,
     desc_en: String,
-    variables: ImmutableMap<String, Variable>,
+    variables: ImmutableList<Variable>,
     localizer: AbstractLocalizer,
 ) : Form(
     namespace,
@@ -334,7 +326,8 @@ class Record(
     localizer
 ) {
     companion object {
-        fun namespace(template: String, recordName: String) = "$template@$recordName"
+        const val NAMESPACE_SEPARATOR : String = "@"
+        fun namespace(template: String, recordName: String) = "$template$NAMESPACE_SEPARATOR$recordName"
     }
 }
 
@@ -348,7 +341,7 @@ class Section(
     desc_ar: String,
     desc_fr: String,
     desc_en: String,
-    variables: ImmutableMap<String, Variable>,
+    variables: ImmutableList<Variable>,
     localizer: AbstractLocalizer,
 ) : Form(
     namespace,
@@ -389,6 +382,7 @@ class Variable internal constructor(
 ) {
 
     companion object {
+        const val SECTION_VARIABLE_INDEX: Int = -1
         private val resources = AbstractApplication.INSTANCE.resources
         fun key(namespace: String, name: String) = "${namespace}.$name"
     }
@@ -400,7 +394,7 @@ class Variable internal constructor(
     private val inputTooShortMessage =
         ErrorMessage { resources.getString(R.string.input_too_short, min) }
 
-//    private val errorMessageChecker = ErrorMessageChecker.forType(type)
+    //    private val errorMessageChecker = ErrorMessageChecker.forType(type)
     private val errorMessageChecker = Type.Text.checker  // TODO remove
 
     fun errorMessage(value: String) = errorMessageChecker.check(this, value)
@@ -554,7 +548,8 @@ class Variable internal constructor(
 
         other as Variable
 
-        if (key != other.key) return false
+        if (namespace != other.namespace) return false
+        if (name != other.name) return false
         if (required != other.required) return false
         if (type != other.type) return false
         if (icon != other.icon) return false

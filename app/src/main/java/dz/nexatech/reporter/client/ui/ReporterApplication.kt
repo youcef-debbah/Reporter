@@ -9,7 +9,7 @@ import dz.nexatech.reporter.client.common.atomicLazy
 import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.core.AbstractBinaryResource
 import dz.nexatech.reporter.client.core.AbstractInputRepository
-import dz.nexatech.reporter.client.core.ValueUpdate
+import dz.nexatech.reporter.client.core.ValueOperation
 import dz.nexatech.reporter.client.model.InputRepository
 import dz.nexatech.reporter.client.model.ResourcesRepository
 import dz.nexatech.reporter.util.model.AppConfig
@@ -66,5 +66,5 @@ object InputHandler : AbstractInputRepository() {
         this.inputRepository = inputRepository
     }
 
-    override fun execute(update: ValueUpdate) = inputRepository.execute(update)
+    override fun execute(operation: ValueOperation) = inputRepository.execute(operation)
 }

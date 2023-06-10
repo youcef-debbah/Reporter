@@ -60,7 +60,7 @@ private fun TextInput(
             label = { Body(variable.label) },
             leadingIcon = leadingIcon,
             trailingIcon = { InfoButton(variable) { showInfo = showInfo.not() } },
-            prefix = { Body(variable.prefix) },
+            prefix = { Body(variableState.index.toString()) },
             suffix = { Body(variable.suffix) },
             isError = errorMessage != null,
             supportingText = { Body(errorMessage ?: "") },
@@ -71,7 +71,7 @@ private fun TextInput(
 @Composable
 private fun InfoButton(
     variable: Variable,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     if (variable.desc.isNotBlank()) {
         IconButton(onClick = onClick) {

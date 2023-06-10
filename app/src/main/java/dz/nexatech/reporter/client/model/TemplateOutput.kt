@@ -70,7 +70,7 @@ class TemplateOutput(
         AppConfig.get(PDF_RESOURCES_CACHING_ENABLED),
         AppConfig.get(PDF_COMPRESSION_LEVEL),
     ) {
-        resourcesRepository.loadFonts(templateState.fontsVariablesStates.values.map { it.state.value })
+        resourcesRepository.loadFonts(templateState.fontsVariablesStates.map { it.state.value })
     }
 
     fun exportTemplateAsPDF(uri: Uri) {
@@ -104,7 +104,7 @@ class TemplateOutput(
     fun newExportPdfIntent(): Intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)
         type = MimeType.APPLICATION_PDF
-        putExtra(Intent.EXTRA_TITLE, "${templateState.template}.${FilesExtension.PDF}")
+        putExtra(Intent.EXTRA_TITLE, "${templateState.templateName}.${FilesExtension.PDF}")
         if (latestUri != Uri.EMPTY && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             putExtra(DocumentsContract.EXTRA_INITIAL_URI, latestUri.value)
         }
