@@ -9,6 +9,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 import dagger.hilt.android.internal.ThreadUtil
+import dz.nexatech.reporter.client.common.addHash
 import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.common.withMain
@@ -383,6 +384,20 @@ class VariableState(
     val index: Int = Variable.SECTION_VARIABLE_INDEX,
     val setter: (String) -> Unit,
 ) {
+    val hash = index.hashCode().addHash(variable.name).addHash(variable.namespace)
+
+    override fun hashCode() = hash
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as VariableState
+        if (variable.namespace != other.variable.namespace) return false
+        if (variable.name != other.variable.name) return false
+        if (index != other.index) return false
+        return true
+    }
+
     override fun toString(): String {
         return state.value
     }

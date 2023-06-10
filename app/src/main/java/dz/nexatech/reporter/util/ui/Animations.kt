@@ -11,15 +11,14 @@ import androidx.compose.ui.unit.dp
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.RemoteConfig
-import dz.nexatech.reporter.util.model.rememberMaxLayoutColumnWidth
 
 @Composable
 fun <T> AnimatedLazyLoading(
+    modifier: Modifier = Modifier,
     animationEnabled: RemoteConfig<Boolean>,
     data: T,
     loadingContent: @Composable () -> Unit = {
-        val width by rememberMaxLayoutColumnWidth()
-        PaddedBox(Modifier.requiredWidth(width)) {
+        PaddedBox(modifier) {
             PaddedColumn {
                 Body(R.string.content_loading_desc, Modifier.contentPadding())
                 CircularProgressIndicator(

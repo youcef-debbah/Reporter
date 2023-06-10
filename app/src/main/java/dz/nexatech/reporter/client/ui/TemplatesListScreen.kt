@@ -32,7 +32,8 @@ import dz.nexatech.reporter.client.model.TEMPLATES_LIST_LOADING_ANIMATION_ENABLE
 import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.TEMPLATES_DOWNLOADING_LINK
-import dz.nexatech.reporter.util.model.rememberMaxLayoutColumnWidth
+import dz.nexatech.reporter.util.model.rememberColumnsCount
+import dz.nexatech.reporter.util.model.rememberLayoutWidth
 import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.Body
 import dz.nexatech.reporter.util.ui.CentredColumn
@@ -119,7 +120,7 @@ object TemplatesListScreen : StaticScreenDestination(
             },
         ) {
             ScrollableColumn {
-                val templatesListWidth by rememberMaxLayoutColumnWidth()
+                val templatesListWidth by rememberLayoutWidth()
                 ContentCard(
                     modifier = Modifier.requiredWidth(templatesListWidth),
                     shape = RoundedCorner.Medium
@@ -128,8 +129,9 @@ object TemplatesListScreen : StaticScreenDestination(
                         LinearProgressIndicator(Modifier.weight(1f))
                     }
                     AnimatedLazyLoading(
-                        TEMPLATES_LIST_LOADING_ANIMATION_ENABLED,
-                        templates
+                        modifier = Modifier.requiredWidth(templatesListWidth),
+                        animationEnabled = TEMPLATES_LIST_LOADING_ANIMATION_ENABLED,
+                        data = templates
                     ) {
                         val items = templates?.values
                         if (items != null) {

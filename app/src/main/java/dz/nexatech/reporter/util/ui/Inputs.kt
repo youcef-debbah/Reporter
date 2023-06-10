@@ -60,7 +60,7 @@ private fun TextInput(
             label = { Body(variable.label) },
             leadingIcon = leadingIcon,
             trailingIcon = { InfoButton(variable) { showInfo = showInfo.not() } },
-            prefix = { Body(variableState.index.toString()) },
+            prefix = { Body(variable.prefix) },
             suffix = { Body(variable.suffix) },
             isError = errorMessage != null,
             supportingText = { Body(errorMessage ?: "") },

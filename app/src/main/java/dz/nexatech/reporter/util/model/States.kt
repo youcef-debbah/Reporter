@@ -36,14 +36,21 @@ fun rememberColumnsCount(
     }
 
 @Composable
-fun rememberMaxLayoutColumnWidth(
+fun rememberLayoutWidth(
+    columnsCount: State<Int>? = null,
     config: Configuration = LocalConfiguration.current,
     dimens: Dimens = Theme.dimens,
 ): State<Dp> = remember(config, dimens) {
     val maxWidth = AppConfig.intState(MAX_LAYOUT_COLUMN_WIDTH)
     val screenWidth = config.screenWidthDp
     val horizontalPadding = dimens.content_padding.horizontal.value * 2
-    derivedStateOf {
-        Dp(min(maxWidth.value, screenWidth) - horizontalPadding)
+    if (columnsCount == null) {
+        derivedStateOf {
+            Dp(min(maxWidth.value, screenWidth) - horizontalPadding)
+        }
+    } else {
+        derivedStateOf {
+            Dp(min(maxWidth.value * columnsCount.value, screenWidth) - horizontalPadding)
+        }
     }
 }

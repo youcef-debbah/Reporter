@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -46,6 +47,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
 import com.google.accompanist.navigation.animation.composable
 import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableMap
 import dagger.hilt.android.internal.ThreadUtil
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.AsyncConfig
@@ -54,13 +56,10 @@ import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.client.common.removeIf
 import dz.nexatech.reporter.client.common.slice
 import dz.nexatech.reporter.client.common.withMain
-import dz.nexatech.reporter.client.core.ValueOperation
 import dz.nexatech.reporter.client.model.MAX_LAYOUT_COLUMN_WIDTH
 import dz.nexatech.reporter.client.model.MainViewModel
-import dz.nexatech.reporter.client.model.Record
 import dz.nexatech.reporter.client.model.RecordState
 import dz.nexatech.reporter.client.model.ResourcesRepository
-import dz.nexatech.reporter.client.model.Section
 import dz.nexatech.reporter.client.model.SectionState
 import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.client.model.TemplateOutput
@@ -72,7 +71,7 @@ import dz.nexatech.reporter.util.model.loadContent
 import dz.nexatech.reporter.util.model.newDynamicWebView
 import dz.nexatech.reporter.util.model.rememberColumnsCount
 import dz.nexatech.reporter.util.model.rememberDpState
-import dz.nexatech.reporter.util.model.rememberMaxLayoutColumnWidth
+import dz.nexatech.reporter.util.model.rememberLayoutWidth
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
 import dz.nexatech.reporter.util.ui.AbstractIcon
@@ -390,13 +389,11 @@ class TabsContext(val template: Template) {
                 for (pair in sectionTabs) {
                     val tab = pair.first
                     val sectionState = pair.second
-                    val section = sectionState.section
                     buildSectionTab(
                         this,
                         navController,
                         destinationsRegistry,
                         tab,
-                        section,
                         sectionState,
                     )
                 }
@@ -404,13 +401,11 @@ class TabsContext(val template: Template) {
                 for (pair in recordsTabs) {
                     val tab = pair.first
                     val recordState = pair.second
-                    val record = recordState.record
                     buildRecordTab(
                         this,
                         navController,
                         destinationsRegistry,
                         tab,
-                        record,
                         recordState,
                         templateState,
                     )
@@ -431,10 +426,10 @@ class TabsContext(val template: Template) {
         navController: NavHostController,
         destinationsRegistry: DestinationsRegistry,
         tab: TemplateTab,
-        record: Record,
         recordState: RecordState,
         templateState: TemplateState,
     ) {
+        val record = recordState.record
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {// TODO impl UI
                 TabScaffold(destinationsRegistry, controller, tab) {
@@ -451,23 +446,43 @@ class TabsContext(val template: Template) {
                             Body("*")
                         }
                     }
-                    Body("Record label: " + record.label)
-
-                    val tuples = recordState.tuples
-                    for (tuple in tuples) {
-                        CentredRow(Modifier.fillMaxWidth()) {
-                            Title("listIndex: " + tuple.values.firstOrNull()?.index)
-                            IconButton(onClick = {
-                                templateState.deleteTuple(recordState, tuple)
-                            }) {
-                                Body("-")
-                            }
-                        }
-                        VariablesRows(tuple.values)
+                    RecordVariables(recordState.tuples) {
+                        templateState.deleteTuple(recordState, it)
                     }
                 }
             }
             tab
+        }
+    }
+
+    @Composable
+    private fun RecordVariables(
+        tuples: SnapshotStateList<ImmutableMap<String, VariableState>>,
+        onDelete: (ImmutableMap<String, VariableState>) -> Unit,
+    ) {
+        val columnsCount = rememberColumnsCount()
+        val width by rememberLayoutWidth(columnsCount)
+        for (tuple in tuples) {
+            ContentCard {
+                CentredColumn(Modifier.contentPadding()) {
+                    CentredRow {
+                        Body("index=" + tuple.values.firstOrNull()?.index)
+                        IconButton(onClick = { onDelete(tuple) }) {
+                            Body("-")
+                        }
+                    }
+                    val variableStateRows = remember(columnsCount, tuple) {
+                        tuple.values.slice(columnsCount.value)
+                    }
+                    for (variableStateRow in variableStateRows) {
+                        Line(modifier = Modifier.requiredWidth(width)) {
+                            for (variableState in variableStateRow) {
+                                VariableInput(variableState)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -476,14 +491,18 @@ class TabsContext(val template: Template) {
         navController: NavHostController,
         destinationsRegistry: DestinationsRegistry,
         tab: TemplateTab,
-        section: Section,
         sectionState: SectionState,
     ) {
+        val desc = sectionState.section.desc
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
-                    Title(section.desc, Modifier.contentPadding())
-                    VariablesRows(sectionState.variables)
+                    ContentCard {
+                        PaddedColumn {
+                            Title(desc, Modifier.contentPadding())
+                            SectionVariables(sectionState.variables)
+                        }
+                    }
                 }
             }
             tab
@@ -491,7 +510,7 @@ class TabsContext(val template: Template) {
     }
 
     @Composable
-    private fun VariablesRows(
+    private fun SectionVariables(
         variables: Iterable<VariableState>,
     ) {
         CentredColumn(
@@ -500,13 +519,13 @@ class TabsContext(val template: Template) {
                 end = Theme.dimens.content_padding.end,
             )
         ) {
-            val columnsCount by rememberColumnsCount()
-            val variableStateRows = remember(columnsCount) {
-                variables.slice(columnsCount)
+            val columnsCount = rememberColumnsCount()
+            val width = rememberLayoutWidth(columnsCount)
+            val variableStateRows = remember(columnsCount.value) {
+                variables.slice(columnsCount.value)
             }
-            val width by rememberDpState(MAX_LAYOUT_COLUMN_WIDTH)
             for (variableStateRow in variableStateRows) {
-                Line(modifier = Modifier.requiredWidth(width)) {
+                Line(modifier = Modifier.requiredWidth(width.value)) {
                     for (variableState in variableStateRow) {
                         VariableInput(variableState)
                     }
@@ -544,7 +563,7 @@ class TabsContext(val template: Template) {
                         }
                     }) {
                     PaddedColumn(Modifier.contentPadding()) {
-                        val dashboardWidth by rememberMaxLayoutColumnWidth()
+                        val dashboardWidth by rememberLayoutWidth()
                         ContentCard(
                             Modifier
                                 .clickable(
@@ -622,7 +641,11 @@ private class TemplateTab(
     tabName: String,
     tabsBuilder: ImmutableList.Builder<AbstractDestination> = ImmutableList.builder(),
     badgeText: State<String> = mutableStateOf(""),
-) : AbstractDestination(TEMPLATE_ROUTE_PREFIX + template.name + '_' + tabName, icon, badgeText) {
+) : AbstractDestination(
+    TEMPLATE_ROUTE_PREFIX + template.name + '_' + tabName,
+    icon,
+    badgeText
+) {
     @Composable
     override fun title() = title
 
@@ -658,11 +681,7 @@ private fun TabScaffold(
         bottomBar = {
         }) {
         ScrollableColumn {
-            ContentCard {
-                PaddedColumn {
-                    block()
-                }
-            }
+            block()
         }
     }
 }
