@@ -119,7 +119,7 @@ object TemplatesListScreen : StaticScreenDestination(
                 }
             },
         ) {
-            ScrollableColumn {
+            ScrollableColumn(Modifier.contentPadding()) {
                 val templatesListWidth by rememberLayoutWidth()
                 ContentCard(
                     modifier = Modifier.requiredWidth(templatesListWidth),

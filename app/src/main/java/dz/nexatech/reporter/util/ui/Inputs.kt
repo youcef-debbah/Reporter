@@ -119,7 +119,7 @@ fun rememberFakeVar(name: String = "varname", type: String = Variable.Type.Text.
 @Preview(name = "input_preview", widthDp = 400, showBackground = true)
 @Composable
 private fun InputPreview() {
-    ScrollableColumn {
+    ScrollableColumn(Modifier.contentPadding()) {
         ContentCard(Modifier.width(700.dp)) {
             val variable = rememberFakeVar()
             val state = rememberSaveable { mutableStateOf(variable.default) }

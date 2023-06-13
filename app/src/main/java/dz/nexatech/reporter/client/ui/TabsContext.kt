@@ -21,11 +21,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -56,7 +58,6 @@ import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.client.common.removeIf
 import dz.nexatech.reporter.client.common.slice
 import dz.nexatech.reporter.client.common.withMain
-import dz.nexatech.reporter.client.model.MAX_LAYOUT_COLUMN_WIDTH
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.RecordState
 import dz.nexatech.reporter.client.model.ResourcesRepository
@@ -70,7 +71,6 @@ import dz.nexatech.reporter.client.model.evaluateState
 import dz.nexatech.reporter.util.model.loadContent
 import dz.nexatech.reporter.util.model.newDynamicWebView
 import dz.nexatech.reporter.util.model.rememberColumnsCount
-import dz.nexatech.reporter.util.model.rememberDpState
 import dz.nexatech.reporter.util.model.rememberLayoutWidth
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.AbstractDestination
@@ -429,24 +429,17 @@ class TabsContext(val template: Template) {
         recordState: RecordState,
         templateState: TemplateState,
     ) {
-        val record = recordState.record
+        val recordDesc = recordState.record.desc
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
-            composable(tab.route) {// TODO impl UI
-                TabScaffold(destinationsRegistry, controller, tab) {
-                    CentredRow(Modifier.fillMaxWidth()) {
-                        Body("Record name:" + record.name)
-                        IconButton(onClick = {
-                            templateState.createTuple(recordState)
-                        }) {
-                            Body("+")
-                        }
-                        IconButton(onClick = {
-                            templateState.reloadTuples(recordState)
-                        }) {
-                            Body("*")
-                        }
+            composable(tab.route) {
+                TabScaffold(destinationsRegistry, controller, tab, {
+                    FloatingActionButton(onClick = {
+                        templateState.createTuple(recordState)
+                    }) {
+                        InfoIcon(icon = R.drawable.baseline_add_24, desc = R.string.new_tuple_desc)
                     }
-                    RecordVariables(recordState.tuples) {
+                }) {
+                    RecordTuples(recordState.tuples, recordDesc) {
                         templateState.deleteTuple(recordState, it)
                     }
                 }
@@ -456,19 +449,28 @@ class TabsContext(val template: Template) {
     }
 
     @Composable
-    private fun RecordVariables(
+    private fun RecordTuples(
         tuples: SnapshotStateList<ImmutableMap<String, VariableState>>,
+        desc: String,
         onDelete: (ImmutableMap<String, VariableState>) -> Unit,
     ) {
         val columnsCount = rememberColumnsCount()
         val width by rememberLayoutWidth(columnsCount)
+
+        ContentCard(Modifier.contentPadding().fillMaxWidth()) {
+            Title(desc, Modifier.contentPadding().width(width))
+        }
+
         for (tuple in tuples) {
-            ContentCard {
-                CentredColumn(Modifier.contentPadding()) {
+            ContentCard(Modifier.contentPadding()) {
+                PaddedColumn {
                     CentredRow {
-                        Body("index=" + tuple.values.firstOrNull()?.index)
+                        Body(
+                            text = "index=" + tuple.values.firstOrNull()?.index,
+                            modifier = Modifier.weight(1f),
+                        )
                         IconButton(onClick = { onDelete(tuple) }) {
-                            Body("-")
+                            InfoIcon(icon = R.drawable.baseline_delete_forever_24, desc = R.string.delete_tuple_desc)
                         }
                     }
                     val variableStateRows = remember(columnsCount, tuple) {
@@ -669,6 +671,7 @@ private fun TabScaffold(
     destinationsRegistry: DestinationsRegistry,
     navController: NavHostController,
     tab: TemplateTab,
+    floatingActionButton: @Composable () -> Unit = {},
     block: @Composable () -> Unit,
 ) {
     SimpleScaffold(
@@ -678,8 +681,8 @@ private fun TabScaffold(
                 DefaultNavigationBar(navController, destinationsRegistry)
             }
         },
-        bottomBar = {
-        }) {
+        floatingActionButton = floatingActionButton
+    ) {
         ScrollableColumn {
             block()
         }

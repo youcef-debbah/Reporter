@@ -67,8 +67,7 @@ inline fun ScrollableColumn(
         modifier = modifier
             .drawVerticalScrollbar(scrollState)
             .verticalScroll(scrollState)
-            .fillMaxWidth()
-            .contentPadding(),
+            .fillMaxWidth(),
         verticalArrangement = verticalArrangement,
         horizontalAlignment = horizontalAlignment,
         content = content
