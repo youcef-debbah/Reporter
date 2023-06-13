@@ -1,5 +1,7 @@
 package dz.nexatech.reporter.client.core
 
+import kotlinx.coroutines.CompletableDeferred
+
 const val VALUE_TABLE = "value"
 const val VALUE_COLUMN_NAMESPACE = VALUE_TABLE + "_namespace"
 const val VALUE_COLUMN_INDEX = VALUE_TABLE + "_index"
@@ -32,16 +34,27 @@ abstract class AbstractInputRepository {
 
 sealed class ValueOperation {
     class Delete(val namespace: String, val index: Int, val name: String) : ValueOperation() {
-        override fun toString() = "Delete(namespace='$namespace', name='$name'"
+        override fun toString() = "Value.Delete(namespace='$namespace', name='$name'"
     }
 
     class DeleteByNamespace(val namespace: String) : ValueOperation() {
-        override fun toString() = "DeleteAll(namespace='$namespace')"
+        override fun toString() = "Value.DeleteAll(namespace='$namespace')"
     }
 
     class Update(val namespace: String, val index: Int, val name: String, val newContent: String) :
         ValueOperation() {
         override fun toString() =
-            "ValueUpdate(namespace='$namespace', name='$name', newContent=$newContent)"
+            "Value.Update(namespace='$namespace', name='$name', newContent=$newContent)"
+    }
+
+    class Read(
+        val completableDeferred: CompletableDeferred<List<AbstractValue>> = CompletableDeferred(),
+        val reader: suspend (Any) -> List<AbstractValue>,
+    ) : ValueOperation() {
+
+        suspend fun await() = completableDeferred.await()
+
+        override fun toString() =
+            "Value.Read()"
     }
 }

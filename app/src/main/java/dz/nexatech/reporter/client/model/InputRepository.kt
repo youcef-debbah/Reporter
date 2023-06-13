@@ -6,12 +6,9 @@ import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.core.AbstractInputRepository
 import dz.nexatech.reporter.client.core.AbstractValue
 import dz.nexatech.reporter.client.core.ValueOperation
-import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.Teller
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @Stable
@@ -52,6 +49,11 @@ class InputRepository @Inject constructor(
             )
 
             is ValueOperation.DeleteByNamespace -> valuesDAO.delete(operation.namespace)
+            is ValueOperation.Read -> operation.completableDeferred.complete(
+                operation.reader(
+                    valuesDAO
+                )
+            )
         }
         Teller.test(operation.toString() + " done in: " + execution.duration())
     }
@@ -60,17 +62,21 @@ class InputRepository @Inject constructor(
         pendingValuesOperations.trySend(operation)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun valuesDAO(): ValuesDAO {
-        while (!pendingValuesOperations.isEmpty) {// TODO consider updating
-            delay(AppConfig.get(VALUES_ACTIVE_WAIT_DELAY))
+    suspend fun loadSectionVariablesValues(template: String): List<AbstractValue> {
+        val readOperation = ValueOperation.Read {
+            val dao = it as ValuesDAO
+            dao.loadSectionVariablesValues(template)
         }
-        return valuesDao.await()
+        execute(readOperation)
+        return readOperation.await()
     }
 
-    suspend fun loadSectionVariablesValues(template: String): List<AbstractValue> =
-        valuesDAO().loadSectionVariablesValues(template)
-
-    suspend fun loadRecordsVariablesValues(template: String): List<AbstractValue> =
-        valuesDAO().loadRecordsVariablesValues(template)
+    suspend fun loadRecordsVariablesValues(template: String): List<AbstractValue> {
+        val readOperation = ValueOperation.Read {
+            val dao = it as ValuesDAO
+            dao.loadRecordsVariablesValues(template)
+        }
+        execute(readOperation)
+        return readOperation.await()
+    }
 }
