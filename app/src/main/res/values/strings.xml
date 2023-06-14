@@ -74,4 +74,5 @@
     <string name="input_description">Show Input Description</string>
     <string name="new_tuple_desc">Add new entry</string>
     <string name="delete_tuple_desc">Delete tuple</string>
+    <string name="tuple_title">Entity#%d</string>
 </resources>

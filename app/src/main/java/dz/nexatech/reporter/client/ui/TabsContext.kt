@@ -457,29 +457,48 @@ class TabsContext(val template: Template) {
         val columnsCount = rememberColumnsCount()
         val width by rememberLayoutWidth(columnsCount)
 
-        ContentCard(Modifier.contentPadding().fillMaxWidth()) {
-            Title(desc, Modifier.contentPadding().width(width))
+        ContentCard(
+            Modifier
+                .contentPadding()
+                .fillMaxWidth()
+        ) {
+            Title(
+                desc,
+                Modifier
+                    .contentPadding()
+                    .padding(bottom = 4.dp)
+                    .width(width)
+            )
         }
 
         for (tuple in tuples) {
-            ContentCard(Modifier.contentPadding()) {
-                PaddedColumn {
-                    CentredRow {
-                        Body(
-                            text = "index=" + tuple.values.firstOrNull()?.index,
-                            modifier = Modifier.weight(1f),
-                        )
-                        IconButton(onClick = { onDelete(tuple) }) {
-                            InfoIcon(icon = R.drawable.baseline_delete_forever_24, desc = R.string.delete_tuple_desc)
+            val values = tuple.values
+            if (values.isNotEmpty()) {
+                ContentCard(Modifier.contentPadding()) {
+                    PaddedColumn {
+                        CentredRow {
+                            Body(
+                                text = stringRes(
+                                    R.string.tuple_title,
+                                    values.first().index
+                                ),
+                                modifier = Modifier.weight(1f),
+                            )
+                            IconButton(onClick = { onDelete(tuple) }) {
+                                InfoIcon(
+                                    icon = R.drawable.baseline_delete_forever_24,
+                                    desc = R.string.delete_tuple_desc
+                                )
+                            }
                         }
-                    }
-                    val variableStateRows = remember(columnsCount, tuple) {
-                        tuple.values.slice(columnsCount.value)
-                    }
-                    for (variableStateRow in variableStateRows) {
-                        Line(modifier = Modifier.requiredWidth(width)) {
-                            for (variableState in variableStateRow) {
-                                VariableInput(variableState)
+                        val variableStateRows = remember(columnsCount, tuple) {
+                            values.slice(columnsCount.value)
+                        }
+                        for (variableStateRow in variableStateRows) {
+                            Line(modifier = Modifier.requiredWidth(width)) {
+                                for (variableState in variableStateRow) {
+                                    VariableInput(variableState)
+                                }
                             }
                         }
                     }
