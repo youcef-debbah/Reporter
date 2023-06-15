@@ -20,12 +20,8 @@ abstract class AbstractValue protected constructor() {
     // this should typically be "$namespace.$name"
     abstract val key: String
 
-    final override fun equals(other: Any?) =
-        this === other || (other is AbstractValue && this.key == other.key)
-
-    final override fun hashCode() = key.hashCode()
-
-    override fun toString() = "Value(name='$key', content='$content')"
+    override fun toString() =
+        "Value(namespace='$namespace', index=$index, name='$name', content='$content')"
 }
 
 abstract class AbstractInputRepository {

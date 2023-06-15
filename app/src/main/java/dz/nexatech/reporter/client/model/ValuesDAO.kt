@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 
 @Dao
 interface ValuesDAO {
@@ -23,10 +24,25 @@ interface ValuesDAO {
     @Query("delete from value where value_namespace = :namespace")
     suspend fun delete(namespace: String)
 
-    suspend fun insert(namespace: String, index: Int, name: String, newContent: String) {
-        insert(Value(namespace, index, name, System.currentTimeMillis(), newContent))
+    suspend fun save(namespace: String, index: Int, name: String, newContent: String) {
+        save(Value(namespace, index, name, System.currentTimeMillis(), newContent))
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(newValue: Value)
+    suspend fun save(value: Value)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAll(values: List<Value>)
+
+    @Query("select * from value")
+    suspend fun loadAll(): List<Value>
+
+    @Query("delete from value")
+    suspend fun deleteAll()
+
+    @Transaction
+    suspend fun replaceAll(values: List<Value>) {
+        deleteAll()
+        saveAll(values)
+    }
 }

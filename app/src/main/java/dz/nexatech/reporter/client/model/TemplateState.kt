@@ -196,7 +196,7 @@ class TemplateState private constructor(
             lastUpdate: MutableSharedFlow<String>,
         ) {
             val draft = ArrayList<ImmutableMap<String, VariableState>>(loadedTuples.size)
-            var maxIndex = -1
+            var maxIndex = 0
             for (loadedEntry in loadedTuples.entries) {
                 val index = loadedEntry.key
                 if (index > maxIndex) {
