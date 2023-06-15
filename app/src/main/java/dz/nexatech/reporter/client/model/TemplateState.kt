@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 import dagger.hilt.android.internal.ThreadUtil
 import dz.nexatech.reporter.client.common.addHash
-import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.common.withMain
 import dz.nexatech.reporter.client.core.AbstractValue
@@ -46,18 +45,15 @@ class TemplateState private constructor(
             }
         }.build()
 
-    fun reloadTuples(record: RecordState) {
-        ioLaunch {
-            updateRecordsStates(inputRepository, templateName, ImmutableList.of(record), lastUpdate)
-        }
-    }
-
     fun createTuple(recordState: RecordState) {
         ThreadUtil.ensureMainThread()
         val index = recordState.maxIndex.value + 1
+        val now = System.currentTimeMillis()
 
+        val variables = recordState.record.variables
         val tupleBuilder = ImmutableMap.builder<String, VariableState>()
-        for (variable in recordState.record.variables) {
+        val tupleValues = ArrayList<Value>(variables.size)
+        for (variable in variables) {
             tupleBuilder.put(
                 variable.name,
                 createVariableState(
@@ -67,32 +63,41 @@ class TemplateState private constructor(
                     value = variable.default,
                 ),
             )
-            InputHandler.execute(
-                ValueOperation.Update(
+
+            tupleValues.add(
+                Value(
                     namespace = variable.namespace,
                     index = index,
                     name = variable.name,
-                    newContent = variable.default
+                    lastUpdate = now,
+                    content = variable.default,
                 )
             )
         }
 
+        InputHandler.execute(ValueOperation.UpdateAll(tupleValues))
         recordState.maxIndex.value = index
         recordState.tuples.add(tupleBuilder.build())
     }
 
     fun deleteTuple(recordState: RecordState, target: ImmutableMap<String, VariableState>) {
         if (recordState.tuples.remove(target)) {
-            for (variableState in target.values) {
+            val values = target.values
+            val toDelete = ArrayList<Value>(values.size)
+            val now = System.currentTimeMillis()
+            for (variableState in values) {
                 val variable = variableState.variable
-                InputHandler.execute(
-                    ValueOperation.Delete(
-                        variable.namespace,
-                        variableState.index,
-                        variable.name
+                toDelete.add(
+                    Value(
+                        namespace = variable.namespace,
+                        index = variableState.index,
+                        name = variable.name,
+                        lastUpdate = now,
+                        content = variable.default
                     )
                 )
             }
+            InputHandler.execute(ValueOperation.DeleteAll(toDelete))
         }
     }
 
@@ -154,38 +159,36 @@ class TemplateState private constructor(
                     recordTuples.tuples.clear()
                 }
             } else {
-                val loadedTuples = TreeMap<Int, MutableMap<String, AbstractValue>>()
-                for (loadedValue in loadedValues) {
-                    loadedTuples.compute(loadedValue.index) { _, values ->
-                        values ?: mutableMapOf<String, AbstractValue>().apply {
-                            put(loadedValue.key, loadedValue)
-                        }
-                    }
-                }
+                updateRecordsStates(loadedValues, recordsStates, lastUpdate)
+            }
+        }
 
-                for (recordState in recordsStates) {
-                    updateRecordTuples(
-                        loadedTuples = loadedTuples,
-                        record = recordState.record,
-                        tuples = recordState.tuples,
-                        maxIndexState = recordState.maxIndex,
-                        lastUpdate = lastUpdate,
-                    )
-                }
-
-                // queue unused values to be deleted from the database
-                for (loadedTuple in loadedTuples.values) {
-                    for (value in loadedTuple.values) {
-                        inputRepository.execute(
-                            ValueOperation.Delete(
-                                namespace = value.namespace,
-                                index = value.index,
-                                name = value.name,
-                            )
-                        )
+        private suspend fun updateRecordsStates(
+            loadedValues: List<AbstractValue>,
+            recordsStates: ImmutableList<RecordState>,
+            lastUpdate: MutableSharedFlow<String>,
+        ) {
+            val loadedTuples = TreeMap<Int, MutableMap<String, AbstractValue>>()
+            for (loadedValue in loadedValues) {
+                loadedTuples.compute(loadedValue.index) { _, values ->
+                    values ?: mutableMapOf<String, AbstractValue>().apply {
+                        put(loadedValue.key, loadedValue)
                     }
                 }
             }
+
+            for (recordState in recordsStates) {
+                updateRecordTuples(
+                    loadedTuples = loadedTuples,
+                    record = recordState.record,
+                    tuples = recordState.tuples,
+                    maxIndexState = recordState.maxIndex,
+                    lastUpdate = lastUpdate,
+                )
+            }
+
+            val unusedValues = loadedTuples.values.flatMap { it.values }
+            InputHandler.execute(ValueOperation.DeleteAll(unusedValues))
         }
 
         private suspend fun updateRecordTuples(
@@ -242,18 +245,18 @@ class TemplateState private constructor(
             templateName: String,
             sectionsStates: ImmutableMap<String, VariableState>,
         ) {
-            val variablesValues: List<AbstractValue> =
+            val loadedValues: List<AbstractValue> =
                 inputRepository.loadSectionVariablesValues(templateName)
-            for (variableValue in variablesValues) {
-                val variableState = sectionsStates[variableValue.name]
+            for (loadedValue in loadedValues) {
+                val variableState = sectionsStates[loadedValue.name]
                 if (variableState != null) {
-                    variableState.state.value = variableValue.content
+                    variableState.state.value = loadedValue.content
                 } else {
                     inputRepository.execute(
                         ValueOperation.Delete(
-                            variableValue.namespace,
-                            variableValue.index,
-                            variableValue.name,
+                            loadedValue.namespace,
+                            loadedValue.index,
+                            loadedValue.name,
                         )
                     )
                 }
