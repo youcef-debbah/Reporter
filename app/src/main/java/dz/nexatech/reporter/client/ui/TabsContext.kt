@@ -518,7 +518,7 @@ class TabsContext(val template: Template) {
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
-                    ContentCard {
+                    ContentCard(Modifier.contentPadding()) {
                         PaddedColumn {
                             Title(desc, Modifier.contentPadding())
                             SectionVariables(sectionState.variables)
