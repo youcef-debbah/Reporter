@@ -444,7 +444,7 @@ fun InputStream.readAsString(
     val inputReader: (InputStreamReader) -> Unit = { reader ->
         var bytesRead: Int
         while (reader.read(buffer, 0, buffer.size).also { bytesRead = it } != -1) {
-            result.append(buffer, 0, bytesRead)
+            result.appendRange(buffer, 0, bytesRead)
         }
     }
     inputReader.invoke(InputStreamReader(this, StandardCharsets.UTF_8))
