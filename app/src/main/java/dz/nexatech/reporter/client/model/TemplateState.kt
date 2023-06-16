@@ -75,7 +75,7 @@ class TemplateState private constructor(
             )
         }
 
-        InputHandler.execute(ValueOperation.UpdateAll(tupleValues))
+        InputHandler.execute(ValueOperation.SaveAll(tupleValues))
         recordState.maxIndex.value = index
         recordState.tuples.add(tupleBuilder.build())
     }
@@ -171,7 +171,8 @@ class TemplateState private constructor(
             val loadedTuples = TreeMap<Int, MutableMap<String, AbstractValue>>()
             for (loadedValue in loadedValues) {
                 loadedTuples.compute(loadedValue.index) { _, values ->
-                    values ?: mutableMapOf<String, AbstractValue>().apply {
+                    val currentValues = values ?: mutableMapOf()
+                    currentValues.apply {
                         put(loadedValue.key, loadedValue)
                     }
                 }
@@ -199,7 +200,7 @@ class TemplateState private constructor(
             lastUpdate: MutableSharedFlow<String>,
         ) {
             val draft = ArrayList<ImmutableMap<String, VariableState>>(loadedTuples.size)
-            var maxIndex = 0
+            var maxIndex = Value.INDEX_OFFSET
             for (loadedEntry in loadedTuples.entries) {
                 val index = loadedEntry.key
                 if (index > maxIndex) {
@@ -208,26 +209,17 @@ class TemplateState private constructor(
                 val loadedTuple = loadedEntry.value
                 val builder = ImmutableMap.Builder<String, VariableState>()
                 for (variable in record.variables) {
-                    val value: AbstractValue? = loadedTuple.remove(variable.key)
-                    if (value == null) {
-                        InputHandler.execute(
-                            ValueOperation.Update(
-                                namespace = variable.namespace,
+                    loadedTuple.remove(variable.key)?.let {
+                        builder.put(
+                            variable.name,
+                            createVariableState(
+                                variable = variable,
+                                lastUpdate = lastUpdate,
                                 index = index,
-                                name = variable.name,
-                                newContent = variable.default
-                            )
+                                value = it.content,
+                            ),
                         )
                     }
-                    builder.put(
-                        variable.name,
-                        createVariableState(
-                            variable = variable,
-                            lastUpdate = lastUpdate,
-                            index = index,
-                            value = value?.content ?: variable.default,
-                        ),
-                    )
                 }
                 draft.add(builder.build())
             }
@@ -302,7 +294,7 @@ class TemplateState private constructor(
 
             for (record in declaredRecords.values) {
                 val tuples = SnapshotStateList<ImmutableMap<String, VariableState>>()
-                val maxIndex = mutableStateOf(-1)
+                val maxIndex = mutableStateOf(Value.INDEX_OFFSET)
                 recordsBuilder.add(
                     RecordState(
                         record,
@@ -368,7 +360,7 @@ class TemplateState private constructor(
                 state.value = newContent
                 lastUpdate.tryEmit(variable.namespace)
                 InputHandler.execute(
-                    ValueOperation.Update(
+                    ValueOperation.Save(
                         variable.namespace,
                         index,
                         variable.name,

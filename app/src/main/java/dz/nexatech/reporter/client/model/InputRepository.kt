@@ -59,14 +59,14 @@ class InputRepository @Inject constructor(
         val execution = System.nanoTime()
         @Suppress("UNCHECKED_CAST")
         when (operation) {
-            is ValueOperation.Update -> valuesDAO.save(
+            is ValueOperation.Save -> valuesDAO.save(
                 namespace = operation.namespace,
                 index = operation.index,
                 name = operation.name,
                 newContent = operation.newContent
             )
 
-            is ValueOperation.UpdateAll -> valuesDAO.saveAll(operation.values as List<Value>)
+            is ValueOperation.SaveAll -> valuesDAO.saveAll(operation.values as List<Value>)
 
             is ValueOperation.Delete -> valuesDAO.delete(
                 namespace = operation.namespace,

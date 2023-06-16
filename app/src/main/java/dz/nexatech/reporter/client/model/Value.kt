@@ -5,7 +5,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import dz.nexatech.reporter.client.common.addHash
-import dz.nexatech.reporter.client.common.fastLazy
 import dz.nexatech.reporter.client.core.AbstractValue
 import dz.nexatech.reporter.client.core.VALUE_COLUMN_CONTENT
 import dz.nexatech.reporter.client.core.VALUE_COLUMN_INDEX
@@ -35,6 +34,11 @@ class Value(
     @ColumnInfo(VALUE_COLUMN_CONTENT)
     override val content: String,
 ) : AbstractValue(), Comparable<Value> {
+
+    companion object {
+        const val INDEX_OFFSET = 0
+    }
+
     @Ignore
     override val key: String = Variable.key(namespace, name)
 
