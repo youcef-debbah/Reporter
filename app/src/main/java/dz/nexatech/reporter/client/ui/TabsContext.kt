@@ -11,6 +11,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.SpringSpec
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,6 +41,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -108,8 +114,12 @@ import kotlinx.coroutines.cancel
 class TabsContext(val template: Template) {
 
     companion object {
-        val context: AbstractApplication = AbstractApplication.INSTANCE
-        val resources: Resources = context.resources
+        private val context: AbstractApplication = AbstractApplication.INSTANCE
+        private val resources: Resources = context.resources
+        private val autoScrollAnimation: AnimationSpec<Float> = SpringSpec(
+            dampingRatio = Spring.DampingRatioHighBouncy,
+            stiffness = Spring.StiffnessMedium,
+        )
     }
 
     private val loadingTab = TemplateTab(
@@ -432,14 +442,31 @@ class TabsContext(val template: Template) {
         val recordDesc = recordState.record.desc
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
             composable(tab.route) {
-                TabScaffold(destinationsRegistry, controller, tab, {
-                    FloatingActionButton(onClick = {
-                        templateState.createTuple(recordState)
-                    }) {
-                        InfoIcon(icon = R.drawable.baseline_add_24, desc = R.string.new_tuple_desc)
+                val scrollState = rememberScrollState()
+                val coroutineScope = rememberCoroutineScope()
+                TabScaffold(
+                    destinationsRegistry = destinationsRegistry,
+                    navController = controller,
+                    tab = tab,
+                    scrollState = scrollState,
+                    floatingActionButton = {
+                        FloatingActionButton(onClick = {
+                            templateState.createTuple(recordState)
+                            coroutineScope.backgroundLaunch {
+                                scrollState.animateScrollTo(Integer.MAX_VALUE, autoScrollAnimation)
+                            }
+                        }) {
+                            InfoIcon(
+                                icon = R.drawable.baseline_add_24,
+                                desc = R.string.new_tuple_desc
+                            )
+                        }
                     }
-                }) {
-                    RecordTuples(recordState.tuples, recordDesc) {
+                ) {
+                    RecordTuples(
+                        tuples = recordState.tuples,
+                        desc = recordDesc,
+                    ) {
                         templateState.deleteTuple(recordState, it)
                     }
                 }
@@ -691,6 +718,7 @@ private fun TabScaffold(
     navController: NavHostController,
     tab: TemplateTab,
     floatingActionButton: @Composable () -> Unit = {},
+    scrollState: ScrollState = rememberScrollState(),
     block: @Composable () -> Unit,
 ) {
     SimpleScaffold(
@@ -702,7 +730,7 @@ private fun TabScaffold(
         },
         floatingActionButton = floatingActionButton
     ) {
-        ScrollableColumn {
+        ScrollableColumn(scrollState = scrollState) {
             block()
         }
     }
