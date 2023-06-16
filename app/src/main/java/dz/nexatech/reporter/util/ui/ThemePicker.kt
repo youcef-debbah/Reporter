@@ -1,9 +1,14 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
 package dz.nexatech.reporter.util.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,8 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.google.accompanist.flowlayout.FlowMainAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
 import dz.nexatech.reporter.client.R
 
 @Composable
@@ -44,7 +47,7 @@ fun ThemePicker(
                 end = zero_padding,
             )
         ) {
-            FlowRow(mainAxisAlignment = FlowMainAxisAlignment.Center) {
+            FlowRow(horizontalArrangement = Arrangement.Center) {
                 for (theme in ThemeColors.values()) {
                     val themeName = theme.name
                     key(themeName) {
