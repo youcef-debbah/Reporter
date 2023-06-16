@@ -14,6 +14,7 @@ import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
 import kotlin.math.log10
+import kotlin.math.min
 
 object Texts {
 
@@ -455,10 +456,11 @@ fun InputStream.readAsString(
 }
 
 fun InputStream.readAsBytes(
-    bufferSize: Int = -1,
+    expectedSize: Int = -1,
     autoClose: Boolean = true,
 ): ByteArray = try {
-    val buffer = ByteArray(if (bufferSize < 1) DEFAULT_BUFFER_SIZE else bufferSize)
+    val bufferSize = if (expectedSize > 0) min(DEFAULT_BUFFER_SIZE, expectedSize) else DEFAULT_BUFFER_SIZE
+    val buffer = ByteArray(bufferSize)
     val output = ByteArrayOutputStream()
     var bytesRead: Int
     while (this.read(buffer).also { bytesRead = it } != -1) {

@@ -28,14 +28,14 @@ object Version {
     const val CORE_ARCH = "2.2.0"
 
     // https://developer.android.com/jetpack/androidx/releases/activity
-    const val ACTIVITY = "1.7.1"
+    const val ACTIVITY = "1.7.2"
 
     // https://developer.android.com/jetpack/androidx/releases/customview
     const val CUSTOMVIEW = "1.1.0"
     const val CUSTOMVIEW_POOLING = "1.0.0"
 
     // https://developer.android.com/jetpack/compose/navigation
-    const val NAVIGATION_COMPOSE = "2.5.3"
+    const val NAVIGATION_COMPOSE = "2.6.0"
 
     // https://developer.android.com/jetpack/androidx/releases/constraintlayout
     const val CONSTRAINT_LAYOUT_COMPOSE = "1.0.1"
@@ -62,8 +62,8 @@ object Version {
     const val GOOGLE_MATERIAL = "1.9.0"
 
     // https://developer.android.com/jetpack/androidx/releases/paging
-    const val PAGING = "3.2.0-alpha05"
-    const val PAGING_COMPOSE = "1.0.0-alpha19"
+    const val PAGING = "3.2.0-beta01"
+    const val PAGING_COMPOSE = "3.2.0-beta01"
 
     // https://developer.android.com/jetpack/androidx/releases/appcompat
     const val APPCOMPAT = "1.7.0-alpha02"

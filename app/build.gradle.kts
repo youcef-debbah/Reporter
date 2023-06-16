@@ -26,7 +26,7 @@ plugins {
 
 logger.info("app build config...")
 
-standardAndroidApp("dz.nexatech.reporter.client", 8, "proguard-rules.pro")
+standardAndroidApp("dz.nexatech.reporter.client", 9, "proguard-rules.pro")
 
 dependencies {
     addCommonTestDependencies()
@@ -53,15 +53,15 @@ dependencies {
     implementation("androidx.appcompat:appcompat-resources:${Version.APPCOMPAT}")
     implementation("androidx.core:core-ktx:${Version.ANDROIDX_CORE}")
     implementation("com.google.android.material:material:${Version.GOOGLE_MATERIAL}")
-    implementation("androidx.preference:preference:${Version.PREFERENCE}")
+    implementation("androidx.preference:preference-ktx:${Version.PREFERENCE}")
     implementation("com.google.guava:guava:${Version.GUAVA_ANDROID}")
 
-    implementation("androidx.paging:paging-runtime:${Version.PAGING}")
-    implementation("androidx.paging:paging-compose:${Version.PAGING_COMPOSE}")
+//    implementation("androidx.paging:paging-runtime-ktx:${Version.PAGING}")
+//    implementation("androidx.paging:paging-compose:${Version.PAGING_COMPOSE}")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:${Version.LIFECYCLE_COMPOSE}")
-    implementation("androidx.constraintlayout:constraintlayout-compose:${Version.CONSTRAINT_LAYOUT_COMPOSE}")
     implementation("androidx.navigation:navigation-compose:${Version.NAVIGATION_COMPOSE}")
+//    implementation("androidx.constraintlayout:constraintlayout-compose:${Version.CONSTRAINT_LAYOUT_COMPOSE}")
 
     implementation("androidx.compose.foundation:foundation:${Version.Compose.FOUNDATION}")
     implementation("androidx.compose.animation:animation:${Version.Compose.ANIMATION}")
@@ -73,7 +73,7 @@ dependencies {
 //    implementation("androidx.compose.material:material:${Version.Compose.MATERIAL}")
 //    implementation("androidx.compose.material:material-icons-extended:${Version.Compose.UI}")
 
-    implementation("com.google.accompanist:accompanist-flowlayout:${Version.COMPOSE_ACCOMPANIST}")
+//    implementation("com.google.accompanist:accompanist-flowlayout:${Version.COMPOSE_ACCOMPANIST}")
     implementation("com.google.accompanist:accompanist-systemuicontroller:${Version.COMPOSE_ACCOMPANIST}")
     implementation("com.google.accompanist:accompanist-navigation-animation:${Version.COMPOSE_ACCOMPANIST}")
     implementation("com.google.accompanist:accompanist-navigation-material:${Version.COMPOSE_ACCOMPANIST}")
