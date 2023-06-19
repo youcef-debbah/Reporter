@@ -30,8 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dz.nexatech.reporter.client.R
-import dz.nexatech.reporter.util.model.APPLICATION_THEME
-import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.rememberLayoutWidth
 
 val themePreviewSize = 60.dp
@@ -153,7 +151,6 @@ private fun ThemePickerPreview() {
             isDarkColors = isSystemInDarkTheme()
         ) {
             selection = it?.name
-            AppConfig.set(APPLICATION_THEME, it?.name ?: "BLUE")
         }
     }
 }
