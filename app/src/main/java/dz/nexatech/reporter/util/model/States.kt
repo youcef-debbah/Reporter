@@ -37,7 +37,7 @@ fun rememberColumnsCount(
 
 @Composable
 fun rememberLayoutWidth(
-    columnsCount: State<Int>? = null,
+    columnsCount: State<Int>? = null, // null = one column
     config: Configuration = LocalConfiguration.current,
     dimens: Dimens = Theme.dimens,
 ): State<Dp> = remember(config, dimens) {
