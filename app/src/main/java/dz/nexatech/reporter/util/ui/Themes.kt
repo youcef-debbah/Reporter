@@ -9,6 +9,8 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
@@ -18,7 +20,6 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dz.nexatech.reporter.util.model.APPLICATION_THEME
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.DYNAMIC_TONAL_PALETTE_ENABLED
-import dz.nexatech.reporter.util.model.LocalConfig
 import dz.nexatech.reporter.util.model.Teller
 
 object DefaultColors {
@@ -41,7 +42,7 @@ fun loadColorScheme(
     context: Context,
     useDynamicTonalPalette: Boolean,
     isDarkTheme: Boolean,
-    themeNameConfig: LocalConfig<String>
+    themeName: String,
 ): ColorScheme =
     if (useDynamicTonalPalette
         && AppConfig.get(DYNAMIC_TONAL_PALETTE_ENABLED)
@@ -49,13 +50,11 @@ fun loadColorScheme(
     ) {
         if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
     } else {
-        val currentThemeName by AppConfig.stringState(themeNameConfig)
         val currentThemeColors = try {
-            ThemeColors.valueOf(currentThemeName)
+            ThemeColors.valueOf(themeName)
         } catch (e: IllegalArgumentException) {
-            val defaultTheme = themeNameConfig.default
-            Teller.warn("Theme not found: $currentThemeName falling back to: $defaultTheme", e)
-            AppConfig.set(themeNameConfig, defaultTheme)
+            val defaultTheme = APPLICATION_THEME.default
+            Teller.warn("Theme not found: $themeName falling back to: $defaultTheme", e)
             ThemeColors.valueOf(defaultTheme)
         }
         currentThemeColors.colorScheme(isDarkTheme)
@@ -64,11 +63,34 @@ fun loadColorScheme(
 
 @Composable
 fun DynamicTheme(
-    themeNameConfig: LocalConfig<String>,
+    themeNameState: State<String>,
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = loadColorScheme(LocalContext.current, false, isDarkTheme, themeNameConfig)
+    val context = LocalContext.current
+    val colorScheme by remember(context, isDarkTheme) {
+        derivedStateOf {
+            loadColorScheme(context, false, isDarkTheme, themeNameState.value)
+        }
+    }
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        content = content,
+    )
+}
+
+@Composable
+fun DynamicTheme(
+    themeName: String,
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
+) {
+    val context = LocalContext.current
+    val colorScheme = remember(context, themeName, isDarkTheme) {
+            loadColorScheme(context, false, isDarkTheme, themeName)
+    }
+
     MaterialTheme(
         colorScheme = colorScheme,
         content = content,
@@ -81,8 +103,11 @@ fun ApplicationTheme(
     context: Context = LocalContext.current,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = remember(context) {
-        loadColorScheme(context, true, isDarkTheme, APPLICATION_THEME)
+    val colorScheme by remember(isDarkTheme, context) {
+        derivedStateOf {
+            val appThemeName = AppConfig.stringState(APPLICATION_THEME)
+            loadColorScheme(context, true, isDarkTheme, appThemeName.value)
+        }
     }
     val systemUiController = rememberSystemUiController()
 
@@ -103,7 +128,7 @@ fun ApplicationTheme(
                 fontSize = 19.sp,
                 lineHeight = 24.sp,
             ),
-            titleSmall = materialTypography.titleSmall.copy (
+            titleSmall = materialTypography.titleSmall.copy(
                 fontSize = 17.sp,
                 lineHeight = 24.sp,
             ),
@@ -119,7 +144,7 @@ fun ApplicationTheme(
 @Composable
 fun InfoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     MaterialTheme(
         colorScheme = ThemeColors.GREEN.colorScheme(darkTheme),
@@ -130,7 +155,7 @@ fun InfoTheme(
 @Composable
 fun WarningTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable() () -> Unit,
 ) {
     MaterialTheme(
         colorScheme = ThemeColors.YELLOW.colorScheme(darkTheme),
@@ -141,7 +166,7 @@ fun WarningTheme(
 @Composable
 fun ErrorTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable() () -> Unit,
 ) {
     MaterialTheme(
         colorScheme = ThemeColors.RED.colorScheme(darkTheme),
