@@ -71,11 +71,14 @@
     <string name="input_too_long">At most %d characters are permitted</string>
     <string name="input_too_short">At least %d characters are required</string>
     <string name="input_required">This input is required</string>
+    <string name="date_too_late">The max date is: %s</string>
+    <string name="date_too_early">The min date is: %s</string>
     <string name="input_description">Show Input Description</string>
     <string name="show_date_picker">Show Date Picker</string>
     <string name="new_tuple_desc">Add new entry</string>
     <string name="delete_tuple_desc">Delete tuple</string>
     <string name="tuple_title">Entity#%d</string>
-    <string name="ok">OK</string>
+    <string name="reset">Reset</string>
+    <string name="save">Save</string>
     <string name="cancel">Cancel</string>
 </resources>

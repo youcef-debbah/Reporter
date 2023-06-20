@@ -2,6 +2,7 @@
 
 package dz.nexatech.reporter.util.ui
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -10,11 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -84,7 +86,6 @@ fun DateInput(variableState: VariableState, modifier: Modifier) {
     )
 
     if (showDialog.value) {
-        val onClose = { showDialog.value = false }
         val yearsRange = remember(variable.min, variable.max) {
             val minDate = Calendar.getInstance().apply { timeInMillis = variable.min }
             val maxDate = Calendar.getInstance().apply { timeInMillis = variable.max }
@@ -95,54 +96,101 @@ fun DateInput(variableState: VariableState, modifier: Modifier) {
             yearRange = yearsRange,
         )
 
+        val onClose = { showDialog.value = false }
+        val onSave = {
+            val date =
+                formatTemplateDate(datePickerState.selectedDateMillis)
+            variableState.setter.invoke(date ?: "")
+            onClose()
+        }
+        val onReset = {
+            variableState.setter("")
+            onClose()
+        }
+
         AlertDialog(properties = datePickerDialogProperties, onDismissRequest = onClose) {
             ContentCard {
-                DatePicker(
-                    title = null,
-                    headline = {
-                        Row(
-                            modifier = Modifier
-                                .padding(
-                                    start = Theme.dimens.content_padding.start,
-                                    end = zero_padding,
-                                    top = Theme.dimens.content_padding.top,
-                                    bottom = Theme.dimens.content_padding.bottom * 2,
-                                )
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Title(
-                                modifier = Modifier.weight(1f),
-                                text = variable.desc,
-                            )
+                if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        CentredColumn {
+                            IconButton(modifier = Modifier.buttonPadding(), onClick = onSave) {
+                                InfoIcon(icon = R.drawable.baseline_done_24, desc = R.string.save)
+                            }
 
-                            IconButton(
-                                modifier = Modifier.buttonPadding(),
-                                onClick = {
-                                    onClose()
-                                    val date =
-                                        formatTemplateDate(datePickerState.selectedDateMillis)
-                                    variableState.setter.invoke(date ?: "")
-                                }
-                            ) {
-                                InfoIcon(icon = R.drawable.baseline_done_24, desc = R.string.ok)
+                            IconButton(modifier = Modifier.buttonPadding(), onClick = onReset) {
+                                InfoIcon(
+                                    icon = R.drawable.baseline_delete_forever_24,
+                                    desc = R.string.reset
+                                )
+                            }
+
+                            IconButton(modifier = Modifier.buttonPadding(), onClick = onClose) {
+                                InfoIcon(
+                                    icon = R.drawable.baseline_close_24,
+                                    desc = R.string.cancel
+                                )
                             }
                         }
-                    },
-                    state = datePickerState,
-                    modifier = Modifier.contentPadding(),
-                    dateValidator = {
-                        Variable.Type.Date.epochChecker.invoke(
-                            variable,
-                            it
-                        ) == null
-                    },
-                    showModeToggle = false,
-                )
+                        VariableDatePicker(variable, datePickerState, false)
+                    }
+                } else {
+                    CentredColumn(Modifier.fillMaxWidth()) {
+                        VariableDatePicker(variable, datePickerState, true)
+                        PaddedDivider()
+                        CentredRow(
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            TextButton(modifier = Modifier.buttonPadding(), onClick = onSave) {
+                                DecorativeIcon(icon = R.drawable.baseline_done_24)
+                                Body(textRes = R.string.save)
+                            }
+
+                            TextButton(modifier = Modifier.buttonPadding(), onClick = onReset) {
+                                DecorativeIcon(icon = R.drawable.baseline_delete_forever_24)
+                                Body(textRes = R.string.reset)
+                            }
+
+                            TextButton(modifier = Modifier.buttonPadding(), onClick = onClose) {
+                                DecorativeIcon(icon = R.drawable.baseline_close_24)
+                                Body(textRes = R.string.cancel)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
+}
+
+@Composable
+private fun VariableDatePicker(
+    variable: Variable,
+    datePickerState: DatePickerState,
+    headline: Boolean,
+) {
+    DatePicker(
+        title = null,
+        headline = if (headline) ({
+            Title(
+                modifier = Modifier
+                    .contentPadding(
+                        top = Theme.dimens.content_padding.top * 2,
+                        start = Theme.dimens.content_padding.start * 3,
+                        end = Theme.dimens.content_padding.end * 3,
+                        bottom = Theme.dimens.content_padding.end * 3,
+                    )
+                    .fillMaxWidth(),
+                text = variable.desc,
+            )
+        }) else null,
+        state = datePickerState,
+        modifier = Modifier.contentPadding(),
+        dateValidator = { it <= variable.max && it >= variable.min },
+        showModeToggle = false,
+    )
 }
 
 @Composable

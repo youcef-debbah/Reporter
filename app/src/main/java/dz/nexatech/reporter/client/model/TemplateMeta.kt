@@ -93,7 +93,8 @@ class TemplateMeta private constructor(
                     try {
                         val sectionJsonObject = sectionsJsonArray.getJSONObject(i)
                         val variablesJsonArray = sectionJsonObject.getJSONArray("variables")
-                        val variablesBuilder: ImmutableList.Builder<Variable> = ImmutableList.builder()
+                        val variablesBuilder: ImmutableList.Builder<Variable> =
+                            ImmutableList.builder()
 
                         for (j in 0 until variablesJsonArray.length()) {
                             val variableJsonObject = variablesJsonArray.getJSONObject(j)
@@ -169,7 +170,8 @@ class TemplateMeta private constructor(
                         try {
                             val recordJsonObject = recordsJsonArray.getJSONObject(recordIndex)
                             val variablesJsonArray = recordJsonObject.getJSONArray("variables")
-                            val variablesBuilder: ImmutableList.Builder<Variable> = ImmutableList.builder()
+                            val variablesBuilder: ImmutableList.Builder<Variable> =
+                                ImmutableList.builder()
 
                             val recordName = recordJsonObject.getString("name")
                             val recordNamespace = Record.namespace(templateName, recordName)
@@ -220,7 +222,10 @@ class TemplateMeta private constructor(
                                 )
                             )
                         } catch (e: Exception) {
-                            teller.warn("invalid template record#$recordIndex for '$templateName': $json", e)
+                            teller.warn(
+                                "invalid template record#$recordIndex for '$templateName': $json",
+                                e
+                            )
                             errorCode.dec()
                             errorCode.addFlag(2)
                         }
@@ -328,8 +333,9 @@ class Record(
     localizer
 ) {
     companion object {
-        const val NAMESPACE_SEPARATOR : String = "@"
-        fun namespace(template: String, recordName: String) = "$template$NAMESPACE_SEPARATOR$recordName"
+        const val NAMESPACE_SEPARATOR: String = "@"
+        fun namespace(template: String, recordName: String) =
+            "$template$NAMESPACE_SEPARATOR$recordName"
     }
 }
 
@@ -395,6 +401,14 @@ class Variable internal constructor(
         ErrorMessage { resources.getString(R.string.input_too_long, max) }
     private val inputTooShortMessage =
         ErrorMessage { resources.getString(R.string.input_too_short, min) }
+
+    private val minDate = Type.Date.formatTemplateDate(min)
+    private val maxDate = Type.Date.formatTemplateDate(max)
+
+    private val dateTooLateMessage =
+        ErrorMessage { resources.getString(R.string.date_too_late, maxDate) }
+    private val dateTooEarlyMessage =
+        ErrorMessage { resources.getString(R.string.date_too_early, minDate) }
 
     //    private val errorMessageChecker = ErrorMessageChecker.forType(type)
     private val errorMessageChecker = Type.Text.checker  // TODO remove
@@ -466,7 +480,16 @@ class Variable internal constructor(
             const val name: String = "date"
 
             val checker = ErrorMessageChecker { variable, value ->
-                null
+                val epoch = parseTemplateDate(value)
+                if (variable.required && epoch == null) {
+                    variable.inputRequiredMessage
+                } else if (epoch != null && epoch > variable.max) {
+                    variable.dateTooLateMessage
+                } else if (epoch != null && epoch < variable.min) {
+                    variable.dateTooEarlyMessage
+                } else {
+                    null
+                }
             }
 
             fun formatTemplateDate(epoch: Long?): String? {
