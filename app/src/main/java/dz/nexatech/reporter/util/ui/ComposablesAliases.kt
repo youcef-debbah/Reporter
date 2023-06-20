@@ -181,7 +181,7 @@ object Theme {
 //    modifier: Modifier = Modifier,
 //    color: Color? = null,
 //    thickness: Dp = 1.dp,
-//    startIndent: Dp = 0.dp
+//    startIndent: Dp = zero_padding
 //) {
 //    if (color != null)
 //        androidx.compose.material.Divider(

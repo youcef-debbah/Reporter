@@ -11,8 +11,10 @@ import dz.nexatech.reporter.client.common.addHash
 import dz.nexatech.reporter.client.common.atomicLazy
 import dz.nexatech.reporter.client.model.Variable.ErrorMessage
 import dz.nexatech.reporter.client.model.Variable.ErrorMessageChecker
+import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import org.json.JSONObject
+import java.util.Calendar
 
 @Immutable
 class TemplateMeta private constructor(
@@ -102,8 +104,8 @@ class TemplateMeta private constructor(
                                 variableJsonObject.optBoolean("required"),
                                 variableJsonObject.getString("type"),
                                 variableJsonObject.optString("icon"),
-                                variableJsonObject.optInt("min"),
-                                variableJsonObject.getInt("max"),
+                                variableJsonObject.optLong("min"),
+                                variableJsonObject.getLong("max"),
                                 variableJsonObject.optString("prefix_ar"),
                                 variableJsonObject.optString("prefix_fr"),
                                 variableJsonObject.optString("prefix_en"),
@@ -181,8 +183,8 @@ class TemplateMeta private constructor(
                                     variableJsonObject.optBoolean("required"),
                                     variableJsonObject.getString("type"),
                                     variableJsonObject.optString("icon"),
-                                    variableJsonObject.optInt("min"),
-                                    variableJsonObject.getInt("max"),
+                                    variableJsonObject.optLong("min"),
+                                    variableJsonObject.getLong("max"),
                                     variableJsonObject.optString("prefix_ar"),
                                     variableJsonObject.optString("prefix_fr"),
                                     variableJsonObject.optString("prefix_en"),
@@ -363,8 +365,8 @@ class Variable internal constructor(
     val required: Boolean,
     val type: String,
     val icon: String,
-    val min: Int,
-    val max: Int,
+    val min: Long,
+    val max: Long,
     val prefix_ar: String,
     val prefix_fr: String,
     val prefix_en: String,
@@ -462,8 +464,46 @@ class Variable internal constructor(
 
         object Date {
             const val name: String = "date"
+
             val checker = ErrorMessageChecker { variable, value ->
-                null // TODO
+                null
+            }
+
+            fun formatTemplateDate(epoch: Long?): String? {
+                if (epoch == null) return null
+
+                val date = Calendar.getInstance().apply {
+                    this.timeInMillis = epoch
+                }
+
+                return String.format(
+                    "%02d %s %04d",
+                    date.get(Calendar.DAY_OF_MONTH),
+                    Localizer.monthName(date.get(Calendar.MONTH)),
+                    date.get(Calendar.YEAR)
+                )
+            }
+
+            fun parseTemplateDate(templateDate: String): Long? {
+                val length = templateDate.length
+                if (length > 10) {
+                    val day = templateDate.substring(0..1).toIntOrNull()
+                    val month = Localizer.monthIndex(templateDate.substring(3..length - 6))
+                    val year = templateDate.substring(length - 4 until length).toIntOrNull()
+                    if (day != null && month != null && year != null) {
+                        return Calendar.getInstance().apply {
+                            set(Calendar.YEAR, year)
+                            set(Calendar.MONTH, month)
+                            set(Calendar.DAY_OF_MONTH, day)
+                            set(Calendar.HOUR_OF_DAY, 12)
+                            set(Calendar.MINUTE, 0)
+                            set(Calendar.SECOND, 0)
+                            set(Calendar.MILLISECOND, 0)
+                        }.timeInMillis
+                    }
+                }
+
+                return null
             }
         }
 

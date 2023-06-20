@@ -2,6 +2,7 @@ package dz.nexatech.reporter.util.model
 
 import android.os.Build
 import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableMap
 import dz.nexatech.reporter.client.common.AbstractLocalizer
 import dz.nexatech.reporter.client.common.Texts
 import dz.nexatech.reporter.client.common.atomicLazy
@@ -9,6 +10,36 @@ import dz.nexatech.reporter.util.ui.AbstractApplication
 import java.util.*
 
 object Localizer : AbstractLocalizer() {
+
+    private val monthsIndexes = ImmutableMap.builder<String, Int>()
+        .put("Janvier", 0)
+        .put("Février", 1)
+        .put("Mars", 2)
+        .put("Avril", 3)
+        .put("Mai", 4)
+        .put("Juin", 5)
+        .put("Juillet", 6)
+        .put("Août", 7)
+        .put("Septembre", 8)
+        .put("Octobre", 9)
+        .put("Novembre", 10)
+        .put("Décembre", 11)
+        .build()
+
+    private val monthsNames = arrayOf(
+        "Janvier",
+        "Février",
+        "Mars",
+        "Avril",
+        "Mai",
+        "Juin",
+        "Juillet",
+        "Août",
+        "Septembre",
+        "Octobre",
+        "Novembre",
+        "Décembre",
+    )
 
     private val preferredLanguages: ImmutableList<String> by atomicLazy {
         val result = LinkedList<String>()
@@ -64,4 +95,8 @@ object Localizer : AbstractLocalizer() {
         frenchText: String?,
         arabicText: String?,
     ): String = Texts.inSecondaryLang(englishText, frenchText, arabicText, preferredLanguages)
+
+    override fun monthName(monthIndex: Int): String = monthsNames[monthIndex % 12]
+
+    override fun monthIndex(monthName: String): Int? = monthsIndexes[monthName]
 }

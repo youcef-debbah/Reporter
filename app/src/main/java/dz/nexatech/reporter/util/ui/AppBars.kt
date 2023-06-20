@@ -22,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.util.model.toggle
 
 @Composable
 fun SimpleAppBar(@StringRes title: Int, @DrawableRes icon: Int? = null) {
@@ -106,7 +107,7 @@ fun StandardAppBarDropdownMenu(
     actions: @Composable (MutableState<Boolean>) -> Unit = {},
 ) {
     val menuExpanded = rememberSaveable { mutableStateOf(false) }
-    IconButton(onClick = { menuExpanded.value = menuExpanded.value.not() }) {
+    IconButton(onClick = { menuExpanded.toggle() }) {
         InfoIcon(
             icon = R.drawable.baseline_more_vert_24,
             desc = R.string.icon_desc_open_drop_menu

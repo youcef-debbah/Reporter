@@ -17,4 +17,8 @@ abstract class AbstractLocalizer() {
         frenchText: String?,
         arabicText: String?
     ): String
+
+    abstract fun monthName(monthIndex: Int): String
+
+    abstract fun monthIndex(monthName: String): Int?
 }

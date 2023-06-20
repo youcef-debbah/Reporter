@@ -72,7 +72,10 @@
     <string name="input_too_short">At least %d characters are required</string>
     <string name="input_required">This input is required</string>
     <string name="input_description">Show Input Description</string>
+    <string name="show_date_picker">Show Date Picker</string>
     <string name="new_tuple_desc">Add new entry</string>
     <string name="delete_tuple_desc">Delete tuple</string>
     <string name="tuple_title">Entity#%d</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>

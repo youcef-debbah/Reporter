@@ -1,36 +1,147 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package dz.nexatech.reporter.util.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.model.Variable
+import dz.nexatech.reporter.client.model.Variable.Type.Date.formatTemplateDate
+import dz.nexatech.reporter.client.model.Variable.Type.Date.parseTemplateDate
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.util.model.Localizer
+import dz.nexatech.reporter.util.model.toggle
+import java.util.Calendar
+
+val datePickerDialogProperties = DialogProperties(usePlatformDefaultWidth = false)
 
 @Composable
 fun VariableInput(
     variableState: VariableState,
     modifier: Modifier = Modifier,
 ) {
-    TextInput(variableState, modifier) {
-        InputIcon(
-            variableState.variable.icon,
-            StaticIcon.baseline_keyboard,
+    when (variableState.variable.type) {
+        Variable.Type.Date.name -> {
+            DateInput(variableState, modifier)
+        }
+
+        else -> {
+            TextInput(variableState, modifier)
+        }
+    }
+}
+
+@Composable
+fun DateInput(variableState: VariableState, modifier: Modifier) {
+    val showDialog = rememberSaveable { mutableStateOf(false) }
+    val variable = variableState.variable
+    val value = variableState.state.value
+    val errorMessage = remember(variable, value) {
+        Variable.Type.Date.checker.check(variable, value)?.asString(value)
+    }
+
+    OutlinedTextField(
+        readOnly = true,
+        modifier = modifier
+            .padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2)
+            .fillMaxWidth(),
+        colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
+        value = value,
+        onValueChange = {},
+        label = { Body(variable.label) },
+        leadingIcon = { InputIcon(variable, StaticIcon.baseline_event) },
+        trailingIcon = {
+            IconButton(onClick = { showDialog.toggle() }) {
+                InfoIcon(icon = R.drawable.baseline_edit_24, desc = R.string.show_date_picker)
+            }
+        },
+        prefix = { Body(variable.prefix) },
+        suffix = { Body(variable.suffix) },
+        isError = errorMessage != null,
+        supportingText = { Body(errorMessage ?: "") },
+    )
+
+    if (showDialog.value) {
+        val onClose = { showDialog.value = false }
+        val yearsRange = remember(variable.min, variable.max) {
+            val minDate = Calendar.getInstance().apply { timeInMillis = variable.min }
+            val maxDate = Calendar.getInstance().apply { timeInMillis = variable.max }
+            IntRange(minDate.get(Calendar.YEAR), maxDate.get(Calendar.YEAR))
+        }
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = parseTemplateDate(value),
+            yearRange = yearsRange,
         )
+
+        AlertDialog(properties = datePickerDialogProperties, onDismissRequest = onClose) {
+            ContentCard {
+                DatePicker(
+                    title = null,
+                    headline = {
+                        Row(
+                            modifier = Modifier
+                                .padding(
+                                    start = Theme.dimens.content_padding.start,
+                                    end = zero_padding,
+                                    top = Theme.dimens.content_padding.top,
+                                    bottom = Theme.dimens.content_padding.bottom * 2,
+                                )
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Title(
+                                modifier = Modifier.weight(1f),
+                                text = variable.desc,
+                            )
+
+                            IconButton(
+                                modifier = Modifier.buttonPadding(),
+                                onClick = {
+                                    onClose()
+                                    val date =
+                                        formatTemplateDate(datePickerState.selectedDateMillis)
+                                    variableState.setter.invoke(date ?: "")
+                                }
+                            ) {
+                                InfoIcon(icon = R.drawable.baseline_done_24, desc = R.string.ok)
+                            }
+                        }
+                    },
+                    state = datePickerState,
+                    modifier = Modifier.contentPadding(),
+                    dateValidator = {
+                        Variable.Type.Date.epochChecker.invoke(
+                            variable,
+                            it
+                        ) == null
+                    },
+                    showModeToggle = false,
+                )
+            }
+        }
     }
 }
 
@@ -38,7 +149,6 @@ fun VariableInput(
 private fun TextInput(
     variableState: VariableState,
     modifier: Modifier = Modifier,
-    leadingIcon: @Composable () -> Unit,
 ) {
     val variable = variableState.variable
     val value = variableState.state.value
@@ -46,10 +156,10 @@ private fun TextInput(
         Variable.Type.Text.checker.check(variable, value)?.asString(value)
     }
     CentredColumn(
-        modifier = modifier.padding(Theme.dimens.content_padding.copy(bottom = 0.dp) * 2),
+        modifier = modifier.padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2),
     ) {
-        var showInfo by rememberSaveable { mutableStateOf(false) }
-        AnimatedVisibility(visible = showInfo) {
+        val showInfo = rememberSaveable { mutableStateOf(false) }
+        AnimatedVisibility(visible = showInfo.value) {
             Body(variable.desc)
         }
         OutlinedTextField(
@@ -58,8 +168,8 @@ private fun TextInput(
             value = value,
             onValueChange = variableState.setter,
             label = { Body(variable.label) },
-            leadingIcon = leadingIcon,
-            trailingIcon = { InfoButton(variable) { showInfo = showInfo.not() } },
+            leadingIcon = { InputIcon(variable, StaticIcon.baseline_keyboard) },
+            trailingIcon = { InfoButton(variable) { showInfo.toggle() } },
             prefix = { Body(variable.prefix) },
             suffix = { Body(variable.suffix) },
             isError = errorMessage != null,
@@ -82,10 +192,10 @@ private fun InfoButton(
 
 @Composable
 fun InputIcon(
-    icon: String,
+    variable: Variable,
     defaultIcon: AbstractIcon,
 ) {
-    DecorativeIcon(iconsAssetsResources[icon] ?: defaultIcon)
+    DecorativeIcon(iconsAssetsResources[variable.icon] ?: defaultIcon)
 }
 
 @Composable
@@ -97,8 +207,8 @@ fun rememberFakeVar(name: String = "varname", type: String = Variable.Type.Text.
             required = true,
             type = type,
             icon = "",
-            min = 0,
-            max = 1,
+            min = 0L,
+            max = 1L,
             prefix_ar = "",
             prefix_fr = "",
             prefix_en = "",

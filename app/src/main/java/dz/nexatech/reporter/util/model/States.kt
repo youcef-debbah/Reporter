@@ -2,6 +2,7 @@ package dz.nexatech.reporter.util.model
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
@@ -53,4 +54,9 @@ fun rememberLayoutWidth(
             Dp(min(maxWidth.value * columnsCount.value, screenWidth) - horizontalPadding)
         }
     }
+}
+
+fun MutableState<Boolean>.toggle(): MutableState<Boolean> {
+    this.value = !value
+    return this
 }

@@ -475,7 +475,7 @@ fun InputStream.readAsBytes(
 
 object Formatters {
     val httpDateFormatter = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US).apply {
-        timeZone = java.util.TimeZone.getTimeZone("GMT")
+        timeZone = TimeZone.getTimeZone("GMT")
     }
 
     fun asHttpDate(epoch: Long): String = asHttpDate(Date(epoch))

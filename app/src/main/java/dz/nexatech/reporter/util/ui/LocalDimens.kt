@@ -92,13 +92,13 @@ fun UpdateDimens(updater: (Dimens) -> Dimens, content: @Composable () -> Unit) {
 @Immutable
 class StaticPadding(
     @Stable
-    val start: Dp = 0.dp,
+    val start: Dp = zero_padding,
     @Stable
-    val top: Dp = 0.dp,
+    val top: Dp = zero_padding,
     @Stable
-    val end: Dp = 0.dp,
+    val end: Dp = zero_padding,
     @Stable
-    val bottom: Dp = 0.dp
+    val bottom: Dp = zero_padding,
 ) : PaddingValues {
 
     val horizontal = start + end
