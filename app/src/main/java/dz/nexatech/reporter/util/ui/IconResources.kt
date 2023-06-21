@@ -33,6 +33,7 @@ class StaticIcon private constructor(@DrawableRes val drawable: Int): AbstractIc
         val baseline_upload_file = StaticIcon(R.drawable.baseline_upload_file_24)
         val baseline_open_in_browser = StaticIcon(R.drawable.baseline_open_in_browser_24)
         val baseline_event = StaticIcon(R.drawable.baseline_event_24)
+        val baseline_color_lens = StaticIcon(R.drawable.baseline_color_lens_24)
     }
 
     @Composable

@@ -4,11 +4,14 @@ package dz.nexatech.reporter.util.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
@@ -24,15 +27,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.godaddy.android.colorpicker.HsvColor
+import com.godaddy.android.colorpicker.harmony.ColorHarmonyMode
+import com.godaddy.android.colorpicker.harmony.HarmonyColorPicker
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.client.model.COLOR_PICKER_SIZE
 import dz.nexatech.reporter.client.model.Variable
+import dz.nexatech.reporter.client.model.Variable.Type.Color.formatColor
 import dz.nexatech.reporter.client.model.Variable.Type.Date.formatTemplateDate
 import dz.nexatech.reporter.client.model.Variable.Type.Date.parseTemplateDate
 import dz.nexatech.reporter.client.model.VariableState
+import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.model.toggle
 import java.util.Calendar
@@ -45,12 +55,121 @@ fun VariableInput(
     modifier: Modifier = Modifier,
 ) {
     when (variableState.variable.type) {
+        Variable.Type.Color.name -> {
+            ColorInput(variableState, modifier)
+        }
+
         Variable.Type.Date.name -> {
             DateInput(variableState, modifier)
         }
 
         else -> {
             TextInput(variableState, modifier)
+        }
+    }
+}
+
+@Composable
+fun ColorInput(variableState: VariableState, modifier: Modifier) {
+    val colorPickerSize = remember { AppConfig.get(COLOR_PICKER_SIZE).dp }
+    val showDialog = rememberSaveable { mutableStateOf(false) }
+    val variable = variableState.variable
+    val value = variableState.state.value
+    val color = remember(value) {
+        Variable.Type.Color.parseColor(value)?.let { Color(it) }
+    }
+    val errorMessage = remember(variable, value) {
+        Variable.Type.Color.checker.check(variable, value)?.asString(value)
+    }
+
+    OutlinedTextField(
+        readOnly = true,
+        modifier = modifier
+            .padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2)
+            .fillMaxWidth(),
+        colors = OutlinedTextFieldDefaults.colors(
+            errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant
+        ),
+        value = value,
+        onValueChange = {},
+        label = { Body(variable.label) },
+        leadingIcon = { InputIcon(variable, StaticIcon.baseline_color_lens) },
+        trailingIcon = {
+            IconButton(onClick = { showDialog.toggle() }) {
+                if (color != null) {
+                    InfoIcon(
+                        modifier = Modifier.border(small_padding, Theme.colorScheme.onSurfaceVariant, CircleShape),
+                        icon = R.drawable.baseline_circle_24, desc = R.string.show_color_picker,
+                        tint = color,
+                    )
+                } else {
+                    InfoIcon(
+                        icon = R.drawable.baseline_edit_24, desc = R.string.show_color_picker,
+                    )
+                }
+            }
+        },
+        prefix = { Body(variable.prefix) },
+        suffix = { Body(variable.suffix) },
+        isError = errorMessage != null,
+        supportingText = { Body(errorMessage ?: "") },
+    )
+
+    if (showDialog.value) {
+        val selectedColor = remember(color) {
+            mutableStateOf(HsvColor.from(color?: Color.White))
+        }
+        val onClose = { showDialog.value = false }
+        val onSave = {
+            variableState.setter.invoke(formatColor(selectedColor.value.toColor()))
+            onClose()
+        }
+        val onReset = {
+            variableState.setter("")
+            onClose()
+        }
+
+        AlertDialog(properties = datePickerDialogProperties, onDismissRequest = onClose) {
+            ContentCard {
+                CentredColumn {
+                    Title(
+                        modifier = Modifier
+                            .contentPadding(
+                                top = Theme.dimens.content_padding.top * 2,
+                                start = Theme.dimens.content_padding.start * 3,
+                                end = Theme.dimens.content_padding.end * 3,
+                                bottom = Theme.dimens.content_padding.end * 3,
+                            )
+                            .fillMaxWidth(),
+                        text = variable.desc,
+                    )
+                    PaddedDivider()
+                    HarmonyColorPicker(
+                        modifier = Modifier.size(colorPickerSize),
+                        harmonyMode = ColorHarmonyMode.NONE,
+                        color = selectedColor.value,
+                        onColorChanged = { selectedColor.value = it })
+                    PaddedDivider()
+                    CentredRow(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        TextButton(modifier = Modifier.buttonPadding(), onClick = onSave) {
+                            DecorativeIcon(icon = R.drawable.baseline_done_24)
+                            Body(textRes = R.string.save)
+                        }
+
+                        TextButton(modifier = Modifier.buttonPadding(), onClick = onReset) {
+                            DecorativeIcon(icon = R.drawable.baseline_delete_forever_24)
+                            Body(textRes = R.string.reset)
+                        }
+
+                        TextButton(modifier = Modifier.buttonPadding(), onClick = onClose) {
+                            DecorativeIcon(icon = R.drawable.baseline_close_24)
+                            Body(textRes = R.string.cancel)
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -111,7 +230,8 @@ fun DateInput(variableState: VariableState, modifier: Modifier) {
         AlertDialog(properties = datePickerDialogProperties, onDismissRequest = onClose) {
             ContentCard {
                 if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    Row(modifier = Modifier.fillMaxWidth(),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {

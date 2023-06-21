@@ -78,8 +78,12 @@ dependencies {
     implementation("com.google.accompanist:accompanist-navigation-animation:${Version.COMPOSE_ACCOMPANIST}")
     implementation("com.google.accompanist:accompanist-navigation-material:${Version.COMPOSE_ACCOMPANIST}")
 
-    implementation("com.github.alorma:compose-settings-ui-m3:${Version.COMPOSE_SETTINGS}")
+    // active 3rd party libs
     implementation("com.tencent:mmkv:${Version.MMKV}")
+    implementation("com.github.alorma:compose-settings-ui-m3:${Version.COMPOSE_SETTINGS}")
+
+    // extra 3rd party libs
+    implementation("com.godaddy.android.colorpicker:compose-color-picker-android:${Version.GODADDY_COLOR_PICKER}")
 
     implementation(project(":core"))
 }

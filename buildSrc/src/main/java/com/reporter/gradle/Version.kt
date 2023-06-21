@@ -51,6 +51,9 @@ object Version {
     // https://github.com/Tencent/MMKV
     const val MMKV = "1.2.16"
 
+    // https://github.com/godaddy/compose-color-picker
+    const val GODADDY_COLOR_PICKER = "0.7.0"
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////
     /* the versions below should get regulare updates becuase they are still under heavy development */
     ///////////////////////////////////////////////////////////////////////////////////////////////////

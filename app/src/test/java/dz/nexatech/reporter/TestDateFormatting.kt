@@ -1,16 +1,11 @@
 package dz.nexatech.reporter
 
 import com.google.common.truth.Truth.assertThat
-import dz.nexatech.reporter.util.ui.formatTemplateDate
-import dz.nexatech.reporter.util.ui.parseTemplateDate
+import dz.nexatech.reporter.client.model.Variable.Type.Date.formatTemplateDate
+import dz.nexatech.reporter.client.model.Variable.Type.Date.parseTemplateDate
 import org.junit.Test
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
-class ExampleUnitTest {
+class TestDateFormatting {
 
     val testEpoch = 1687258800000L
     val testDate = "20 Juin 2023"
