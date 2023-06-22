@@ -359,7 +359,11 @@ fun <C : CharSequence> C.nullIfEmpty(): C? = if (isEmpty()) null else this
 @Suppress("ReplaceIsEmptyWithIfEmpty")
 fun <C : CharSequence> C.nullIfBlank(): C? = if (isBlank()) null else this
 
-fun <T : ImmutableCollection.Builder<String>> String.splitInto(delimiter: Char, builder: T): T {
+fun <T : ImmutableCollection.Builder<String>> String.splitInto(
+    delimiter: Char,
+    builder: T,
+    filter: ((String) -> Boolean)? = null,
+): T {
     val iterator = this.iterator()
     var index = 0
     var buffer = StringBuilder(this.length)
@@ -368,27 +372,44 @@ fun <T : ImmutableCollection.Builder<String>> String.splitInto(delimiter: Char, 
         val currentChar = iterator.nextChar()
         if (currentChar != delimiter) {
             buffer.append(currentChar)
-        } else {
-            if (buffer.isNotEmpty()) {
-                val token = buffer.toString()
+        } else if (buffer.isNotEmpty()) {
+            val token = buffer.toString()
+            if (filter == null || filter.invoke(token)) {
                 builder.add(token)
-                buffer = StringBuilder(this.length - index)
             }
+            buffer = StringBuilder(this.length - index)
         }
     }
 
     if (buffer.isNotEmpty()) {
-        builder.add(buffer.toString())
+        val token = buffer.toString()
+        if (filter == null || filter.invoke(token)) {
+            builder.add(token)
+        }
     }
 
     return builder
 }
 
-fun String.splitIntoSet(delimiter: Char): ImmutableSet<String> =
-    if (isEmpty()) ImmutableSet.of() else splitInto(delimiter, ImmutableSet.Builder()).build()
+fun String.splitIntoSet(
+    delimiter: Char,
+    filter: ((String) -> Boolean)? = null,
+): ImmutableSet<String> =
+    if (isEmpty()) ImmutableSet.of() else splitInto(
+        delimiter,
+        ImmutableSet.Builder(),
+        filter
+    ).build()
 
-fun String.splitIntoList(delimiter: Char): ImmutableList<String> =
-    if (isEmpty()) ImmutableList.of() else splitInto(delimiter, ImmutableList.Builder()).build()
+fun String.splitIntoList(
+    delimiter: Char,
+    filter: ((String) -> Boolean)? = null,
+): ImmutableList<String> =
+    if (isEmpty()) ImmutableList.of() else splitInto(
+        delimiter,
+        ImmutableList.Builder(),
+        filter
+    ).build()
 
 fun String.containsAll(substrings: Iterable<String>): Boolean {
     val iterator = substrings.iterator()
@@ -459,7 +480,8 @@ fun InputStream.readAsBytes(
     expectedSize: Int = -1,
     autoClose: Boolean = true,
 ): ByteArray = try {
-    val bufferSize = if (expectedSize > 0) min(DEFAULT_BUFFER_SIZE, expectedSize) else DEFAULT_BUFFER_SIZE
+    val bufferSize =
+        if (expectedSize > 0) min(DEFAULT_BUFFER_SIZE, expectedSize) else DEFAULT_BUFFER_SIZE
     val buffer = ByteArray(bufferSize)
     val output = ByteArrayOutputStream()
     var bytesRead: Int

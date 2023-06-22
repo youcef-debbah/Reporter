@@ -13,12 +13,14 @@ val PDF_RESOURCES_CACHING_ENABLED = RemoteConfig.Boolean("PDF_RESOURCES_CACHING_
 val PDF_COMPRESSION_LEVEL =
     RemoteConfig.Int("PDF_COMPRESSION_LEVEL", CompressionConstants.BEST_COMPRESSION)
 val COLOR_PICKER_SIZE = RemoteConfig.Int("COLOR_PICKER_SIZE", 220)
+val OUTLINED_FIELD_DROP_MENU_OFFSET = RemoteConfig.Int("OUTLINED_FIELD_DROP_MENU_OFFSET", 0)
 
 val REPORTER_REMOTE_CONFIGS_DEFAULTS: ImmutableMap<String, Any> = ImmutableMap.builder<String, Any>()
     .putRemoteConfigDefault(TEMPLATES_LIST_LOADING_ANIMATION_ENABLED)
     .putRemoteConfigDefault(PDF_RESOURCES_CACHING_ENABLED)
     .putRemoteConfigDefault(PDF_COMPRESSION_LEVEL)
     .putRemoteConfigDefault(COLOR_PICKER_SIZE)
+    .putRemoteConfigDefault(OUTLINED_FIELD_DROP_MENU_OFFSET)
     .build()
 
 val TEMPLATE_PREVIEW_DEBOUNCE = LocalConfig.Long("TEMPLATE_PREVIEW_DEBOUNCE", 500L)

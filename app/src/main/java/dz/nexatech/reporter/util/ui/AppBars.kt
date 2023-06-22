@@ -32,7 +32,7 @@ fun SimpleAppBar(@StringRes title: Int, @DrawableRes icon: Int? = null) {
 @Composable
 fun SimpleAppBar(
     title: String = AbstractApplication.INSTANCE.config.applicationName,
-    @DrawableRes icon: Int? = null
+    @DrawableRes icon: Int? = null,
 ) {
     TopAppBar(
         title = {
@@ -165,7 +165,7 @@ fun DropdownMenuTextItem(
 ) {
     DropdownMenuItem(
         text = { Body(text = title, style = Theme.typography.titleSmall) },
-        leadingIcon = { DecorativeIcon(icon) },
+        leadingIcon = icon?.let { { DecorativeIcon(icon) } },
         modifier = modifier,
         enabled = enabled,
         colors = colors,

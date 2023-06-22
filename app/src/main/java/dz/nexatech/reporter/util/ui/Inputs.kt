@@ -4,6 +4,7 @@ package dz.nexatech.reporter.util.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -30,13 +32,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.harmony.ColorHarmonyMode
 import com.godaddy.android.colorpicker.harmony.HarmonyColorPicker
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.client.common.splitIntoSet
 import dz.nexatech.reporter.client.model.COLOR_PICKER_SIZE
+import dz.nexatech.reporter.client.model.OUTLINED_FIELD_DROP_MENU_OFFSET
 import dz.nexatech.reporter.client.model.Variable
 import dz.nexatech.reporter.client.model.Variable.Type.Color.formatColor
 import dz.nexatech.reporter.client.model.Variable.Type.Date.formatTemplateDate
@@ -55,16 +60,119 @@ fun VariableInput(
     modifier: Modifier = Modifier,
 ) {
     when (variableState.variable.type) {
-        Variable.Type.Color.name -> {
-            ColorInput(variableState, modifier)
-        }
+        Variable.Type.Options.name -> OptionsInput(variableState, modifier)
+        Variable.Type.Date.name -> DateInput(variableState, modifier)
+        Variable.Type.Color.name -> ColorInput(variableState, modifier)
+        else -> TextInput(variableState, modifier)
+    }
+}
 
-        Variable.Type.Date.name -> {
-            DateInput(variableState, modifier)
-        }
+@Composable
+fun OptionsInput(
+    variableState: VariableState,
+    modifier: Modifier = Modifier,
+) {
+    val outlinedFieldDropMenuOffset = remember { AppConfig.get(OUTLINED_FIELD_DROP_MENU_OFFSET).dp }
+    val variable = variableState.variable
 
-        else -> {
-            TextInput(variableState, modifier)
+    val desc = variable.desc
+    val options = remember(desc) {
+        desc.splitIntoSet(Variable.Type.Options.SEPARATOR)
+    }
+
+    val value = variableState.state.value
+    val selection = remember(value) {
+        value.splitIntoSet(Variable.Type.Options.SEPARATOR) {
+            options.contains(it)
+        }
+    }
+
+    val errorMessage = remember(variable, value) {
+        Variable.Type.Options.checker.check(variable, value)?.asString(value)
+    }
+
+    val menuExpanded = rememberSaveable { mutableStateOf(false) }
+
+    CentredColumn(
+        Modifier
+            .padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2)
+            .fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            readOnly = true,
+            modifier = modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant
+            ),
+            value = value,
+            onValueChange = {},
+            label = { Body(variable.label) },
+            leadingIcon = { InputIcon(variable, StaticIcon.baseline_list) },
+            trailingIcon = {
+                if (variable.max > 0) {
+                    val icon =
+                        if (menuExpanded.value) R.drawable.baseline_arrow_drop_up_24 else R.drawable.baseline_arrow_drop_down_24
+                    IconButton(onClick = { menuExpanded.toggle() }) {
+                        InfoIcon(icon = icon, desc = R.string.show_options_menu)
+                    }
+                }
+            },
+            prefix = { Body(variable.prefix) },
+            suffix = { Body(variable.suffix) },
+            isError = errorMessage != null,
+            supportingText = { Body(errorMessage ?: "") },
+        )
+
+        DropdownMenu(
+            modifier = modifier
+                .padding(Theme.dimens.content_padding.copy(top = zero_padding, bottom = zero_padding) * 2)
+                .minWidth(150.dp)
+            ,
+            offset = DpOffset(zero_padding, outlinedFieldDropMenuOffset),
+            expanded = menuExpanded.value,
+            onDismissRequest = { menuExpanded.value = false }) {
+            val selectedItemColor = Theme.colorScheme.surfaceVariant
+
+            for (option in options) {
+                DropdownMenuTextItem(
+                    modifier = if (selection.contains(option)) Modifier.background(selectedItemColor) else Modifier,
+                    title = option,
+                    icon = null
+                ) {
+                    val newValue = if (selection.isEmpty()) {
+                        option
+                    } else if (selection.contains(option)) {
+                        StringBuilder(value.length - option.length).apply {
+                            val iterator = selection.iterator()
+                            while (iterator.hasNext()) {
+                                val selected = iterator.next()
+                                if (selected != option) {
+                                    append(selected)
+                                    if (iterator.hasNext()) {
+                                        append(Variable.Type.Options.SEPARATOR)
+                                    }
+                                }
+                            }
+                        }.toString()
+                    } else {
+                        StringBuilder(value.length + option.length + 1).apply {
+                            for (selectedValue in selection) {
+                                append(selectedValue)
+                                append(Variable.Type.Options.SEPARATOR)
+                            }
+                            append(option)
+                        }.toString()
+                    }
+
+                    variableState.setter.invoke(newValue)
+
+                    if (variable.max == 1L
+                        && newValue.isNotBlank()
+                        && !newValue.contains(Variable.Type.Options.SEPARATOR)) {
+                        menuExpanded.value = false
+                    }
+                }
+            }
         }
     }
 }
@@ -98,7 +206,11 @@ fun ColorInput(variableState: VariableState, modifier: Modifier) {
             IconButton(onClick = { showDialog.toggle() }) {
                 if (color != null) {
                     InfoIcon(
-                        modifier = Modifier.border(small_padding, Theme.colorScheme.onSurfaceVariant, CircleShape),
+                        modifier = Modifier.border(
+                            small_padding,
+                            Theme.colorScheme.onSurfaceVariant,
+                            CircleShape
+                        ),
                         icon = R.drawable.baseline_circle_24, desc = R.string.show_color_picker,
                         tint = color,
                     )
@@ -117,7 +229,7 @@ fun ColorInput(variableState: VariableState, modifier: Modifier) {
 
     if (showDialog.value) {
         val selectedColor = remember(color) {
-            mutableStateOf(HsvColor.from(color?: Color.White))
+            mutableStateOf(HsvColor.from(color ?: Color.White))
         }
         val onClose = { showDialog.value = false }
         val onSave = {

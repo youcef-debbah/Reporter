@@ -9,12 +9,14 @@ import dz.nexatech.reporter.client.common.AbstractTeller
 import dz.nexatech.reporter.client.common.IntCounter
 import dz.nexatech.reporter.client.common.addHash
 import dz.nexatech.reporter.client.common.atomicLazy
+import dz.nexatech.reporter.client.common.splitIntoSet
 import dz.nexatech.reporter.client.model.Variable.ErrorMessage
 import dz.nexatech.reporter.client.model.Variable.ErrorMessageChecker
 import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import org.json.JSONObject
 import java.util.Calendar
+import kotlin.math.min
 
 @Immutable
 class TemplateMeta private constructor(
@@ -99,14 +101,15 @@ class TemplateMeta private constructor(
                         for (j in 0 until variablesJsonArray.length()) {
                             val variableJsonObject = variablesJsonArray.getJSONObject(j)
                             val name = variableJsonObject.getString("name")
+                            val max = variableJsonObject.getLong("max")
                             val variable = Variable(
                                 templateName,
                                 name,
                                 variableJsonObject.optBoolean("required"),
                                 variableJsonObject.getString("type"),
                                 variableJsonObject.optString("icon"),
-                                variableJsonObject.optLong("min"),
-                                variableJsonObject.getLong("max"),
+                                min(variableJsonObject.optLong("min"), max),
+                                max,
                                 variableJsonObject.optString("prefix_ar"),
                                 variableJsonObject.optString("prefix_fr"),
                                 variableJsonObject.optString("prefix_en"),
@@ -179,14 +182,15 @@ class TemplateMeta private constructor(
                             for (varIndex in 0 until variablesJsonArray.length()) {
                                 val variableJsonObject = variablesJsonArray.getJSONObject(varIndex)
                                 val name = variableJsonObject.getString("name")
+                                val max = variableJsonObject.getLong("max")
                                 val variable = Variable(
                                     recordNamespace,
                                     name,
                                     variableJsonObject.optBoolean("required"),
                                     variableJsonObject.getString("type"),
                                     variableJsonObject.optString("icon"),
-                                    variableJsonObject.optLong("min"),
-                                    variableJsonObject.getLong("max"),
+                                    min(variableJsonObject.optLong("min"), max),
+                                    max,
                                     variableJsonObject.optString("prefix_ar"),
                                     variableJsonObject.optString("prefix_fr"),
                                     variableJsonObject.optString("prefix_en"),
@@ -401,6 +405,12 @@ class Variable internal constructor(
         ErrorMessage { resources.getString(R.string.input_too_long, max) }
     private val inputTooShortMessage =
         ErrorMessage { resources.getString(R.string.input_too_short, min) }
+    private val inputIllegalMessage =
+        ErrorMessage { resources.getString(R.string.illegal_value) }
+    private val inputSelectionCountTooLowMessage =
+        ErrorMessage { resources.getString(R.string.selection_too_low, min) }
+    private val inputSelectionCountTooHighMessage =
+        ErrorMessage { resources.getString(R.string.selection_too_high, max) }
 
     private val minDate = Type.Date.formatTemplateDate(min)
     private val maxDate = Type.Date.formatTemplateDate(max)
@@ -571,8 +581,25 @@ class Variable internal constructor(
 
         object Options {
             const val name: String = "options"
+            const val SEPARATOR: Char = ','
             val checker: ErrorMessageChecker = ErrorMessageChecker { variable, value ->
-                null // TODO
+                val options = variable.desc.splitIntoSet(SEPARATOR)
+                val selection = value.splitIntoSet(SEPARATOR)
+                for (selected in selection) {
+                    if (!options.contains(selected)) {
+                        return@ErrorMessageChecker variable.inputIllegalMessage
+                    }
+                }
+
+                if (variable.required && selection.isEmpty()) {
+                    variable.inputRequiredMessage
+                } else if (selection.size > variable.max) {
+                    variable.inputSelectionCountTooHighMessage
+                } else if (selection.size < variable.min) {
+                    variable.inputSelectionCountTooLowMessage
+                } else {
+                    null
+                }
             }
         }
 
