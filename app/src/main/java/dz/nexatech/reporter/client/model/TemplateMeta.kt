@@ -551,7 +551,10 @@ class Variable internal constructor(
             const val name: String = "color"
             const val COLOR_PREFIX = '#'
             val checker = ErrorMessageChecker { variable, value ->
-                if (variable.required && parseColor(value) == null) {
+                val color = parseColor(value)
+                if (value.isNotEmpty() && color == null) {
+                    variable.inputIllegalMessage
+                } else if (variable.required && color == null) {
                     variable.inputRequiredMessage
                 } else {
                     null
@@ -566,9 +569,9 @@ class Variable internal constructor(
             }
 
             fun parseColor(value: String): Long? {
-                if (value.isEmpty() || value[0] != COLOR_PREFIX) return null
-                val stringValue = "FF" + value.removePrefix("#")
-                return stringValue.toLongOrNull(16)
+                if (value.length != 7 || value[0] != COLOR_PREFIX) return null
+                val hexValue = "FF" + value.substring(1)
+                return hexValue.toLongOrNull(16)
             }
         }
 

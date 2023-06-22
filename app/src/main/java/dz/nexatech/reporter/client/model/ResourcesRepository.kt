@@ -73,7 +73,7 @@ class ResourcesRepository @Inject constructor(
         cache.load(path) { loadBinaryResource(path) }
 
     private suspend fun loadBinaryResource(path: String): AbstractBinaryResource? {
-        if (path == "" || path == "favicon.ico") {
+        if (path == "favicon.ico" || path == "") {
             return null
         }
 

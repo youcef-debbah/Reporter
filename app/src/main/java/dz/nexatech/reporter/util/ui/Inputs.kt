@@ -191,7 +191,6 @@ fun ColorInput(variableState: VariableState, modifier: Modifier) {
     }
 
     OutlinedTextField(
-        readOnly = true,
         modifier = modifier
             .padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2)
             .fillMaxWidth(),
@@ -199,7 +198,7 @@ fun ColorInput(variableState: VariableState, modifier: Modifier) {
             errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant
         ),
         value = value,
-        onValueChange = {},
+        onValueChange = variableState.setter,
         label = { Body(variable.label) },
         leadingIcon = { InputIcon(variable, StaticIcon.baseline_color_lens) },
         trailingIcon = {
