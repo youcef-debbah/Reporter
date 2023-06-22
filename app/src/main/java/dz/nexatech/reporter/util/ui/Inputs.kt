@@ -39,7 +39,6 @@ import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.harmony.ColorHarmonyMode
 import com.godaddy.android.colorpicker.harmony.HarmonyColorPicker
 import dz.nexatech.reporter.client.R
-import dz.nexatech.reporter.client.common.splitIntoSet
 import dz.nexatech.reporter.client.model.COLOR_PICKER_SIZE
 import dz.nexatech.reporter.client.model.OUTLINED_FIELD_DROP_MENU_OFFSET
 import dz.nexatech.reporter.client.model.Variable
@@ -77,14 +76,12 @@ fun OptionsInput(
 
     val desc = variable.desc
     val options = remember(desc) {
-        desc.splitIntoSet(Variable.Type.Options.SEPARATOR)
+        Variable.Type.Options.loadOptions(desc)
     }
 
     val value = variableState.state.value
     val selection = remember(value) {
-        value.splitIntoSet(Variable.Type.Options.SEPARATOR) {
-            options.contains(it)
-        }
+        Variable.Type.Options.loadSelection(value, options)
     }
 
     val errorMessage = remember(variable, value) {

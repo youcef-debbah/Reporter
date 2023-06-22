@@ -285,7 +285,7 @@ class TemplateState private constructor(
                     )
                     allSectionsVariablesBuilder.put(variable.name, variableState)
                     currentSectionVariablesBuilder.add(variableState)
-                    if (variable.type == Variable.Type.Font.name) {
+                    if (variable.isFontVariable()) {
                         fontVariablesBuilder.add(variableState)
                     }
                 }

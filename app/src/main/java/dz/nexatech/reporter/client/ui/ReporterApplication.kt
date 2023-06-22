@@ -1,6 +1,7 @@
 package dz.nexatech.reporter.client.ui
 
 import android.content.res.Resources
+import com.google.common.collect.ImmutableSet
 import com.google.firebase.FirebaseApp
 import dagger.Lazy
 import dagger.hilt.android.HiltAndroidApp
@@ -12,6 +13,7 @@ import dz.nexatech.reporter.client.core.AbstractInputRepository
 import dz.nexatech.reporter.client.core.ValueOperation
 import dz.nexatech.reporter.client.model.InputRepository
 import dz.nexatech.reporter.client.model.ResourcesRepository
+import dz.nexatech.reporter.client.model.TemplatesRepository
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.StandardDestinations
@@ -40,9 +42,11 @@ class ReporterApplication : AbstractApplication() {
     @Inject
     fun initResourcesLoader(
         resourcesRepository: ResourcesRepository,
+        templatesRepository: TemplatesRepository,
         inputRepository: InputRepository,
     ) {
         ResourcesHandler.init(resourcesRepository)
+        FontHandler.init(templatesRepository)
         InputHandler.init(inputRepository)
     }
 }
@@ -57,6 +61,16 @@ object ResourcesHandler {
     suspend fun load(path: String?): AbstractBinaryResource? = withIO {
         resourcesRepository.load(path)
     }
+}
+
+object FontHandler {
+    private lateinit var templatesRepository: TemplatesRepository
+
+    fun init(templatesRepository: TemplatesRepository) {
+        this.templatesRepository = templatesRepository
+    }
+
+    fun loadFontFamilies(): ImmutableSet<String> = templatesRepository.fontFamilies.value
 }
 
 object InputHandler : AbstractInputRepository() {

@@ -3,6 +3,7 @@ package dz.nexatech.reporter.client.model
 import androidx.compose.runtime.Immutable
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
+import com.google.common.collect.ImmutableSet
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.AbstractLocalizer
 import dz.nexatech.reporter.client.common.AbstractTeller
@@ -12,6 +13,7 @@ import dz.nexatech.reporter.client.common.atomicLazy
 import dz.nexatech.reporter.client.common.splitIntoSet
 import dz.nexatech.reporter.client.model.Variable.ErrorMessage
 import dz.nexatech.reporter.client.model.Variable.ErrorMessageChecker
+import dz.nexatech.reporter.client.ui.FontHandler
 import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import org.json.JSONObject
@@ -431,22 +433,10 @@ class Variable internal constructor(
 
     fun interface ErrorMessageChecker {
         fun check(variable: Variable, value: String): ErrorMessage?
-
-        companion object {
-            fun forType(type: String) = when (type) {
-                Type.Text.name -> Type.Text.checker
-                Type.Number.name -> Type.Number.checker
-                Type.Counter.name -> Type.Counter.checker
-                Type.Decimal.name -> Type.Decimal.checker
-                Type.Date.name -> Type.Date.checker
-                Type.Switch.name -> Type.Switch.checker
-                Type.Color.name -> Type.Color.checker
-                Type.Font.name -> Type.Font.checker
-                Type.Options.name -> Type.Options.checker
-                else -> Type.Unknown.checker
-            }
-        }
     }
+
+    fun isFontVariable(): Boolean =
+        type == Type.Options.name && desc == Type.Options.FONTS_LIST_OPTIONS
 
     object Type {
         object Text {
@@ -575,18 +565,23 @@ class Variable internal constructor(
             }
         }
 
-        object Font {
-            const val name: String = "font"
-            val checker = ErrorMessageChecker { variable, value ->
-                null // TODO
-            }
-        }
-
         object Options {
+            fun loadOptions(desc: String): ImmutableSet<String> = if (desc == FONTS_LIST_OPTIONS) {
+                FontHandler.loadFontFamilies()
+            } else {
+                desc.splitIntoSet(SEPARATOR)
+            }
+
+            fun loadSelection(value: String, options: ImmutableSet<String>): ImmutableSet<String> =
+                value.splitIntoSet(SEPARATOR) {
+                    options.contains(it)
+                }
+
             const val name: String = "options"
             const val SEPARATOR: Char = ','
+            const val FONTS_LIST_OPTIONS: String = "fonts-list"
             val checker: ErrorMessageChecker = ErrorMessageChecker { variable, value ->
-                val options = variable.desc.splitIntoSet(SEPARATOR)
+                val options = loadOptions(variable.desc)
                 val selection = value.splitIntoSet(SEPARATOR)
                 for (selected in selection) {
                     if (!options.contains(selected)) {
