@@ -3,6 +3,7 @@ package dz.nexatech.reporter.client.model
 import android.content.Context
 import androidx.compose.runtime.Stable
 import com.google.common.collect.ImmutableMap
+import com.google.common.collect.ImmutableSet
 import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -115,5 +116,19 @@ class ResourcesRepository @Inject constructor(
 
     suspend fun updateResources(resources: List<Resource>?) {
         resources?.let { resourcesDAO.get().updateAll(it) }
+    }
+
+    suspend fun loadFontFamilies(): ImmutableSet<String> = ImmutableSet.Builder<String>().apply {
+        addFamilies(fontAssetsResources.keys)
+        addFamilies(resourcesDAO.get().loadAvailableDynamicFonts())
+    }.build()
+
+    private fun ImmutableSet.Builder<String>.addFamilies(fontPaths: Iterable<String>) {
+        for (fontPath in fontPaths) {
+            val familyName = fontFamilyName(fontPath)
+            if (familyName.isNotEmpty()) {
+                add(familyName)
+            }
+        }
     }
 }

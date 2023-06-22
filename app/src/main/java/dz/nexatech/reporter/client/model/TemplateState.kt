@@ -18,6 +18,7 @@ import dz.nexatech.reporter.client.ui.InputHandler
 import dz.nexatech.reporter.util.model.Teller
 import dz.nexatech.reporter.util.model.errorHtmlPage
 import io.pebbletemplates.pebble.template.PebbleTemplate
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import java.io.StringWriter
@@ -131,9 +132,16 @@ class TemplateState private constructor(
 
             val sectionsVariableStates = sectionsVariableStatesBuilder.build()
             val recordsStates = recordsBuilder.build()
+
             withIO {
-                updateSectionsStates(inputRepository, templateName, sectionsVariableStates)
-                updateRecordsStates(inputRepository, templateName, recordsStates, lastUpdate)
+                val sectionsUpdate = async {
+                    updateSectionsStates(inputRepository, templateName, sectionsVariableStates)
+                }
+                val recordsUpdate = async {
+                    updateRecordsStates(inputRepository, templateName, recordsStates, lastUpdate)
+                }
+                sectionsUpdate.await()
+                recordsUpdate.await()
             }
 
             return TemplateState(

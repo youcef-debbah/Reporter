@@ -32,7 +32,6 @@ import dz.nexatech.reporter.client.model.TEMPLATES_LIST_LOADING_ANIMATION_ENABLE
 import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.TEMPLATES_DOWNLOADING_LINK
-import dz.nexatech.reporter.util.model.rememberColumnsCount
 import dz.nexatech.reporter.util.model.rememberLayoutWidth
 import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.Body
@@ -52,7 +51,6 @@ import dz.nexatech.reporter.util.ui.StandardAppbarIcon
 import dz.nexatech.reporter.util.ui.StaticIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
 import dz.nexatech.reporter.util.ui.Title
-import dz.nexatech.reporter.util.ui.collectWithLifecycleAsState
 import dz.nexatech.reporter.util.ui.contentPadding
 
 object TemplatesListScreen : StaticScreenDestination(
@@ -80,8 +78,7 @@ object TemplatesListScreen : StaticScreenDestination(
         navController: NavHostController,
         viewModel: MainViewModel,
     ) {
-        val templateState = viewModel.templates().collectWithLifecycleAsState()
-        val templates = templateState.value
+        val templates = viewModel.templates().value
         val templateImportLauncher = rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->

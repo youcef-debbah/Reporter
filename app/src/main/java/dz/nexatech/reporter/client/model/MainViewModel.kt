@@ -58,12 +58,12 @@ class MainViewModel @Inject constructor(
         }
 
         oldContext?.clear(activeDestinations, navController)
-        val newContext = TabsContext(template)
+        val newContext = TabsContext(template, templatesRepository)
         currentTabsContext = newContext
         newContext.loadTemplateAndNavigateToPreviewTab(this, navController)
     }
 
-    fun templates(): StateFlow<Map<String, Template>?> = templatesRepository.templates
+    fun templates(): State<Map<String, Template>?> = templatesRepository.templates
 
     suspend fun newTemplateState(meta: TemplateMeta) =
         TemplateState.from(meta, inputRepository)

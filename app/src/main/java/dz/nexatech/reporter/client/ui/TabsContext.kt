@@ -71,6 +71,7 @@ import dz.nexatech.reporter.client.model.SectionState
 import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.client.model.TemplateOutput
 import dz.nexatech.reporter.client.model.TemplateState
+import dz.nexatech.reporter.client.model.TemplatesRepository
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.client.model.asWebResourceResponse
 import dz.nexatech.reporter.client.model.evaluateState
@@ -111,7 +112,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 
 
-class TabsContext(val template: Template) {
+class TabsContext(
+    val template: Template,
+    private val templateRepository: TemplatesRepository,
+) {
 
     companion object {
         private val context: AbstractApplication = AbstractApplication.INSTANCE

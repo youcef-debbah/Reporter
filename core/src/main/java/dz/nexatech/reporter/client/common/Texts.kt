@@ -506,3 +506,17 @@ object Formatters {
 }
 
 fun Int.addHash(instance: Any): Int = (31 * this) xor instance.hashCode()
+
+fun breakCamlCase(text: String): String {
+    if (text.length < 2) return text
+    return StringBuilder(text.length + text.length / 3).apply {
+        append(text[0])
+        for (i in 1 until text.length) {
+            val char = text[i]
+            if (char.isUpperCase()) {
+                append(' ')
+            }
+            append(char)
+        }
+    }.toString()
+}

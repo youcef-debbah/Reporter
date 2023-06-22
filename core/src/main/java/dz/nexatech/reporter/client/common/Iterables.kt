@@ -1,6 +1,7 @@
 package dz.nexatech.reporter.client.common
 
 import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableSet
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
@@ -89,4 +90,13 @@ fun <T: Any> Iterable<T>.slice(count: Int = 2): ImmutableList<ImmutableList<T>> 
     }
 
     return result.build()
+}
+
+fun <T, R> Iterable<T>.mapToSet(mapper: (T) -> R): ImmutableSet<R> {
+    val builder = ImmutableSet.builder<R>()
+    val iterator = iterator()
+    while (iterator.hasNext()) {
+        builder.add(mapper.invoke(iterator.next()))
+    }
+    return builder.build()
 }
