@@ -136,9 +136,7 @@ fun OptionsInput(
                     title = option,
                     icon = null
                 ) {
-                    val newValue = if (selection.isEmpty()) {
-                        option
-                    } else if (selection.contains(option)) {
+                    val newValue = if (selection.contains(option)) {
                         StringBuilder(value.length - option.length).apply {
                             val iterator = selection.iterator()
                             while (iterator.hasNext()) {
@@ -151,6 +149,11 @@ fun OptionsInput(
                                 }
                             }
                         }.toString()
+                    } else if (variable.max == 1L && selection.size < 2) {
+                        menuExpanded.value = false
+                        option
+                    } else if (selection.isEmpty()) {
+                        option
                     } else {
                         StringBuilder(value.length + option.length + 1).apply {
                             for (selectedValue in selection) {
@@ -162,12 +165,6 @@ fun OptionsInput(
                     }
 
                     variableState.setter.invoke(newValue)
-
-                    if (variable.max == 1L
-                        && newValue.isNotBlank()
-                        && !newValue.contains(Variable.Type.Options.SEPARATOR)) {
-                        menuExpanded.value = false
-                    }
                 }
             }
         }

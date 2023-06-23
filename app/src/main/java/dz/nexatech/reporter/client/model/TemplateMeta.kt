@@ -422,9 +422,7 @@ class Variable internal constructor(
     private val dateTooEarlyMessage =
         ErrorMessage { resources.getString(R.string.date_too_early, minDate) }
 
-    //    private val errorMessageChecker = ErrorMessageChecker.forType(type)
-    private val errorMessageChecker = Type.Text.checker  // TODO remove
-
+    private val errorMessageChecker = ErrorMessageChecker.forType(type)
     fun errorMessage(value: String) = errorMessageChecker.check(this, value)
 
     fun interface ErrorMessage {
@@ -433,6 +431,20 @@ class Variable internal constructor(
 
     fun interface ErrorMessageChecker {
         fun check(variable: Variable, value: String): ErrorMessage?
+
+        companion object {
+            fun forType(type: String) = when (type) {
+                Type.Text.name -> Type.Text.checker
+                Type.Number.name -> Type.Number.checker
+                Type.Counter.name -> Type.Counter.checker
+                Type.Decimal.name -> Type.Decimal.checker
+                Type.Date.name -> Type.Date.checker
+                Type.Switch.name -> Type.Switch.checker
+                Type.Color.name -> Type.Color.checker
+                Type.Options.name -> Type.Options.checker
+                else -> Type.Unknown.checker
+            }
+        }
     }
 
     fun isFontVariable(): Boolean =
