@@ -69,6 +69,8 @@ fun VariableInput(
         Type.Number.name -> TextInput(variableState, modifier, Type.Number)
         Type.Email.name -> TextInput(variableState, modifier, Type.Email)
         Type.Mobile.name -> TextInput(variableState, modifier, Type.Mobile)
+        Type.LinePhone.name -> TextInput(variableState, modifier, Type.LinePhone)
+        Type.Uri.name -> TextInput(variableState, modifier, Type.Uri)
         else -> TextInput(variableState, modifier, Type.Text)
     }
 }

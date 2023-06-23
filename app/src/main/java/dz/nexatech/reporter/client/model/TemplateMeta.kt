@@ -421,6 +421,9 @@ class Variable internal constructor(
     private val illegalMobileNumberMessage =
         ErrorMessage { resources.getString(R.string.illegalMobileNumber) }
 
+    private val illegalLinePhoneNumberMessage =
+        ErrorMessage { resources.getString(R.string.illegal_line_phone_number) }
+
     private val illegalEmailMessage =
         ErrorMessage { resources.getString(R.string.illegal_email_address) }
 
@@ -493,6 +496,77 @@ class Variable internal constructor(
                 } else {
                     null
                 }
+            }
+        }
+
+        object Uri : TextType {
+            override val name: String
+                get() = "uri"
+
+            override val defaultIcon: StaticIcon
+                get() = StaticIcon.baseline_language
+
+            override val keyboardOptions =
+                KeyboardOptions(autoCorrect = false, keyboardType = KeyboardType.Uri)
+
+            override val checker = ErrorMessageChecker { variable, value ->
+                val length = value.length
+                if (variable.required && length == 0) {
+                    variable.inputRequiredMessage
+                } else if (length > variable.max) {
+                    variable.inputTooLongMessage
+                } else if (length < variable.min) {
+                    variable.inputTooShortMessage
+                } else {
+                    null
+                }
+            }
+        }
+
+        object LinePhone : TextType {
+            override val name: String
+                get() = "line-phone"
+
+            override val defaultIcon: StaticIcon
+                get() = StaticIcon.baseline_call
+
+            override val keyboardOptions =
+                KeyboardOptions(autoCorrect = false, keyboardType = KeyboardType.Phone)
+
+            override val checker = ErrorMessageChecker { variable, value ->
+                if (value.isNotEmpty() && invalidLinePhone(value)) {
+                    variable.illegalLinePhoneNumberMessage
+                } else if (variable.required && value.isEmpty()) {
+                    variable.inputRequiredMessage
+                } else {
+                    null
+                }
+            }
+
+            private fun invalidLinePhone(mobile: String): Boolean {
+                if (mobile.length == 12
+                    && mobile[3] == ' '
+                    && mobile[6] == ' '
+                    && mobile[9] == ' '
+                ) {
+                    return invalidLinePhone(
+                        StringBuilder()
+                            .append(mobile[0])
+                            .append(mobile[1])
+                            .append(mobile[2])
+                            .append(mobile[4])
+                            .append(mobile[5])
+                            .append(mobile[7])
+                            .append(mobile[8])
+                            .append(mobile[10])
+                            .append(mobile[11])
+                            .toString()
+                    )
+                }
+
+                if (mobile.length != 9 || mobile[0] != '0' || mobile[1] == '0') return true
+                val number = mobile.toIntOrNull()
+                return number == null || number < 0
             }
         }
 
