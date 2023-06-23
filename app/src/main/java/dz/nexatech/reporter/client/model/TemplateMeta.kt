@@ -545,7 +545,12 @@ class Variable internal constructor(
         object Switch {
             const val name: String = "switch"
             val checker = ErrorMessageChecker { variable, value ->
-                null // TODO
+                val checked = value.toBooleanStrictOrNull()
+                if (variable.required && checked == null) {
+                    variable.inputRequiredMessage
+                } else {
+                    null
+                }
             }
         }
 

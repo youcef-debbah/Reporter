@@ -18,6 +18,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -39,6 +41,7 @@ import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.harmony.ColorHarmonyMode
 import com.godaddy.android.colorpicker.harmony.HarmonyColorPicker
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.client.common.Texts
 import dz.nexatech.reporter.client.model.COLOR_PICKER_SIZE
 import dz.nexatech.reporter.client.model.OUTLINED_FIELD_DROP_MENU_OFFSET
 import dz.nexatech.reporter.client.model.Variable
@@ -59,6 +62,7 @@ fun VariableInput(
     modifier: Modifier = Modifier,
 ) {
     when (variableState.variable.type) {
+        Variable.Type.Switch.name -> SwitchInput(variableState, modifier)
         Variable.Type.Options.name -> OptionsInput(variableState, modifier)
         Variable.Type.Date.name -> DateInput(variableState, modifier)
         Variable.Type.Color.name -> ColorInput(variableState, modifier)
@@ -122,9 +126,13 @@ fun OptionsInput(
 
         DropdownMenu(
             modifier = modifier
-                .padding(Theme.dimens.content_padding.copy(top = zero_padding, bottom = zero_padding) * 2)
-                .minWidth(150.dp)
-            ,
+                .padding(
+                    Theme.dimens.content_padding.copy(
+                        top = zero_padding,
+                        bottom = zero_padding
+                    ) * 2
+                )
+                .minWidth(150.dp),
             offset = DpOffset(zero_padding, outlinedFieldDropMenuOffset),
             expanded = menuExpanded.value,
             onDismissRequest = { menuExpanded.value = false }) {
@@ -416,6 +424,68 @@ private fun VariableDatePicker(
         dateValidator = { it <= variable.max && it >= variable.min },
         showModeToggle = false,
     )
+}
+
+@Composable
+fun SwitchInput(
+    variableState: VariableState,
+    modifier: Modifier,
+) {
+    val variable = variableState.variable
+    val value = variableState.state.value
+    val errorMessage: String? = remember(variable, value) {
+        Variable.Type.Switch.checker.check(variable, value)?.asString(value)
+    }
+
+    CentredColumn(
+        modifier
+            .padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2)
+            .fillMaxWidth()
+    ) {
+        CentredRow(Modifier.fillMaxWidth()) {
+            val enabled = value.toBooleanStrictOrNull()
+            CentredColumn(Modifier.weight(1f)) {
+                Body(
+                    text = variable.label,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start,
+                    style = Theme.typography.titleSmall,
+                )
+                Body(
+                    text = variable.desc,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start,
+                )
+            }
+            CentredRow {
+                FilledIconToggleButton(checked = enabled == true, onCheckedChange = {
+                    variableState.setter.invoke(if (it) Texts.TRUE else "")
+                }) {
+                    InfoIcon(
+                        icon = R.drawable.baseline_done_24,
+                        desc = R.string.enable
+                    )
+                }
+                FilledIconToggleButton(checked = enabled == false, onCheckedChange = {
+                    variableState.setter.invoke(if (it) Texts.FALSE else "")
+                }) {
+                    InfoIcon(
+                        icon = R.drawable.baseline_close_24,
+                        desc = R.string.disable
+                    )
+                }
+            }
+        }
+        AnimatedVisibility(errorMessage != null) {
+            Body(
+                text = errorMessage ?: "",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start,
+                color = Theme.colorScheme.error,
+                style = Theme.typography.bodySmall,
+            )
+        }
+    }
 }
 
 @Composable

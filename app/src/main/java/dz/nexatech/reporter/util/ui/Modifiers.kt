@@ -71,3 +71,8 @@ fun Modifier.roundedComponentTrailing() = composed {
 fun Modifier.roundedComponentLeading() = composed {
     padding(start = Theme.dimens.rounded_component.end)
 }
+
+@Stable
+fun Modifier.roundedComponentPadding() = composed {
+    padding(Theme.dimens.rounded_component)
+}

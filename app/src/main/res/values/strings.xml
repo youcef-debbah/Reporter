@@ -86,4 +86,6 @@
     <string name="reset">Reset</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="disable">Disable</string>
+    <string name="enable">Enable</string>
 </resources>
