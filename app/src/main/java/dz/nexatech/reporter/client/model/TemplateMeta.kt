@@ -418,6 +418,12 @@ class Variable internal constructor(
     private val valueTooSmallMessage =
         ErrorMessage { resources.getString(R.string.value_too_small, min) }
 
+    private val illegalMobileNumberMessage =
+        ErrorMessage { resources.getString(R.string.illegalMobileNumber) }
+
+    private val illegalEmailMessage =
+        ErrorMessage { resources.getString(R.string.illegal_email_address) }
+
     private val inputRequiredMessage =
         ErrorMessage { resources.getString(R.string.input_required) }
     private val inputTooLongMessage =
@@ -490,7 +496,102 @@ class Variable internal constructor(
             }
         }
 
-        object Number: TextType {
+        object Mobile : TextType {
+            override val name: String
+                get() = "mobile"
+
+            override val defaultIcon: StaticIcon
+                get() = StaticIcon.baseline_call
+
+            override val keyboardOptions =
+                KeyboardOptions(autoCorrect = false, keyboardType = KeyboardType.Phone)
+
+            override val checker = ErrorMessageChecker { variable, value ->
+                if (value.isNotEmpty() && invalidMobile(value)) {
+                    variable.illegalMobileNumberMessage
+                } else if (variable.required && value.isEmpty()) {
+                    variable.inputRequiredMessage
+                } else {
+                    null
+                }
+            }
+
+            private fun invalidMobile(mobile: String): Boolean {
+                if (mobile.length == 14
+                    && mobile[2] == ' '
+                    && mobile[5] == ' '
+                    && mobile[8] == ' '
+                    && mobile[11] == ' '
+                ) {
+                    return invalidMobile(
+                        StringBuilder()
+                            .append(mobile[0])
+                            .append(mobile[1])
+                            .append(mobile[3])
+                            .append(mobile[4])
+                            .append(mobile[6])
+                            .append(mobile[7])
+                            .append(mobile[9])
+                            .append(mobile[10])
+                            .append(mobile[12])
+                            .append(mobile[13])
+                            .toString()
+                    )
+                }
+
+                if (mobile.length != 10 || mobile[0] != '0' || mobile[1] == '0') return true
+                val number = mobile.toIntOrNull()
+                return number == null || number < 0
+            }
+        }
+
+        object Email : TextType {
+            override val name: String
+                get() = "email"
+
+            override val defaultIcon: StaticIcon
+                get() = StaticIcon.baseline_email
+
+            override val keyboardOptions =
+                KeyboardOptions(autoCorrect = false, keyboardType = KeyboardType.Email)
+
+            override val checker = ErrorMessageChecker { variable, value ->
+                if (value.isNotEmpty() && isInvalidEmail(value)) {
+                    variable.illegalEmailMessage
+                } else if (variable.required && value.isEmpty()) {
+                    variable.inputRequiredMessage
+                } else {
+                    null
+                }
+            }
+
+            fun isInvalidEmail(email: String): Boolean {
+                if (email.length < 5) return true
+                val lastIndex = email.length - 1
+
+                var hasAtSymbol = false
+                var hasDot = false
+
+                for (i in email.indices) {
+                    val c = email[i]
+                    if (c == '@') {
+                        if (hasAtSymbol || i == 0 || i == lastIndex) {
+                            return true
+                        }
+                        hasAtSymbol = true
+                    } else if (c == '.') {
+                        if (i == 0 || i == lastIndex) {
+                            return true
+                        }
+                        hasDot = true
+                    }
+                }
+
+                return !hasAtSymbol || !hasDot
+            }
+        }
+
+        object Number : TextType {
             override val name: String
                 get() = "number"
 
@@ -523,7 +624,7 @@ class Variable internal constructor(
             }
         }
 
-        object Decimal: TextType {
+        object Decimal : TextType {
             override val name: String
                 get() = "decimal"
 

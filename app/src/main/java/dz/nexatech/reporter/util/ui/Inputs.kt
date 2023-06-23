@@ -67,6 +67,8 @@ fun VariableInput(
         Type.Color.name -> ColorInput(variableState, modifier)
         Type.Decimal.name -> TextInput(variableState, modifier, Type.Decimal)
         Type.Number.name -> TextInput(variableState, modifier, Type.Number)
+        Type.Email.name -> TextInput(variableState, modifier, Type.Email)
+        Type.Mobile.name -> TextInput(variableState, modifier, Type.Mobile)
         else -> TextInput(variableState, modifier, Type.Text)
     }
 }

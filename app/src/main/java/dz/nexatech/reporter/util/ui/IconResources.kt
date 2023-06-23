@@ -36,6 +36,8 @@ class StaticIcon private constructor(@DrawableRes val drawable: Int): AbstractIc
         val baseline_color_lens = StaticIcon(R.drawable.baseline_color_lens_24)
         val baseline_list = StaticIcon(R.drawable.baseline_list_24)
         val baseline_dialpad = StaticIcon(R.drawable.baseline_dialpad_24)
+        val baseline_email = StaticIcon(R.drawable.baseline_email_24)
+        val baseline_call = StaticIcon(R.drawable.baseline_call_24)
     }
 
     @Composable
