@@ -88,4 +88,6 @@
     <string name="cancel">Cancel</string>
     <string name="disable">Disable</string>
     <string name="enable">Enable</string>
+    <string name="value_too_big">the value must not be more than %d</string>
+    <string name="value_too_small">the value must be at least %d</string>
 </resources>

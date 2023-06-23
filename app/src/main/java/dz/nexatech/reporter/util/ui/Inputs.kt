@@ -36,7 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.harmony.ColorHarmonyMode
 import com.godaddy.android.colorpicker.harmony.HarmonyColorPicker
@@ -45,7 +44,9 @@ import dz.nexatech.reporter.client.common.Texts
 import dz.nexatech.reporter.client.model.COLOR_PICKER_SIZE
 import dz.nexatech.reporter.client.model.OUTLINED_FIELD_DROP_MENU_OFFSET
 import dz.nexatech.reporter.client.model.Variable
+import dz.nexatech.reporter.client.model.Variable.Type
 import dz.nexatech.reporter.client.model.Variable.Type.Color.formatColor
+import dz.nexatech.reporter.client.model.Variable.Type.Date.datePickerDialogProperties
 import dz.nexatech.reporter.client.model.Variable.Type.Date.formatTemplateDate
 import dz.nexatech.reporter.client.model.Variable.Type.Date.parseTemplateDate
 import dz.nexatech.reporter.client.model.VariableState
@@ -54,19 +55,19 @@ import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.model.toggle
 import java.util.Calendar
 
-val datePickerDialogProperties = DialogProperties(usePlatformDefaultWidth = false)
-
 @Composable
 fun VariableInput(
     variableState: VariableState,
     modifier: Modifier = Modifier,
 ) {
     when (variableState.variable.type) {
-        Variable.Type.Switch.name -> SwitchInput(variableState, modifier)
-        Variable.Type.Options.name -> OptionsInput(variableState, modifier)
-        Variable.Type.Date.name -> DateInput(variableState, modifier)
-        Variable.Type.Color.name -> ColorInput(variableState, modifier)
-        else -> TextInput(variableState, modifier)
+        Type.Switch.name -> SwitchInput(variableState, modifier)
+        Type.Options.name -> OptionsInput(variableState, modifier)
+        Type.Date.name -> DateInput(variableState, modifier)
+        Type.Color.name -> ColorInput(variableState, modifier)
+        Type.Decimal.name -> TextInput(variableState, modifier, Type.Decimal)
+        Type.Number.name -> TextInput(variableState, modifier, Type.Number)
+        else -> TextInput(variableState, modifier, Type.Text)
     }
 }
 
@@ -80,16 +81,16 @@ fun OptionsInput(
 
     val desc = variable.desc
     val options = remember(desc) {
-        Variable.Type.Options.loadOptions(desc)
+        Type.Options.loadOptions(desc)
     }
 
     val value = variableState.state.value
     val selection = remember(value) {
-        Variable.Type.Options.loadSelection(value, options)
+        Type.Options.loadSelection(value, options)
     }
 
     val errorMessage = remember(variable, value) {
-        Variable.Type.Options.checker.check(variable, value)?.asString(value)
+        Type.Options.checker.check(variable, value)?.asString(value)
     }
 
     val menuExpanded = rememberSaveable { mutableStateOf(false) }
@@ -152,7 +153,7 @@ fun OptionsInput(
                                 if (selected != option) {
                                     append(selected)
                                     if (iterator.hasNext()) {
-                                        append(Variable.Type.Options.SEPARATOR)
+                                        append(Type.Options.SEPARATOR)
                                     }
                                 }
                             }
@@ -166,7 +167,7 @@ fun OptionsInput(
                         StringBuilder(value.length + option.length + 1).apply {
                             for (selectedValue in selection) {
                                 append(selectedValue)
-                                append(Variable.Type.Options.SEPARATOR)
+                                append(Type.Options.SEPARATOR)
                             }
                             append(option)
                         }.toString()
@@ -186,10 +187,10 @@ fun ColorInput(variableState: VariableState, modifier: Modifier) {
     val variable = variableState.variable
     val value = variableState.state.value
     val color = remember(value) {
-        Variable.Type.Color.parseColor(value)?.let { Color(it) }
+        Type.Color.parseColor(value)?.let { Color(it) }
     }
     val errorMessage = remember(variable, value) {
-        Variable.Type.Color.checker.check(variable, value)?.asString(value)
+        Type.Color.checker.check(variable, value)?.asString(value)
     }
 
     OutlinedTextField(
@@ -293,7 +294,7 @@ fun DateInput(variableState: VariableState, modifier: Modifier) {
     val variable = variableState.variable
     val value = variableState.state.value
     val errorMessage = remember(variable, value) {
-        Variable.Type.Date.checker.check(variable, value)?.asString(value)
+        Type.Date.checker.check(variable, value)?.asString(value)
     }
 
     OutlinedTextField(
@@ -434,7 +435,7 @@ fun SwitchInput(
     val variable = variableState.variable
     val value = variableState.state.value
     val errorMessage: String? = remember(variable, value) {
-        Variable.Type.Switch.checker.check(variable, value)?.asString(value)
+        Type.Switch.checker.check(variable, value)?.asString(value)
     }
 
     CentredColumn(
@@ -492,11 +493,12 @@ fun SwitchInput(
 private fun TextInput(
     variableState: VariableState,
     modifier: Modifier = Modifier,
+    inputType: Variable.TextType,
 ) {
     val variable = variableState.variable
     val value = variableState.state.value
     val errorMessage: String? = remember(variable, value) {
-        Variable.Type.Text.checker.check(variable, value)?.asString(value)
+        inputType.checker.check(variable, value)?.asString(value)
     }
     CentredColumn(
         modifier = modifier.padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2),
@@ -511,12 +513,13 @@ private fun TextInput(
             value = value,
             onValueChange = variableState.setter,
             label = { Body(variable.label) },
-            leadingIcon = { InputIcon(variable, StaticIcon.baseline_keyboard) },
+            leadingIcon = { InputIcon(variable, inputType.defaultIcon) },
             trailingIcon = { InfoButton(variable) { showInfo.toggle() } },
             prefix = { Body(variable.prefix) },
             suffix = { Body(variable.suffix) },
             isError = errorMessage != null,
             supportingText = { Body(errorMessage ?: "") },
+            keyboardOptions = inputType.keyboardOptions,
         )
     }
 }
@@ -542,7 +545,7 @@ fun InputIcon(
 }
 
 @Composable
-fun rememberFakeVar(name: String = "varname", type: String = Variable.Type.Text.name): Variable =
+fun rememberFakeVar(name: String = "varname", type: String = Type.Text.name): Variable =
     remember {
         Variable(
             namespace = "namespace",

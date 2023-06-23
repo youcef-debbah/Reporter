@@ -1,6 +1,9 @@
 package dz.nexatech.reporter.client.model
 
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.window.DialogProperties
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
@@ -16,6 +19,7 @@ import dz.nexatech.reporter.client.model.Variable.ErrorMessageChecker
 import dz.nexatech.reporter.client.ui.FontHandler
 import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.ui.AbstractApplication
+import dz.nexatech.reporter.util.ui.StaticIcon
 import org.json.JSONObject
 import java.util.Calendar
 import kotlin.math.min
@@ -401,6 +405,19 @@ class Variable internal constructor(
         fun key(namespace: String, name: String) = "${namespace}.$name"
     }
 
+    private val minDate = Type.Date.formatTemplateDate(min)
+    private val maxDate = Type.Date.formatTemplateDate(max)
+
+    private val dateTooLateMessage =
+        ErrorMessage { resources.getString(R.string.date_too_late, maxDate) }
+    private val dateTooEarlyMessage =
+        ErrorMessage { resources.getString(R.string.date_too_early, minDate) }
+
+    private val valueTooBigMessage =
+        ErrorMessage { resources.getString(R.string.value_too_big, max) }
+    private val valueTooSmallMessage =
+        ErrorMessage { resources.getString(R.string.value_too_small, min) }
+
     private val inputRequiredMessage =
         ErrorMessage { resources.getString(R.string.input_required) }
     private val inputTooLongMessage =
@@ -413,14 +430,6 @@ class Variable internal constructor(
         ErrorMessage { resources.getString(R.string.selection_too_low, min) }
     private val inputSelectionCountTooHighMessage =
         ErrorMessage { resources.getString(R.string.selection_too_high, max) }
-
-    private val minDate = Type.Date.formatTemplateDate(min)
-    private val maxDate = Type.Date.formatTemplateDate(max)
-
-    private val dateTooLateMessage =
-        ErrorMessage { resources.getString(R.string.date_too_late, maxDate) }
-    private val dateTooEarlyMessage =
-        ErrorMessage { resources.getString(R.string.date_too_early, minDate) }
 
     private val errorMessageChecker = ErrorMessageChecker.forType(type)
     fun errorMessage(value: String) = errorMessageChecker.check(this, value)
@@ -450,10 +459,24 @@ class Variable internal constructor(
     fun isFontVariable(): Boolean =
         type == Type.Options.name && desc == Type.Options.FONTS_LIST_OPTIONS
 
+    interface TextType {
+        val name: String
+        val defaultIcon: StaticIcon
+        val keyboardOptions: KeyboardOptions
+        val checker: ErrorMessageChecker
+    }
+
     object Type {
-        object Text {
-            const val name: String = "text"
-            val checker = ErrorMessageChecker { variable, value ->
+        object Text : TextType {
+            override val name: String
+                get() = "text"
+
+            override val defaultIcon: StaticIcon
+                get() = StaticIcon.baseline_keyboard
+
+            override val keyboardOptions = KeyboardOptions()
+
+            override val checker = ErrorMessageChecker { variable, value ->
                 val length = value.length
                 if (variable.required && length == 0) {
                     variable.inputRequiredMessage
@@ -467,10 +490,29 @@ class Variable internal constructor(
             }
         }
 
-        object Number {
-            const val name: String = "number"
-            val checker = ErrorMessageChecker { variable, value ->
-                null // TODO
+        object Number: TextType {
+            override val name: String
+                get() = "number"
+
+            override val defaultIcon: StaticIcon
+                get() = StaticIcon.baseline_dialpad
+
+            override val keyboardOptions =
+                KeyboardOptions(autoCorrect = false, keyboardType = KeyboardType.Number)
+
+            override val checker = ErrorMessageChecker { variable, value ->
+                val number = value.toLongOrNull()
+                if (value.isNotEmpty() && number == null) {
+                    variable.inputIllegalMessage
+                } else if (variable.required && number == null) {
+                    variable.inputRequiredMessage
+                } else if (number != null && number > variable.max) {
+                    variable.valueTooBigMessage
+                } else if (number != null && number < variable.min) {
+                    variable.valueTooSmallMessage
+                } else {
+                    null
+                }
             }
         }
 
@@ -481,19 +523,41 @@ class Variable internal constructor(
             }
         }
 
-        object Decimal {
-            const val name: String = "decimal"
-            val checker = ErrorMessageChecker { variable, value ->
-                null // TODO
+        object Decimal: TextType {
+            override val name: String
+                get() = "decimal"
+
+            override val defaultIcon: StaticIcon
+                get() = StaticIcon.baseline_dialpad
+
+            override val keyboardOptions =
+                KeyboardOptions(autoCorrect = false, keyboardType = KeyboardType.Decimal)
+
+            override val checker = ErrorMessageChecker { variable, value ->
+                val number = value.toDoubleOrNull()
+                if (value.isNotEmpty() && number == null) {
+                    variable.inputIllegalMessage
+                } else if (variable.required && number == null) {
+                    variable.inputRequiredMessage
+                } else if (number != null && number > variable.max) {
+                    variable.valueTooBigMessage
+                } else if (number != null && number < variable.min) {
+                    variable.valueTooSmallMessage
+                } else {
+                    null
+                }
             }
         }
 
         object Date {
             const val name: String = "date"
+            val datePickerDialogProperties = DialogProperties(usePlatformDefaultWidth = false)
 
             val checker = ErrorMessageChecker { variable, value ->
                 val epoch = parseTemplateDate(value)
-                if (variable.required && epoch == null) {
+                if (value.isNotEmpty() && epoch == null) {
+                    variable.inputIllegalMessage
+                } else if (variable.required && epoch == null) {
                     variable.inputRequiredMessage
                 } else if (epoch != null && epoch > variable.max) {
                     variable.dateTooLateMessage
@@ -546,7 +610,9 @@ class Variable internal constructor(
             const val name: String = "switch"
             val checker = ErrorMessageChecker { variable, value ->
                 val checked = value.toBooleanStrictOrNull()
-                if (variable.required && checked == null) {
+                if (value.isNotEmpty() && checked == null) {
+                    variable.inputIllegalMessage
+                } else if (variable.required && checked == null) {
                     variable.inputRequiredMessage
                 } else {
                     null
