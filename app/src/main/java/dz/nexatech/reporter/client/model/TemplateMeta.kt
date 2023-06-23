@@ -403,6 +403,21 @@ class Variable internal constructor(
         const val SECTION_VARIABLE_INDEX: Int = -1
         private val resources = AbstractApplication.INSTANCE.resources
         fun key(namespace: String, name: String) = "${namespace}.$name"
+
+        private val illegalMobileNumberMessage =
+            ErrorMessage { resources.getString(R.string.illegalMobileNumber) }
+
+        private val illegalLinePhoneNumberMessage =
+            ErrorMessage { resources.getString(R.string.illegal_line_phone_number) }
+
+        private val illegalEmailMessage =
+            ErrorMessage { resources.getString(R.string.illegal_email_address) }
+
+        private val inputRequiredMessage =
+            ErrorMessage { resources.getString(R.string.input_required) }
+
+        private val inputIllegalMessage =
+            ErrorMessage { resources.getString(R.string.illegal_value) }
     }
 
     private val minDate = Type.Date.formatTemplateDate(min)
@@ -418,23 +433,11 @@ class Variable internal constructor(
     private val valueTooSmallMessage =
         ErrorMessage { resources.getString(R.string.value_too_small, min) }
 
-    private val illegalMobileNumberMessage =
-        ErrorMessage { resources.getString(R.string.illegalMobileNumber) }
-
-    private val illegalLinePhoneNumberMessage =
-        ErrorMessage { resources.getString(R.string.illegal_line_phone_number) }
-
-    private val illegalEmailMessage =
-        ErrorMessage { resources.getString(R.string.illegal_email_address) }
-
-    private val inputRequiredMessage =
-        ErrorMessage { resources.getString(R.string.input_required) }
     private val inputTooLongMessage =
         ErrorMessage { resources.getString(R.string.input_too_long, max) }
     private val inputTooShortMessage =
         ErrorMessage { resources.getString(R.string.input_too_short, min) }
-    private val inputIllegalMessage =
-        ErrorMessage { resources.getString(R.string.illegal_value) }
+
     private val inputSelectionCountTooLowMessage =
         ErrorMessage { resources.getString(R.string.selection_too_low, min) }
     private val inputSelectionCountTooHighMessage =
@@ -488,7 +491,7 @@ class Variable internal constructor(
             override val checker = ErrorMessageChecker { variable, value ->
                 val length = value.length
                 if (variable.required && length == 0) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else if (length > variable.max) {
                     variable.inputTooLongMessage
                 } else if (length < variable.min) {
@@ -512,7 +515,7 @@ class Variable internal constructor(
             override val checker = ErrorMessageChecker { variable, value ->
                 val length = value.length
                 if (variable.required && length == 0) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else if (length > variable.max) {
                     variable.inputTooLongMessage
                 } else if (length < variable.min) {
@@ -535,9 +538,9 @@ class Variable internal constructor(
 
             override val checker = ErrorMessageChecker { variable, value ->
                 if (value.isNotEmpty() && invalidLinePhone(value)) {
-                    variable.illegalLinePhoneNumberMessage
+                    illegalLinePhoneNumberMessage
                 } else if (variable.required && value.isEmpty()) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else {
                     null
                 }
@@ -582,9 +585,9 @@ class Variable internal constructor(
 
             override val checker = ErrorMessageChecker { variable, value ->
                 if (value.isNotEmpty() && invalidMobile(value)) {
-                    variable.illegalMobileNumberMessage
+                    illegalMobileNumberMessage
                 } else if (variable.required && value.isEmpty()) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else {
                     null
                 }
@@ -631,9 +634,9 @@ class Variable internal constructor(
 
             override val checker = ErrorMessageChecker { variable, value ->
                 if (value.isNotEmpty() && isInvalidEmail(value)) {
-                    variable.illegalEmailMessage
+                    illegalEmailMessage
                 } else if (variable.required && value.isEmpty()) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else {
                     null
                 }
@@ -678,9 +681,9 @@ class Variable internal constructor(
             override val checker = ErrorMessageChecker { variable, value ->
                 val number = value.toLongOrNull()
                 if (value.isNotEmpty() && number == null) {
-                    variable.inputIllegalMessage
+                    inputIllegalMessage
                 } else if (variable.required && number == null) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else if (number != null && number > variable.max) {
                     variable.valueTooBigMessage
                 } else if (number != null && number < variable.min) {
@@ -711,9 +714,9 @@ class Variable internal constructor(
             override val checker = ErrorMessageChecker { variable, value ->
                 val number = value.toDoubleOrNull()
                 if (value.isNotEmpty() && number == null) {
-                    variable.inputIllegalMessage
+                    inputIllegalMessage
                 } else if (variable.required && number == null) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else if (number != null && number > variable.max) {
                     variable.valueTooBigMessage
                 } else if (number != null && number < variable.min) {
@@ -731,9 +734,9 @@ class Variable internal constructor(
             val checker = ErrorMessageChecker { variable, value ->
                 val epoch = parseTemplateDate(value)
                 if (value.isNotEmpty() && epoch == null) {
-                    variable.inputIllegalMessage
+                    inputIllegalMessage
                 } else if (variable.required && epoch == null) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else if (epoch != null && epoch > variable.max) {
                     variable.dateTooLateMessage
                 } else if (epoch != null && epoch < variable.min) {
@@ -786,9 +789,9 @@ class Variable internal constructor(
             val checker = ErrorMessageChecker { variable, value ->
                 val checked = value.toBooleanStrictOrNull()
                 if (value.isNotEmpty() && checked == null) {
-                    variable.inputIllegalMessage
+                    inputIllegalMessage
                 } else if (variable.required && checked == null) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else {
                     null
                 }
@@ -801,9 +804,9 @@ class Variable internal constructor(
             val checker = ErrorMessageChecker { variable, value ->
                 val color = parseColor(value)
                 if (value.isNotEmpty() && color == null) {
-                    variable.inputIllegalMessage
+                    inputIllegalMessage
                 } else if (variable.required && color == null) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else {
                     null
                 }
@@ -843,12 +846,12 @@ class Variable internal constructor(
                 val selection = value.splitIntoSet(SEPARATOR)
                 for (selected in selection) {
                     if (!options.contains(selected)) {
-                        return@ErrorMessageChecker variable.inputIllegalMessage
+                        return@ErrorMessageChecker inputIllegalMessage
                     }
                 }
 
                 if (variable.required && selection.isEmpty()) {
-                    variable.inputRequiredMessage
+                    inputRequiredMessage
                 } else if (selection.size > variable.max) {
                     variable.inputSelectionCountTooHighMessage
                 } else if (selection.size < variable.min) {
