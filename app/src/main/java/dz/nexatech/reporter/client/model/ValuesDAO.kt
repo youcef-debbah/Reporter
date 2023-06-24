@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 
 @Dao
 interface ValuesDAO {
@@ -27,11 +28,11 @@ interface ValuesDAO {
     @Delete
     suspend fun delete(values: List<Value>)
 
-    suspend fun save(namespace: String, index: Int, name: String, newContent: String) =
-        save(Value(namespace, index, name, System.currentTimeMillis(), newContent))
+    suspend fun updateValue(namespace: String, index: Int, name: String, newValue: String) =
+        updateValue(Value(namespace, index, name, System.currentTimeMillis(), newValue))
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun save(value: Value)
+    @Update(onConflict = OnConflictStrategy.ABORT)
+    suspend fun updateValue(value: Value)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveAll(values: List<Value>)
@@ -44,8 +45,12 @@ interface ValuesDAO {
     suspend fun deleteAll()
 
     @Transaction
-    suspend fun replaceAll(values: List<Value>) {
-        deleteAll()
-        saveAll(values)
+    suspend fun replaceAll(newValues: List<Value>, oldValues: List<Value>? = null) {
+        if (oldValues == null) {
+            deleteAll()
+        } else {
+            delete(oldValues)
+        }
+        saveAll(newValues)
     }
 }

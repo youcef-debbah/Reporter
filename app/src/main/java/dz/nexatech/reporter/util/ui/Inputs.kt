@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextButton
@@ -529,7 +530,12 @@ private fun CounterInput(
             }
             OutlinedTextField(
                 modifier = Modifier
-                    .padding(Theme.dimens.content_padding.copy(top = zero_padding, bottom = zero_padding) * 2)
+                    .padding(
+                        Theme.dimens.content_padding.copy(
+                            top = zero_padding,
+                            bottom = zero_padding
+                        ) * 2
+                    )
                     .weight(1f),
                 colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
                 value = value,
@@ -609,7 +615,10 @@ fun InputIcon(
     variable: Variable,
     defaultIcon: AbstractIcon,
 ) {
-    DecorativeIcon(iconsAssetsResources[variable.icon] ?: defaultIcon)
+    DecorativeIcon(
+        icon = iconsAssetsResources[variable.icon] ?: defaultIcon,
+        tint = LocalContentColor.current.copy(alpha = DisabledIconOpacity),
+    )
 }
 
 @Composable

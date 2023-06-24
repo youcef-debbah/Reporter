@@ -10,6 +10,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 
+const val DisabledIconOpacity = 0.38f
+
 @Composable
 fun DecorativeIcon(
     @DrawableRes icon: Int?,
@@ -25,7 +27,7 @@ fun DecorativeIcon(
     modifier: Modifier = Modifier,
     tint: Color = LocalContentColor.current,
 ) {
-    InfoIcon(icon = icon, desc = null, modifier, tint)
+    InfoIcon(icon = icon, desc = null, modifier = modifier, tint = tint)
 }
 
 @Composable

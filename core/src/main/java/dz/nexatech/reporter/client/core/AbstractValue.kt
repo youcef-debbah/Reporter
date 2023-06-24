@@ -37,10 +37,14 @@ sealed class ValueOperation {
         override fun toString() = "Value.DeleteAll(values=$values)"
     }
 
-    class Save(val namespace: String, val index: Int, val name: String, val newContent: String) :
+    class ReplaceAll(val newValues: List<AbstractValue>, val oldValues: List<AbstractValue>): ValueOperation() {
+        override fun toString() = "Value.ReplaceAll(newValues=$newValues,oldValues=$oldValues)"
+    }
+
+    class UpdateValue(val namespace: String, val index: Int, val name: String, val newValue: String) :
         ValueOperation() {
         override fun toString() =
-            "Value.Save(namespace='$namespace', name='$name', newContent=$newContent)"
+            "Value.UpdateValue(namespace='$namespace', index=$index, name='$name', newValue=$newValue)"
     }
 
     class SaveAll(val values: List<AbstractValue>) : ValueOperation() {

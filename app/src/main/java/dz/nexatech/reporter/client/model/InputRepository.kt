@@ -36,7 +36,10 @@ class InputRepository @Inject constructor(
                 val currentSet = set ?: TreeSet<Value>()
                 currentSet.apply {
                     if (!add(value)) {
-                        Teller.logUnexpectedCondition("dropped_value", "value dropped because its index is not unique: $value")
+                        Teller.logUnexpectedCondition(
+                            "dropped_value",
+                            "value dropped because its index is not unique: $value"
+                        )
                     }
                 }
             }
@@ -59,11 +62,11 @@ class InputRepository @Inject constructor(
         val execution = System.nanoTime()
         @Suppress("UNCHECKED_CAST")
         when (operation) {
-            is ValueOperation.Save -> valuesDAO.save(
+            is ValueOperation.UpdateValue -> valuesDAO.updateValue(
                 namespace = operation.namespace,
                 index = operation.index,
                 name = operation.name,
-                newContent = operation.newContent
+                newValue = operation.newValue
             )
 
             is ValueOperation.SaveAll -> valuesDAO.saveAll(operation.values as List<Value>)
@@ -75,6 +78,11 @@ class InputRepository @Inject constructor(
             )
 
             is ValueOperation.DeleteAll -> valuesDAO.delete(operation.values as List<Value>)
+
+            is ValueOperation.ReplaceAll -> valuesDAO.replaceAll(
+                operation.newValues as List<Value>,
+                operation.oldValues as List<Value>,
+            )
 
             is ValueOperation.Read -> operation.completableDeferred.complete(
                 operation.reader(

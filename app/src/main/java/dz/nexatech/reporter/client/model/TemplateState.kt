@@ -46,22 +46,39 @@ class TemplateState private constructor(
             }
         }.build()
 
-    fun createTuple(recordState: RecordState) {
+    fun createTuple(
+        recordState: RecordState,
+        source: ImmutableMap<String, VariableState> = ImmutableMap.of(),
+    ) {
         ThreadUtil.ensureMainThread()
         val index = recordState.maxIndex.value + 1
-        val now = System.currentTimeMillis()
-
         val variables = recordState.record.variables
-        val tupleBuilder = ImmutableMap.builder<String, VariableState>()
         val tupleValues = ArrayList<Value>(variables.size)
+        val newTuple = newTuple(variables, index, tupleValues, source)
+        InputHandler.execute(ValueOperation.SaveAll(tupleValues))
+        recordState.maxIndex.value = index
+        recordState.tuples.add(newTuple)
+    }
+
+    private fun newTuple(
+        variables: ImmutableList<Variable>,
+        index: Int,
+        tupleValues: ArrayList<Value>,
+        source: ImmutableMap<String, VariableState>,
+    ): ImmutableMap<String, VariableState> {
+        val now = System.currentTimeMillis()
+        val tupleBuilder = ImmutableMap.builder<String, VariableState>()
         for (variable in variables) {
+            val variableState = source[variable.name]
+            val value = variableState?.state?.value ?: variable.default
             tupleBuilder.put(
                 variable.name,
                 createVariableState(
                     variable = variable,
                     lastUpdate = lastUpdate,
                     index = index,
-                    value = variable.default,
+                    value = value,
+                    version = 0,
                 ),
             )
 
@@ -71,14 +88,110 @@ class TemplateState private constructor(
                     index = index,
                     name = variable.name,
                     lastUpdate = now,
-                    content = variable.default,
+                    content = value,
                 )
             )
         }
 
-        InputHandler.execute(ValueOperation.SaveAll(tupleValues))
-        recordState.maxIndex.value = index
-        recordState.tuples.add(tupleBuilder.build())
+        return tupleBuilder.build()
+    }
+
+    fun moveTupleUp(recordState: RecordState, target: ImmutableMap<String, VariableState>) {
+        val tuples = recordState.tuples.toList()
+        val targetIndex = tuples.indexOf(target)
+        if (targetIndex > 0) {
+            swap(target, tuples[targetIndex - 1], recordState)
+        }
+    }
+
+    fun moveTupleDown(recordState: RecordState, target: ImmutableMap<String, VariableState>) {
+        val tuples = recordState.tuples.toList()
+        val targetIndex = tuples.indexOf(target)
+        if (targetIndex > -1 && targetIndex < tuples.size - 1) {
+            swap(target, tuples[targetIndex + 1], recordState)
+        }
+    }
+
+    private fun swap(
+        tuple1: ImmutableMap<String, VariableState>,
+        tuple2: ImmutableMap<String, VariableState>,
+        recordState: RecordState,
+    ) {
+        if (tuple1.isNotEmpty() && tuple2.isNotEmpty()) {
+            val tuple1Index = tuple1.values.first().index
+            val tuple2Index = tuple2.values.first().index
+
+            val valuesCount = tuple1.size + tuple2.size
+            val oldValues = ArrayList<Value>(valuesCount)
+            val newValues = ArrayList<Value>(valuesCount)
+
+            val new1: ImmutableMap<String, VariableState> =
+                copyValues(tuple1, tuple2Index, oldValues, newValues)
+            val new2: ImmutableMap<String, VariableState> =
+                copyValues(tuple2, tuple1Index, oldValues, newValues)
+
+            InputHandler.execute(
+                ValueOperation.ReplaceAll(
+                    newValues,
+                    oldValues,
+                )
+            )
+
+            recordState.tuples.replaceAll {
+                when (it) {
+                    tuple1 -> new2
+                    tuple2 -> new1
+                    else -> it
+                }
+            }
+        }
+    }
+
+    private fun copyValues(
+        oldEntries: ImmutableMap<String, VariableState>,
+        newIndex: Int,
+        oldValues: MutableList<Value>,
+        newValues: MutableList<Value>,
+    ): ImmutableMap<String, VariableState> {
+        val builder = ImmutableMap.Builder<String, VariableState>()
+        val now = System.currentTimeMillis()
+        for (oldEntry in oldEntries) {
+            val oldVariableState = oldEntry.value
+            val variable = oldVariableState.variable
+            val currentValue = oldVariableState.state.value
+            builder.put(
+                oldEntry.key,
+                createVariableState(
+                    variable = variable,
+                    lastUpdate = lastUpdate,
+                    index = newIndex,
+                    value = currentValue,
+                    version = oldVariableState.version.inc(),
+                )
+            )
+
+            oldValues.add(
+                Value(
+                    namespace = variable.namespace,
+                    index = oldVariableState.index,
+                    name = variable.name,
+                    lastUpdate = now,
+                    content = currentValue
+                )
+            )
+
+            newValues.add(
+                Value(
+                    namespace = variable.namespace,
+                    index = newIndex,
+                    name = variable.name,
+                    lastUpdate = now,
+                    content = currentValue
+                )
+            )
+        }
+
+        return builder.build()
     }
 
     fun deleteTuple(recordState: RecordState, target: ImmutableMap<String, VariableState>) {
@@ -225,6 +338,7 @@ class TemplateState private constructor(
                                 lastUpdate = lastUpdate,
                                 index = index,
                                 value = it.content,
+                                version = 0,
                             ),
                         )
                     }
@@ -279,9 +393,10 @@ class TemplateState private constructor(
                     ImmutableList.builder()
                 for (variable in section.variables) {
                     val variableState = createVariableState(
-                        variable,
-                        lastUpdate,
-                        Variable.SECTION_VARIABLE_INDEX,
+                        variable = variable,
+                        lastUpdate = lastUpdate,
+                        index = Variable.SECTION_VARIABLE_INDEX,
+                        version = 0,
                     )
                     allSectionsVariablesBuilder.put(variable.name, variableState)
                     currentSectionVariablesBuilder.add(variableState)
@@ -349,9 +464,10 @@ class TemplateState private constructor(
             lastUpdate: MutableSharedFlow<String>,
             index: Int,
             value: String = variable.default,
+            version: Int,
         ): VariableState {
             val state: MutableState<String> = mutableStateOf(value)
-            return VariableState(variable, state, index) {
+            return VariableState(variable, state, index, version) {
                 setState(variable, index, state, it, lastUpdate)
             }
         }
@@ -368,7 +484,7 @@ class TemplateState private constructor(
                 state.value = newContent
                 lastUpdate.tryEmit(variable.namespace)
                 InputHandler.execute(
-                    ValueOperation.Save(
+                    ValueOperation.UpdateValue(
                         variable.namespace,
                         index,
                         variable.name,
@@ -385,9 +501,10 @@ class VariableState(
     val variable: Variable,
     val state: MutableState<String>,
     val index: Int = Variable.SECTION_VARIABLE_INDEX,
+    val version: Int = 0,
     val setter: (String) -> Unit,
 ) {
-    val hash = index.hashCode().addHash(variable.name).addHash(variable.namespace)
+    val hash = version.hashCode().addHash(index).addHash(variable.name).addHash(variable.namespace)
 
     override fun hashCode() = hash
 
@@ -398,6 +515,7 @@ class VariableState(
         if (variable.namespace != other.variable.namespace) return false
         if (variable.name != other.variable.name) return false
         if (index != other.index) return false
+        if (version != other.version) return false
         return true
     }
 

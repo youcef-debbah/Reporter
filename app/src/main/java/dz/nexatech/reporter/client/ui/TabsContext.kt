@@ -378,6 +378,7 @@ class TabsContext(
             builtInZoomControls = true
             displayZoomControls = false
         }
+
         webView.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(
                 view: WebView?,
@@ -456,9 +457,7 @@ class TabsContext(
                     floatingActionButton = {
                         FloatingActionButton(onClick = {
                             templateState.createTuple(recordState)
-                            coroutineScope.backgroundLaunch {
-                                scrollState.animateScrollTo(Integer.MAX_VALUE, autoScrollAnimation)
-                            }
+                            scrollToBottom(coroutineScope, scrollState)
                         }) {
                             InfoIcon(
                                 icon = R.drawable.baseline_add_24,
@@ -470,12 +469,32 @@ class TabsContext(
                     RecordTuples(
                         tuples = recordState.tuples,
                         desc = recordDesc,
-                    ) {
-                        templateState.deleteTuple(recordState, it)
-                    }
+                        onMoveUp = {
+                            templateState.moveTupleUp(recordState, it)
+                        },
+                        onMoveDown = {
+                            templateState.moveTupleDown(recordState, it)
+                        },
+                        onCopy = {
+                            templateState.createTuple(recordState, it)
+                            scrollToBottom(coroutineScope, scrollState)
+                        },
+                        onDelete = {
+                            templateState.deleteTuple(recordState, it)
+                        }
+                    )
                 }
             }
             tab
+        }
+    }
+
+    private fun scrollToBottom(
+        coroutineScope: CoroutineScope,
+        scrollState: ScrollState,
+    ) {
+        coroutineScope.backgroundLaunch {
+            scrollState.animateScrollTo(Integer.MAX_VALUE, autoScrollAnimation)
         }
     }
 
@@ -483,6 +502,9 @@ class TabsContext(
     private fun RecordTuples(
         tuples: SnapshotStateList<ImmutableMap<String, VariableState>>,
         desc: String,
+        onMoveUp: (ImmutableMap<String, VariableState>) -> Unit,
+        onMoveDown: (ImmutableMap<String, VariableState>) -> Unit,
+        onCopy: (ImmutableMap<String, VariableState>) -> Unit,
         onDelete: (ImmutableMap<String, VariableState>) -> Unit,
     ) {
         val columnsCount = rememberColumnsCount()
@@ -502,23 +524,49 @@ class TabsContext(
             )
         }
 
-        for (tuple in tuples) {
+        for ((i, tuple) in tuples.withIndex()) {
             val values = tuple.values
             if (values.isNotEmpty()) {
+                val index = values.first().index
                 ContentCard(Modifier.contentPadding()) {
                     PaddedColumn {
                         CentredRow {
+                            IconButton(
+                                enabled = i < tuples.size - 1,
+                                onClick = { onMoveDown(tuple) },
+                            ) {
+                                InfoIcon(
+                                    icon = R.drawable.baseline_keyboard_arrow_down_24,
+                                    desc = stringRes(R.string.move_entry_down_desc, index)
+                                )
+                            }
+
+                            IconButton(
+                                enabled = i > 0,
+                                onClick = { onMoveUp(tuple) },
+                            ) {
+                                InfoIcon(
+                                    icon = R.drawable.baseline_keyboard_arrow_up_24,
+                                    desc = stringRes(R.string.move_entry_up_desc, index)
+                                )
+                            }
+
                             Body(
-                                text = stringRes(
-                                    R.string.tuple_title,
-                                    values.first().index
-                                ),
+                                text = stringRes(R.string.tuple_title, index),
                                 modifier = Modifier.weight(1f),
                             )
+
+                            IconButton(onClick = { onCopy(tuple) }) {
+                                InfoIcon(
+                                    icon = R.drawable.baseline_content_copy_24,
+                                    desc = stringRes(R.string.copy_entry_desc, index)
+                                )
+                            }
+
                             IconButton(onClick = { onDelete(tuple) }) {
                                 InfoIcon(
                                     icon = R.drawable.baseline_delete_forever_24,
-                                    desc = R.string.delete_tuple_desc
+                                    desc = stringRes(R.string.delete_entry_desc, index)
                                 )
                             }
                         }
