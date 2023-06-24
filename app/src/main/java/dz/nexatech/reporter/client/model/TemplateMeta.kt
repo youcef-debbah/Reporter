@@ -668,6 +668,31 @@ class Variable internal constructor(
             }
         }
 
+        object Counter: TextType {
+            override val name: String = "counter"
+
+            override val defaultIcon: StaticIcon
+                get() = StaticIcon.baseline_exposure
+
+            override val keyboardOptions =
+                KeyboardOptions(autoCorrect = false, keyboardType = KeyboardType.Number)
+
+            override val checker = ErrorMessageChecker { variable, value ->
+                val number = value.toIntOrNull()
+                if (value.isNotEmpty() && number == null) {
+                    inputIllegalMessage
+                } else if (variable.required && number == null) {
+                    inputRequiredMessage
+                } else if (number != null && number > variable.max) {
+                    variable.valueTooBigMessage
+                } else if (number != null && number < variable.min) {
+                    variable.valueTooSmallMessage
+                } else {
+                    null
+                }
+            }
+        }
+
         object Number : TextType {
             override val name: String
                 get() = "number"
@@ -691,13 +716,6 @@ class Variable internal constructor(
                 } else {
                     null
                 }
-            }
-        }
-
-        object Counter {
-            const val name: String = "counter"
-            val checker = ErrorMessageChecker { variable, value ->
-                null // TODO
             }
         }
 

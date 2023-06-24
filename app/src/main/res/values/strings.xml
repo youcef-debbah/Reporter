@@ -93,4 +93,6 @@
     <string name="illegalMobileNumber">Invalid mobile number, you can use: 0512345678 or 05\u00A012\u00A034\u00A056\u00A078</string>
     <string name="illegal_email_address">Illegal email address</string>
     <string name="illegal_line_phone_number">Invalid line phone number, you can use: 023123456 or 023\u00A012\u00A034\u00A056</string>
+    <string name="inc_counter">Increment the counter</string>
+    <string name="dec_counter">Decrement the counter</string>
 </resources>

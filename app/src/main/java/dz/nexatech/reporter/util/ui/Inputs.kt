@@ -18,6 +18,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -65,6 +66,7 @@ fun VariableInput(
         Type.Options.name -> OptionsInput(variableState, modifier)
         Type.Date.name -> DateInput(variableState, modifier)
         Type.Color.name -> ColorInput(variableState, modifier)
+        Type.Counter.name -> CounterInput(variableState, modifier, Type.Counter)
         Type.Decimal.name -> TextInput(variableState, modifier, Type.Decimal)
         Type.Number.name -> TextInput(variableState, modifier, Type.Number)
         Type.Email.name -> TextInput(variableState, modifier, Type.Email)
@@ -489,6 +491,68 @@ fun SwitchInput(
                 color = Theme.colorScheme.error,
                 style = Theme.typography.bodySmall,
             )
+        }
+    }
+}
+
+@Composable
+private fun CounterInput(
+    variableState: VariableState,
+    modifier: Modifier = Modifier,
+    inputType: Variable.TextType,
+) {
+    val variable = variableState.variable
+    val value = variableState.state.value
+    val errorMessage: String? = remember(variable, value) {
+        inputType.checker.check(variable, value)?.asString(value)
+    }
+    val intValue = value.toIntOrNull()
+    CentredColumn(
+        modifier = modifier
+            .padding(Theme.dimens.content_padding.copy(bottom = zero_padding))
+            .fillMaxWidth()
+    ) {
+        val showInfo = rememberSaveable { mutableStateOf(false) }
+        AnimatedVisibility(visible = showInfo.value) {
+            Body(variable.desc)
+        }
+        Row {
+            FilledIconButton(
+                modifier = Modifier.padding(top = 12.dp),
+                enabled = intValue != null,
+                onClick = {
+                    if (intValue != null) {
+                        variableState.setter.invoke(intValue.dec().toString())
+                    }
+                }) {
+                InfoIcon(icon = R.drawable.baseline_remove_24, desc = R.string.dec_counter)
+            }
+            OutlinedTextField(
+                modifier = Modifier
+                    .padding(Theme.dimens.content_padding.copy(top = zero_padding, bottom = zero_padding) * 2)
+                    .weight(1f),
+                colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
+                value = value,
+                onValueChange = variableState.setter,
+                label = { Body(variable.label) },
+                leadingIcon = { InputIcon(variable, inputType.defaultIcon) },
+                trailingIcon = { InfoButton(variable) { showInfo.toggle() } },
+                prefix = { Body(variable.prefix) },
+                suffix = { Body(variable.suffix) },
+                isError = errorMessage != null,
+                supportingText = { Body(errorMessage ?: "") },
+                keyboardOptions = inputType.keyboardOptions,
+            )
+            FilledIconButton(
+                modifier = Modifier.padding(top = 12.dp),
+                enabled = intValue != null,
+                onClick = {
+                    if (intValue != null) {
+                        variableState.setter.invoke(intValue.inc().toString())
+                    }
+                }) {
+                InfoIcon(icon = R.drawable.baseline_add_24, desc = R.string.inc_counter)
+            }
         }
     }
 }
