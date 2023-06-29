@@ -82,6 +82,9 @@ object Version {
     // https://github.com/google/accompanist
     const val COMPOSE_ACCOMPANIST = "0.30.1"
 
+    // https://developer.android.com/develop/ui/views/launch/splash-screen#getting-started
+    const val SPLASH_SCREEN = "1.0.1"
+
     // https://developer.android.com/jetpack/androidx/releases/compose
     object Compose {
         const val ANIMATION = "1.4.3"

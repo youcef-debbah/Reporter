@@ -77,6 +77,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:${Version.COMPOSE_ACCOMPANIST}")
     implementation("com.google.accompanist:accompanist-navigation-animation:${Version.COMPOSE_ACCOMPANIST}")
     implementation("com.google.accompanist:accompanist-navigation-material:${Version.COMPOSE_ACCOMPANIST}")
+    implementation("androidx.core:core-splashscreen:${Version.SPLASH_SCREEN}")
 
     // active 3rd party libs
     implementation("com.tencent:mmkv:${Version.MMKV}")

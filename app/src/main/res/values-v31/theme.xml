@@ -3,5 +3,9 @@
     <style name="Theme.Reporter" parent="Theme.Reporter.SplashScreen">
         <item name="android:navigationBarColor">@color/default_background</item>
         <item name="android:windowLightNavigationBar">@bool/light_navigation_bar</item>
+
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_reporter_splash_icon</item>
+        <item name="android:windowSplashScreenBackground">@color/default_background</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
     </style>
 </resources>

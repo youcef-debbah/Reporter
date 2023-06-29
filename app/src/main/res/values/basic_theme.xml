@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="Theme.Reporter.SplashScreen" parent="Theme.SplashScreen.IconBackground">
+        <item name="android:colorBackground">@color/default_background</item>
+        <item name="android:statusBarColor">@color/default_background</item>
+        <item name="android:windowLightStatusBar">@bool/light_status_bar</item>
+
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_reporter_splash_icon</item>
+        <item name="windowSplashScreenBackground">@color/default_background</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.Reporter.Basic</item>
+    </style>
+
     <style name="Theme.Reporter.Basic" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:colorBackground">@color/default_background</item>
         <item name="android:statusBarColor">@color/default_background</item>

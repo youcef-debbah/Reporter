@@ -1,12 +1,10 @@
-@file:OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterialNavigationApi::class,
-)
+@file:OptIn(ExperimentalMaterialNavigationApi::class,)
 
 package dz.nexatech.reporter.client.ui
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -23,6 +21,7 @@ import dz.nexatech.reporter.util.ui.NavigationScaffold
 class MainActivity : AbstractActivity() {
 
     override fun onCreate(state: Bundle?) {
+        installSplashScreen()
         super.onCreate(state)
         val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         val destinations = viewModel.activeDestinations

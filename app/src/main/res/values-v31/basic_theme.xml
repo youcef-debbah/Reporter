@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Reporter.SplashScreen" parent="Theme.SplashScreen.IconBackground">
+        <item name="android:colorBackground">@color/default_background</item>
+        <item name="android:statusBarColor">@color/default_background</item>
+        <item name="android:windowLightStatusBar">@bool/light_status_bar</item>
+
+        <item name="postSplashScreenTheme">@style/Theme.Reporter.Basic</item>
+    </style>
+</resources>
