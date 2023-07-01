@@ -17,11 +17,9 @@ import dz.nexatech.reporter.client.common.splitIntoSet
 import dz.nexatech.reporter.client.model.Variable.ErrorMessage
 import dz.nexatech.reporter.client.model.Variable.ErrorMessageChecker
 import dz.nexatech.reporter.client.ui.FontHandler
-import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.StaticIcon
 import org.json.JSONObject
-import java.util.Calendar
 import kotlin.math.min
 
 @Immutable
@@ -420,8 +418,8 @@ class Variable internal constructor(
             ErrorMessage { resources.getString(R.string.illegal_value) }
     }
 
-    private val minDate = Type.Date.formatTemplateDate(min)
-    private val maxDate = Type.Date.formatTemplateDate(max)
+    private val minDate = localizer.formatSimpleDate(min)
+    private val maxDate = localizer.formatSimpleDate(max)
 
     private val dateTooLateMessage =
         ErrorMessage { resources.getString(R.string.date_too_late, maxDate) }
@@ -668,7 +666,7 @@ class Variable internal constructor(
             }
         }
 
-        object Counter: TextType {
+        object Counter : TextType {
             override val name: String = "counter"
 
             override val defaultIcon: StaticIcon
@@ -750,7 +748,7 @@ class Variable internal constructor(
             val datePickerDialogProperties = DialogProperties(usePlatformDefaultWidth = false)
 
             val checker = ErrorMessageChecker { variable, value ->
-                val epoch = parseTemplateDate(value)
+                val epoch = variable.localizer.parseSimpleDate(value)
                 if (value.isNotEmpty() && epoch == null) {
                     inputIllegalMessage
                 } else if (variable.required && epoch == null) {
@@ -762,43 +760,6 @@ class Variable internal constructor(
                 } else {
                     null
                 }
-            }
-
-            fun formatTemplateDate(epoch: Long?): String? {
-                if (epoch == null) return null
-
-                val date = Calendar.getInstance().apply {
-                    this.timeInMillis = epoch
-                }
-
-                return String.format(
-                    "%02d %s %04d",
-                    date.get(Calendar.DAY_OF_MONTH),
-                    Localizer.monthName(date.get(Calendar.MONTH)),
-                    date.get(Calendar.YEAR)
-                )
-            }
-
-            fun parseTemplateDate(templateDate: String): Long? {
-                val length = templateDate.length
-                if (length > 10) {
-                    val day = templateDate.substring(0..1).toIntOrNull()
-                    val month = Localizer.monthIndex(templateDate.substring(3..length - 6))
-                    val year = templateDate.substring(length - 4 until length).toIntOrNull()
-                    if (day != null && month != null && year != null) {
-                        return Calendar.getInstance().apply {
-                            set(Calendar.YEAR, year)
-                            set(Calendar.MONTH, month)
-                            set(Calendar.DAY_OF_MONTH, day)
-                            set(Calendar.HOUR_OF_DAY, 12)
-                            set(Calendar.MINUTE, 0)
-                            set(Calendar.SECOND, 0)
-                            set(Calendar.MILLISECOND, 0)
-                        }.timeInMillis
-                    }
-                }
-
-                return null
             }
         }
 

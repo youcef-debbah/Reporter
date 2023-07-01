@@ -14,6 +14,8 @@ import dz.nexatech.reporter.client.common.mainLaunch
 import dz.nexatech.reporter.client.common.readAsString
 import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.common.withMain
+import dz.nexatech.reporter.client.core.AbstractBinaryResource
+import dz.nexatech.reporter.client.core.AbstractTemplate
 import dz.nexatech.reporter.client.core.TemplateEncoder
 import dz.nexatech.reporter.client.ui.TabsContext
 import dz.nexatech.reporter.util.model.Localizer
@@ -24,7 +26,6 @@ import dz.nexatech.reporter.util.ui.DestinationsRegistry
 import dz.nexatech.reporter.util.ui.Toasts
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,12 +69,13 @@ class MainViewModel @Inject constructor(
     suspend fun newTemplateState(meta: TemplateMeta) =
         TemplateState.from(meta, inputRepository)
 
-    suspend fun loadTemplateMeta(templateName: String): TemplateMeta {
+    suspend fun loadTemplateMeta(template: Template): TemplateMeta {
+        val templateName = template.name
         var metaInput = ""
         withIO {
             metaInput = templatesRepository.loadTemplateMeta(templateName)?.readAsString() ?: ""
         }
-        return TemplateMeta.from(templateName, metaInput, Teller, Localizer)
+        return TemplateMeta.from(templateName, metaInput, Teller, Localizer.from(template.lang))
     }
 
     suspend fun compileTemplate(templateName: String): PebbleTemplate? =
@@ -85,7 +87,9 @@ class MainViewModel @Inject constructor(
             var pendingJob: Job? = null
             try {
                 context.useInputStream(uri) {
-                    val loaded = TemplateEncoder.readZipInput(it, Localizer)
+                    val loaded: Pair<List<AbstractTemplate>, List<AbstractBinaryResource>> =
+                        TemplateEncoder.readZipInput(it, Localizer::from)
+
                     val templates = loaded.first.map(Template::from)
                     val resources = loaded.second.map(Resource::from)
                     if (templates.isEmpty()) {

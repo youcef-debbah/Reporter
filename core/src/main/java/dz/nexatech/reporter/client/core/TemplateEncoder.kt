@@ -15,7 +15,10 @@ object TemplateEncoder {
 
     private const val TEMPLATE_INFO_EXTENSION = ".${FilesExtension.PROPERTIES}"
 
-    fun readZipInput(input: InputStream, localizer: AbstractLocalizer): Pair<List<AbstractTemplate>, List<AbstractBinaryResource>> {
+    fun readZipInput(
+        input: InputStream,
+        newLocalizer: (String) -> AbstractLocalizer,
+    ): Pair<List<AbstractTemplate>, List<AbstractBinaryResource>> {
         val templates = LinkedList<AbstractTemplate>()
         val resources = LinkedList<AbstractBinaryResource>()
 
@@ -37,6 +40,7 @@ object TemplateEncoder {
                         val templateName: String? =
                             properties.getProperty(TEMPLATE_COLUMN_NAME)
                         if (templateName != null) {
+                            val lang = properties.getProperty(TEMPLATE_COLUMN_LANG)
                             templates.add(
                                 SimpleTemplate(
                                     templateName,
@@ -58,8 +62,9 @@ object TemplateEncoder {
                                     desc_fr = properties.getProperty(
                                         TEMPLATE_COLUMN_DESC_FR
                                     ),
+                                    lang = lang,
                                     lastUpdate = System.currentTimeMillis(),
-                                    localizer = localizer,
+                                    localizer = newLocalizer(lang),
                                 )
                             )
                         }

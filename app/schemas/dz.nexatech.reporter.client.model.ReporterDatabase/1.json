@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b7ccffea048c8f2d8c4fecd91b654de5",
+    "identityHash": "db6dd96ce44ba909ae24c8f90763074d",
     "entities": [
       {
         "tableName": "template",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`template_name` TEXT NOT NULL, `label_en` TEXT, `label_ar` TEXT, `label_fr` TEXT, `desc_en` TEXT, `desc_ar` TEXT, `desc_fr` TEXT, `last_update` INTEGER NOT NULL, PRIMARY KEY(`template_name`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`template_name` TEXT NOT NULL, `label_en` TEXT, `label_ar` TEXT, `label_fr` TEXT, `desc_en` TEXT, `desc_ar` TEXT, `desc_fr` TEXT, `lang` TEXT NOT NULL, `last_update` INTEGER NOT NULL, PRIMARY KEY(`template_name`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -49,6 +49,12 @@
             "columnName": "desc_fr",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "lang",
+            "columnName": "lang",
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "lastUpdate",
@@ -186,7 +192,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b7ccffea048c8f2d8c4fecd91b654de5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'db6dd96ce44ba909ae24c8f90763074d')"
     ]
   }
 }

@@ -13,6 +13,7 @@ import dz.nexatech.reporter.client.core.TEMPLATE_COLUMN_DESC_FR
 import dz.nexatech.reporter.client.core.TEMPLATE_COLUMN_LABEL_AR
 import dz.nexatech.reporter.client.core.TEMPLATE_COLUMN_LABEL_EN
 import dz.nexatech.reporter.client.core.TEMPLATE_COLUMN_LABEL_FR
+import dz.nexatech.reporter.client.core.TEMPLATE_COLUMN_LANG
 import dz.nexatech.reporter.client.core.TEMPLATE_COLUMN_LAST_UPDATE
 import dz.nexatech.reporter.client.core.TEMPLATE_COLUMN_NAME
 import dz.nexatech.reporter.client.core.TEMPLATE_TABLE
@@ -36,6 +37,8 @@ class Template(
     override val desc_ar: String?,
     @ColumnInfo(name = TEMPLATE_COLUMN_DESC_FR)
     override val desc_fr: String?,
+    @ColumnInfo(name = TEMPLATE_COLUMN_LANG)
+    override val lang: String,
     @ColumnInfo(name = TEMPLATE_COLUMN_LAST_UPDATE)
     override val lastUpdate: Long,
 ) : AbstractTemplate() {
@@ -53,6 +56,7 @@ class Template(
                     desc_en = source.desc_en,
                     desc_ar = source.desc_ar,
                     desc_fr = source.desc_fr,
+                    lang = source.lang,
                     lastUpdate = source.lastUpdate,
                 )
             }

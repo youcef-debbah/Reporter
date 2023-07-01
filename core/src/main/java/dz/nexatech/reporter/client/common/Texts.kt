@@ -217,6 +217,7 @@ object Texts {
     val SUPPORTED_LANGUAGES: List<String> = ImmutableList.of(LANG_EN, LANG_FR, LANG_AR)
 
     val WHITESPACE_REGEX = Regex("\\s+")
+    val SIMPLE_IDENTIFIER = Regex("[a-z][a-z_]+[a-z]")
 
     fun inPrimaryLang(
         englishText: String?,

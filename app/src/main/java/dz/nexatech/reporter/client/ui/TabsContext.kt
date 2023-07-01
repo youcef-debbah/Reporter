@@ -173,7 +173,7 @@ class TabsContext(
         navController: NavHostController,
     ) {
         loadingScope.backgroundLaunch {
-            val meta = viewModel.loadTemplateMeta(template.name)
+            val meta = viewModel.loadTemplateMeta(template)
             if (meta.hasErrors()) {
                 withMain {
                     buildAndNavigateToErrorTab(

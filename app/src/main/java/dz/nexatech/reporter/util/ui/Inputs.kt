@@ -49,8 +49,6 @@ import dz.nexatech.reporter.client.model.Variable
 import dz.nexatech.reporter.client.model.Variable.Type
 import dz.nexatech.reporter.client.model.Variable.Type.Color.formatColor
 import dz.nexatech.reporter.client.model.Variable.Type.Date.datePickerDialogProperties
-import dz.nexatech.reporter.client.model.Variable.Type.Date.formatTemplateDate
-import dz.nexatech.reporter.client.model.Variable.Type.Date.parseTemplateDate
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.Localizer
@@ -299,7 +297,9 @@ fun ColorInput(variableState: VariableState, modifier: Modifier) {
 fun DateInput(variableState: VariableState, modifier: Modifier) {
     val showDialog = rememberSaveable { mutableStateOf(false) }
     val variable = variableState.variable
+    val localizer = variable.localizer
     val value = variableState.state.value
+    val epoch = remember(value) { localizer.parseSimpleDate(value) }
     val errorMessage = remember(variable, value) {
         Type.Date.checker.check(variable, value)?.asString(value)
     }
@@ -327,19 +327,18 @@ fun DateInput(variableState: VariableState, modifier: Modifier) {
 
     if (showDialog.value) {
         val yearsRange = remember(variable.min, variable.max) {
-            val minDate = Calendar.getInstance().apply { timeInMillis = variable.min }
-            val maxDate = Calendar.getInstance().apply { timeInMillis = variable.max }
+            val minDate = Localizer.newCalendar().apply { timeInMillis = variable.min }
+            val maxDate = Localizer.newCalendar().apply { timeInMillis = variable.max }
             IntRange(minDate.get(Calendar.YEAR), maxDate.get(Calendar.YEAR))
         }
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = parseTemplateDate(value),
+            initialSelectedDateMillis = if (errorMessage != null) variable.min else epoch,
             yearRange = yearsRange,
         )
 
         val onClose = { showDialog.value = false }
         val onSave = {
-            val date =
-                formatTemplateDate(datePickerState.selectedDateMillis)
+            val date = localizer.formatSimpleDate(datePickerState.selectedDateMillis)
             variableState.setter.invoke(date ?: "")
             onClose()
         }
@@ -645,7 +644,7 @@ fun rememberFakeVar(name: String = "varname", type: String = Type.Text.name): Va
             desc_ar = "desc_ar",
             desc_fr = "desc_fr",
             desc_en = "desc_en",
-            localizer = Localizer
+            localizer = Localizer.from("en")
         )
     }
 
