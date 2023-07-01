@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Theme.Reporter.SplashScreen" parent="Theme.SplashScreen.IconBackground">
         <item name="android:colorBackground">@color/default_background</item>
         <item name="android:statusBarColor">@color/default_background</item>
         <item name="android:windowLightStatusBar">@bool/light_status_bar</item>
+
+        <item name="android:navigationBarColor">@color/default_background</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">@bool/light_navigation_bar</item>
 
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_reporter_splash_icon</item>
         <item name="windowSplashScreenBackground">@color/default_background</item>
@@ -16,6 +19,9 @@
         <item name="android:colorBackground">@color/default_background</item>
         <item name="android:statusBarColor">@color/default_background</item>
         <item name="android:windowLightStatusBar">@bool/light_status_bar</item>
+
+        <item name="android:navigationBarColor">@color/default_background</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">@bool/light_navigation_bar</item>
     </style>
 
 </resources>

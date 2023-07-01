@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- global configs -->
+    <color name="ic_launcher_background">#4285F4</color>
+
+    <!-- day configs -->
     <color name="default_background">#FFE6E6E6</color>
     <bool name="light_status_bar">true</bool>
     <bool name="light_navigation_bar">true</bool>
-    <color name="ic_launcher_background">#4285F4</color>
 </resources>
