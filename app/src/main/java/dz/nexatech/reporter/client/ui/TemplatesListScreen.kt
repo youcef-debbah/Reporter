@@ -173,7 +173,7 @@ object TemplatesListScreen : StaticScreenDestination(
     private fun newOpenTemplateFileIntent() = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)
         type = MimeType.ANY
-        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
     }
 }
 
