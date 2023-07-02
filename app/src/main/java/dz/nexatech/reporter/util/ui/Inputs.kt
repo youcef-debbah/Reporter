@@ -6,9 +6,12 @@ import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,6 +28,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -54,6 +59,26 @@ import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.model.toggle
 import java.util.Calendar
+
+@Composable
+fun readOnlyOutlinedTextFieldColors(): TextFieldColors {
+    val onSurface = Theme.colorScheme.onSurface
+    val outline = Theme.colorScheme.outline
+    val onSurfaceVariant = Theme.colorScheme.onSurfaceVariant
+    return OutlinedTextFieldDefaults.colors(
+        disabledTextColor = onSurface,
+        disabledContainerColor = Color.Transparent,
+        disabledBorderColor = outline,
+        disabledLeadingIconColor = onSurfaceVariant,
+        disabledTrailingIconColor = onSurfaceVariant,
+        disabledLabelColor = onSurfaceVariant,
+        disabledPlaceholderColor = onSurfaceVariant,
+        disabledSupportingTextColor = onSurfaceVariant,
+        disabledPrefixColor = onSurfaceVariant,
+        disabledSuffixColor = onSurfaceVariant,
+        errorTrailingIconColor = onSurfaceVariant,
+    )
+}
 
 @Composable
 fun VariableInput(
@@ -100,35 +125,50 @@ fun OptionsInput(
 
     val menuExpanded = rememberSaveable { mutableStateOf(false) }
 
+    val clickable = variable.max > 0 && options.isNotEmpty()
+    val iconInfo = if (menuExpanded.value) {
+        Pair(R.drawable.baseline_arrow_drop_up_24, R.string.hide_options_menu)
+    } else {
+        Pair(R.drawable.baseline_arrow_drop_down_24, R.string.show_options_menu)
+    }
+
     CentredColumn(
-        Modifier
-            .padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2)
-            .fillMaxWidth()
+        Modifier.padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2)
     ) {
-        OutlinedTextField(
-            readOnly = true,
-            modifier = modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant
-            ),
-            value = value,
-            onValueChange = {},
-            label = { Body(variable.label) },
-            leadingIcon = { InputIcon(variable, StaticIcon.baseline_list) },
-            trailingIcon = {
-                if (variable.max > 0) {
-                    val icon =
-                        if (menuExpanded.value) R.drawable.baseline_arrow_drop_up_24 else R.drawable.baseline_arrow_drop_down_24
-                    IconButton(onClick = { menuExpanded.toggle() }) {
-                        InfoIcon(icon = icon, desc = R.string.show_options_menu)
+        Box {
+            OutlinedTextField(
+                colors = readOnlyOutlinedTextFieldColors(),
+                enabled = false,
+                readOnly = true,
+                modifier = modifier.fillMaxWidth(),
+                value = value,
+                onValueChange = {},
+                label = { Body(variable.label) },
+                leadingIcon = { InputIcon(variable, StaticIcon.baseline_list) },
+                trailingIcon = {
+                    if (clickable) {
+                        InfoIcon(icon = iconInfo.first, desc = iconInfo.second)
                     }
-                }
-            },
-            prefix = { Body(variable.prefix) },
-            suffix = { Body(variable.suffix) },
-            isError = errorMessage != null,
-            supportingText = { Body(errorMessage ?: "") },
-        )
+                },
+                prefix = { Body(variable.prefix) },
+                suffix = { Body(variable.suffix) },
+                isError = errorMessage != null,
+                supportingText = { Body(errorMessage ?: "") },
+            )
+
+            Box(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .clickable(
+                        onClickLabel = stringRes(iconInfo.second),
+                        role = Role.DropdownList,
+                    ) {
+                        menuExpanded.toggle()
+                    }
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) {}
+        }
 
         DropdownMenu(
             modifier = modifier
@@ -305,7 +345,6 @@ fun DateInput(variableState: VariableState, modifier: Modifier) {
     }
 
     OutlinedTextField(
-        readOnly = true,
         modifier = modifier
             .padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2)
             .fillMaxWidth(),

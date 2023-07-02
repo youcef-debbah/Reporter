@@ -80,6 +80,7 @@
     <string name="show_date_picker">Show Date Picker</string>
     <string name="show_color_picker">Show Color Picker</string>
     <string name="show_options_menu">Show Options Menu</string>
+    <string name="hide_options_menu">Hide Options Menu</string>
     <string name="new_tuple_desc">Add new entry</string>
     <string name="delete_entry_desc">Delete Entry %d</string>
     <string name="copy_entry_desc">Copy Entry %d</string>
