@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- global configs -->
-    <color name="ic_launcher_background">#4285F4</color>
+    <color name="ic_launcher_background">#4B8BF5</color>
 
     <!-- day configs -->
     <color name="default_background">#FFE6E6E6</color>
