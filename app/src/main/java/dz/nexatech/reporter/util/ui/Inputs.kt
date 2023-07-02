@@ -350,7 +350,7 @@ fun DateInput(variableState: VariableState, modifier: Modifier) {
             .fillMaxWidth(),
         colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
         value = value,
-        onValueChange = {},
+        onValueChange = variableState.setter,
         label = { Body(variable.label) },
         leadingIcon = { InputIcon(variable, StaticIcon.baseline_event) },
         trailingIcon = {

@@ -84,7 +84,7 @@ class Localizer private constructor(formattingLang: String?) : AbstractLocalizer
         val year = yearNumber.toIntOrNull()
 
         if (day != null && month != null && year != null) {
-            return newCalendar().apply {
+            val calendar = newCalendar().apply {
                 set(Calendar.YEAR, year)
                 set(Calendar.MONTH, month)
                 set(Calendar.DAY_OF_MONTH, day)
@@ -92,7 +92,14 @@ class Localizer private constructor(formattingLang: String?) : AbstractLocalizer
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
-            }.timeInMillis
+            }
+
+            if (calendar.get(Calendar.YEAR) == year
+                && calendar.get(Calendar.MONTH) == month
+                && calendar.get(Calendar.DAY_OF_MONTH) == day
+            ) {
+                return calendar.timeInMillis
+            }
         }
 
         return null
