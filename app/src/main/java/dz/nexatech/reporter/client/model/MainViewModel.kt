@@ -66,8 +66,8 @@ class MainViewModel @Inject constructor(
 
     fun templates(): State<Map<String, Template>?> = templatesRepository.templates
 
-    suspend fun newTemplateState(meta: TemplateMeta) =
-        TemplateState.from(meta, inputRepository)
+    suspend fun newTemplateState(meta: TemplateMeta, lang: String) =
+        TemplateState.from(meta, lang, inputRepository)
 
     suspend fun loadTemplateMeta(template: Template): TemplateMeta {
         val templateName = template.name

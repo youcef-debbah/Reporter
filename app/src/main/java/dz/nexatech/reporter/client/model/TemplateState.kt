@@ -23,6 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import java.io.StringWriter
+import java.util.Locale
 import java.util.SortedMap
 import java.util.TreeMap
 
@@ -34,6 +35,7 @@ class TemplateState private constructor(
     val recordsStates: ImmutableList<RecordState>,
     val lastUpdate: MutableSharedFlow<String>,
     val fontsVariablesStates: ImmutableList<VariableState>,
+    val locale: Locale,
     private val inputRepository: InputRepository,
 ) {
 
@@ -220,6 +222,7 @@ class TemplateState private constructor(
 
         suspend fun from(
             meta: TemplateMeta,
+            lang: String,
             inputRepository: InputRepository,
         ): TemplateState {
             val templateName = meta.template
@@ -266,8 +269,11 @@ class TemplateState private constructor(
                 lastUpdate = lastUpdate,
                 fontsVariablesStates = fontVariablesBuilder.build(),
                 inputRepository = inputRepository,
+                locale = chooseLocale(lang),
             )
         }
+
+        private fun chooseLocale(lang: String): Locale = if (lang == "en") Locale.ENGLISH else Locale.FRENCH
 
         private suspend fun updateRecordsStates(
             inputRepository: InputRepository,
@@ -576,7 +582,7 @@ fun PebbleTemplate.evaluateState(
     templateState: TemplateState,
 ): String = try {
     val writer = StringWriter()
-    evaluate(writer, templateState.currentEnvironment())
+    evaluate(writer, templateState.currentEnvironment(), templateState.locale)
     writer.toString()
 } catch (e: Exception) {
     Teller.error("error while evaluating template: ${templateState.templateName}", e)

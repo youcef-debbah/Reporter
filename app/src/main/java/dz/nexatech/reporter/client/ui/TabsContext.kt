@@ -183,7 +183,7 @@ class TabsContext(
                     )
                 }
             } else {
-                val templateStateJob = async { viewModel.newTemplateState(meta) }
+                val templateStateJob = async { viewModel.newTemplateState(meta, template.lang) }
                 val compiledTemplateJob = async { viewModel.compileTemplate(template.name) }
                 val templateState = templateStateJob.await()
                 val compiledTemplate = compiledTemplateJob.await()
