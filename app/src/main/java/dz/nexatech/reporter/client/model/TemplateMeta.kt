@@ -436,6 +436,11 @@ class Variable internal constructor(
     private val inputTooShortMessage =
         ErrorMessage { resources.getString(R.string.input_too_short, min) }
 
+    private val tooManyLinesMessage =
+        ErrorMessage { resources.getString(R.string.too_many_lines, max) }
+    private val tooFewLinesMessage =
+        ErrorMessage { resources.getString(R.string.too_few_lines, min) }
+
     private val inputSelectionCountTooLowMessage =
         ErrorMessage { resources.getString(R.string.selection_too_low, min) }
     private val inputSelectionCountTooHighMessage =
@@ -477,6 +482,30 @@ class Variable internal constructor(
     }
 
     object Type {
+
+        object Lines {
+            val name: String
+                get() = "lines"
+
+            val defaultIcon: StaticIcon
+                get() = StaticIcon.baseline_notes
+
+            val keyboardOptions = KeyboardOptions()
+
+            val checker = ErrorMessageChecker { variable, value ->
+                val linebreaks = value.count { it == '\n' }
+                if (variable.required && value.isEmpty()) {
+                    inputRequiredMessage
+                } else if (linebreaks > variable.max) {
+                    variable.tooManyLinesMessage
+                } else if (linebreaks < variable.min) {
+                    variable.tooFewLinesMessage
+                } else {
+                    null
+                }
+            }
+        }
+
         object Text : TextType {
             override val name: String
                 get() = "text"

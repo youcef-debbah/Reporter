@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 import dagger.hilt.android.internal.ThreadUtil
 import dz.nexatech.reporter.client.common.addHash
+import dz.nexatech.reporter.client.common.splitIntoList
 import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.common.withMain
 import dz.nexatech.reporter.client.core.AbstractValue
@@ -467,7 +468,7 @@ class TemplateState private constructor(
             version: Int,
         ): VariableState {
             val state: MutableState<String> = mutableStateOf(value)
-            return VariableState(variable, state, index, version) {
+            return VariableState.from(variable, state, index, version) {
                 setState(variable, index, state, it, lastUpdate)
             }
         }
@@ -497,18 +498,33 @@ class TemplateState private constructor(
 }
 
 @Stable
-class VariableState(
+open class VariableState protected constructor(
     val variable: Variable,
     val state: MutableState<String>,
     val index: Int = Variable.SECTION_VARIABLE_INDEX,
     val version: Int = 0,
     val setter: (String) -> Unit,
 ) {
+
+    companion object {
+        fun from(
+            variable: Variable,
+            state: MutableState<String>,
+            index: Int = Variable.SECTION_VARIABLE_INDEX,
+            version: Int = 0,
+            setter: (String) -> Unit,
+        ): VariableState = if (variable.type == Variable.Type.Lines.name) {
+            LinesVariableState(variable, state, index, version, setter)
+        } else {
+            VariableState(variable, state, index, version, setter)
+        }
+    }
+
     val hash = version.hashCode().addHash(index).addHash(variable.name).addHash(variable.namespace)
 
-    override fun hashCode() = hash
+    final override fun hashCode() = hash
 
-    override fun equals(other: Any?): Boolean {
+    final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as VariableState
@@ -519,9 +535,18 @@ class VariableState(
         return true
     }
 
-    override fun toString(): String {
-        return state.value
-    }
+    override fun toString(): String = state.value
+}
+
+@Stable
+class LinesVariableState(
+    variable: Variable,
+    state: MutableState<String>,
+    index: Int,
+    version: Int,
+    setter: (String) -> Unit,
+) : VariableState(variable, state, index, version, setter), Iterable<String> {
+    override fun iterator(): Iterator<String> = state.value.splitIntoList('\n').iterator()
 }
 
 @Stable

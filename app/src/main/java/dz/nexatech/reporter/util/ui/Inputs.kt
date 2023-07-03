@@ -59,6 +59,7 @@ import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.model.toggle
 import java.util.Calendar
+import kotlin.math.max
 
 @Composable
 fun readOnlyOutlinedTextFieldColors(): TextFieldColors {
@@ -97,6 +98,7 @@ fun VariableInput(
         Type.Mobile.name -> TextInput(variableState, modifier, Type.Mobile)
         Type.LinePhone.name -> TextInput(variableState, modifier, Type.LinePhone)
         Type.Uri.name -> TextInput(variableState, modifier, Type.Uri)
+        Type.Lines.name -> LinesInput(variableState, modifier)
         else -> TextInput(variableState, modifier, Type.Text)
     }
 }
@@ -239,6 +241,7 @@ fun ColorInput(variableState: VariableState, modifier: Modifier) {
     }
 
     OutlinedTextField(
+        singleLine = true,
         modifier = modifier
             .padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2)
             .fillMaxWidth(),
@@ -345,6 +348,7 @@ fun DateInput(variableState: VariableState, modifier: Modifier) {
     }
 
     OutlinedTextField(
+        singleLine = true,
         modifier = modifier
             .padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2)
             .fillMaxWidth(),
@@ -567,6 +571,7 @@ private fun CounterInput(
                 InfoIcon(icon = R.drawable.baseline_remove_24, desc = R.string.dec_counter)
             }
             OutlinedTextField(
+                singleLine = true,
                 modifier = Modifier
                     .padding(
                         Theme.dimens.content_padding.copy(
@@ -620,6 +625,7 @@ private fun TextInput(
             Body(variable.desc)
         }
         OutlinedTextField(
+            singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
             value = value,
@@ -632,6 +638,42 @@ private fun TextInput(
             isError = errorMessage != null,
             supportingText = { Body(errorMessage ?: "") },
             keyboardOptions = inputType.keyboardOptions,
+        )
+    }
+}
+
+@Composable
+private fun LinesInput(
+    variableState: VariableState,
+    modifier: Modifier = Modifier,
+) {
+    val variable = variableState.variable
+    val value = variableState.state.value
+    val errorMessage: String? = remember(variable, value) {
+        Type.Lines.checker.check(variable, value)?.asString(value)
+    }
+    CentredColumn(
+        modifier = modifier.padding(Theme.dimens.content_padding.copy(bottom = zero_padding) * 2),
+    ) {
+        val showInfo = rememberSaveable { mutableStateOf(false) }
+        AnimatedVisibility(visible = showInfo.value) {
+            Body(variable.desc)
+        }
+        OutlinedTextField(
+            minLines = max(variable.min.toInt(), 2),
+            maxLines = variable.max.toInt(),
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(errorTrailingIconColor = Theme.colorScheme.onSurfaceVariant),
+            value = value,
+            onValueChange = variableState.setter,
+            label = { Body(variable.label) },
+            leadingIcon = { InputIcon(variable, Type.Lines.defaultIcon) },
+            trailingIcon = { InfoButton(variable) { showInfo.toggle() } },
+            prefix = { Body(variable.prefix) },
+            suffix = { Body(variable.suffix) },
+            isError = errorMessage != null,
+            supportingText = { Body(errorMessage ?: "") },
+            keyboardOptions = Type.Lines.keyboardOptions,
         )
     }
 }
@@ -694,7 +736,7 @@ private fun InputPreview() {
         ContentCard(Modifier.width(700.dp)) {
             val variable = rememberFakeVar()
             val state = rememberSaveable { mutableStateOf(variable.default) }
-            val variableState = remember { VariableState(variable, state) { state.value = it } }
+            val variableState = remember { VariableState.from(variable, state) { state.value = it } }
             PaddedColumn {
                 repeat(2) {
                     Line {
