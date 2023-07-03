@@ -28,11 +28,20 @@ interface ValuesDAO {
     @Delete
     suspend fun delete(values: List<Value>)
 
-    suspend fun updateValue(namespace: String, index: Int, name: String, newValue: String) =
-        updateValue(Value(namespace, index, name, System.currentTimeMillis(), newValue))
+    suspend fun updateValue(namespace: String, index: Int, name: String, newValue: String) {
+        val value = Value(namespace, index, name, System.currentTimeMillis(), newValue)
+        if (index == Variable.SECTION_VARIABLE_INDEX) {
+            saveValue(value)
+        } else {
+            updateValue(value)
+        }
+    }
 
     @Update(onConflict = OnConflictStrategy.ABORT)
     suspend fun updateValue(value: Value)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveValue(value: Value)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveAll(values: List<Value>)
