@@ -86,7 +86,11 @@ class TemplatesRepository @Inject constructor(
         try {
             val currentEngine = pebbleEngine
             if (currentEngine == null) {
-                val newEngine = PebbleEngine.Builder().loader(templateLoader).build()
+                val newEngine = PebbleEngine.Builder()
+                    .newLineTrimming(false)
+                    .autoEscaping(true)
+                    .loader(templateLoader)
+                    .build()
                 pebbleEngine = newEngine
                 return newEngine.getTemplate(templateName)
             } else {
