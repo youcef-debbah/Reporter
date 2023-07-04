@@ -20,12 +20,14 @@ import dz.nexatech.reporter.client.ui.FontHandler
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.StaticIcon
 import org.json.JSONObject
+import java.util.Locale
 import kotlin.math.min
 
 @Immutable
 class TemplateMeta private constructor(
     val template: String,
     val errorCode: Int,
+    val locale: Locale,
     val sections: ImmutableList<Section> = ImmutableList.of(),
     val records: ImmutableMap<String, Record> = ImmutableMap.of(),
     val teller: AbstractTeller,
@@ -62,7 +64,12 @@ class TemplateMeta private constructor(
             localizer: AbstractLocalizer,
         ): TemplateMeta {
             if (json.isEmpty())
-                return TemplateMeta(template = templateName, errorCode = 404, teller = teller)
+                return TemplateMeta(
+                    template = templateName,
+                    errorCode = 404,
+                    teller = teller,
+                    locale = localizer.locale
+                )
 
             try {
                 val jsonObject = JSONObject(json)
@@ -74,13 +81,19 @@ class TemplateMeta private constructor(
                 return TemplateMeta(
                     templateName,
                     errorCode.value,
+                    localizer.locale,
                     sections,
                     records,
                     teller,
                 )
             } catch (e: Exception) {
                 teller.warn("invalid template meta for '$templateName': $json", e)
-                return TemplateMeta(template = templateName, errorCode = 400, teller = teller)
+                return TemplateMeta(
+                    template = templateName,
+                    errorCode = 400,
+                    teller = teller,
+                    locale = localizer.locale
+                )
             }
         }
 

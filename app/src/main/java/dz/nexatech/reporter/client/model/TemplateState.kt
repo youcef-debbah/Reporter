@@ -222,7 +222,6 @@ class TemplateState private constructor(
 
         suspend fun from(
             meta: TemplateMeta,
-            lang: String,
             inputRepository: InputRepository,
         ): TemplateState {
             val templateName = meta.template
@@ -269,11 +268,9 @@ class TemplateState private constructor(
                 lastUpdate = lastUpdate,
                 fontsVariablesStates = fontVariablesBuilder.build(),
                 inputRepository = inputRepository,
-                locale = chooseLocale(lang),
+                locale = meta.locale,
             )
         }
-
-        private fun chooseLocale(lang: String): Locale = if (lang == "en") Locale.ENGLISH else Locale.FRENCH
 
         private suspend fun updateRecordsStates(
             inputRepository: InputRepository,
@@ -542,6 +539,8 @@ open class VariableState protected constructor(
     }
 
     override fun toString(): String = state.value
+
+    fun toEpoch(): Long? = variable.localizer.parseSimpleDate(toString())
 }
 
 @Stable

@@ -1,6 +1,10 @@
 package dz.nexatech.reporter.client.common
 
-abstract class AbstractLocalizer() {
+import java.util.Locale
+
+abstract class AbstractLocalizer {
+
+    abstract val locale: Locale
 
     abstract fun formatMonthName(monthIndex: Int): String
 

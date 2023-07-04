@@ -12,17 +12,21 @@ import java.util.*
 
 class Localizer private constructor(formattingLang: String?) : AbstractLocalizer() {
 
-    val isArabic: Boolean = formattingLang == Texts.LANG_AR
-
-    val monthsNames: Array<String>? = when (formattingLang) {
-        Texts.LANG_EN -> englishMonths
-        Texts.LANG_FR -> frenchMonths
-        Texts.LANG_AR -> arabicMonths
-        else -> null
+    override val locale: Locale = when (formattingLang) {
+        Texts.LANG_EN -> ENGLISH_LOCALE
+        Texts.LANG_AR -> ARABIC_LOCALE
+        else -> FRENCH_LOCALE
     }
 
-    override fun formatMonthName(monthIndex: Int): String = monthsNames?.get(monthIndex % 12)
-        ?: throw IllegalStateException("this localizer does not support formatting")
+    val monthsNames: Array<String> = when (formattingLang) {
+        Texts.LANG_EN -> englishMonths
+        Texts.LANG_AR -> arabicMonths
+        else -> frenchMonths
+    }
+
+    val isArabic: Boolean = formattingLang == Texts.LANG_AR
+
+    override fun formatMonthName(monthIndex: Int): String = monthsNames[monthIndex % 12]
 
     override fun monthIndex(monthName: String): Int? = monthsIndexes[monthName]
 
@@ -128,6 +132,10 @@ class Localizer private constructor(formattingLang: String?) : AbstractLocalizer
     ): String = Localizer.inSecondaryLang(englishText, frenchText, arabicText)
 
     companion object {
+
+        val ARABIC_LOCALE: Locale = Locale("ar", "DZ")
+        val FRENCH_LOCALE: Locale = Locale.FRANCE
+        val ENGLISH_LOCALE: Locale = Locale.UK
 
         val utcTimeZone: TimeZone = TimeZone.getTimeZone("UTC")
 
