@@ -75,25 +75,30 @@ class ResourcesRepository @Inject constructor(
             return null
         }
 
-        if (path.startsWith(ICON_RESOURCE_PREFIX)) {
-            val iconResource = iconsAssetsResources[path]
-            if (iconResource != null) {
-                Teller.debug("resource loaded from asset: $path")
-                return CachedResource(iconResource)
-            }
-        }
-
         val databaseResource = resourcesDAO.get().load(path)
         if (databaseResource != null) {
-            Teller.debug("resource loaded from database: $path")
+            Teller.debug("database resource loaded: $path")
             return databaseResource
         }
 
-        val assetResource =
-            if (path.startsWith(FONT_RESOURCE_PREFIX)) fontAssetsResources[path] else extraAssetsResources[path]
-        if (assetResource != null) {
-            Teller.debug("resource loaded from asset: $path")
-            return CachedResource(assetResource)
+        if (path.startsWith(ICON_RESOURCE_PREFIX)) {
+            val iconRes = iconsAssetsResources[path]
+            if (iconRes != null) {
+                Teller.debug("icon asset loaded: $path")
+                return CachedResource(iconRes)
+            }
+        } else if (path.startsWith(FONT_RESOURCE_PREFIX)) {
+            val fontRes = fontAssetsResources[path]
+            if (fontRes != null) {
+                Teller.debug("font asset loaded: $path")
+                return CachedResource(fontRes)
+            }
+        } else {
+            val extraRes = extraAssetsResources[path]
+            if (extraRes != null) {
+                Teller.debug("extra asset loaded: $path")
+                return CachedResource(extraRes)
+            }
         }
 
         Teller.warn("resource not found: $path")
