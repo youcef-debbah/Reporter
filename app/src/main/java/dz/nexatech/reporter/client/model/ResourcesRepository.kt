@@ -23,9 +23,6 @@ import java.io.InputStream
 import java.net.URL
 import javax.inject.Inject
 
-const val WEB_RESOURCE_PREFIX = "web/"
-const val TEMPLATE_RESOURCE_PREFIX = "templates/"
-
 private val extraAssetsResources: Map<String, AbstractBinaryResource> =
     ImmutableMap.builder<String, AbstractBinaryResource>()
         // extra loadable assets should be added here

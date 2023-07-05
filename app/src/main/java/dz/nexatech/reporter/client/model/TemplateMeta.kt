@@ -19,6 +19,7 @@ import dz.nexatech.reporter.client.model.Variable.ErrorMessageChecker
 import dz.nexatech.reporter.client.ui.FontHandler
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.StaticIcon
+import dz.nexatech.reporter.util.ui.iconPath
 import org.json.JSONObject
 import java.util.Locale
 import kotlin.math.min
@@ -266,7 +267,7 @@ class TemplateMeta private constructor(
 @Immutable
 abstract class Form(
     val namespace: String,
-    val icon: String,
+    icon: String,
     val label_ar: String,
     val label_fr: String,
     val label_en: String,
@@ -276,6 +277,8 @@ abstract class Form(
     val variables: ImmutableList<Variable>,
     val localizer: AbstractLocalizer,
 ) {
+
+    val iconPath: String = iconPath(icon)
 
     val className: String = this.javaClass.simpleName
 
@@ -308,7 +311,7 @@ abstract class Form(
         other as Record
 
         if (namespace != other.namespace) return false
-        if (icon != other.icon) return false
+        if (iconPath != other.iconPath) return false
         if (label_ar != other.label_ar) return false
         if (label_fr != other.label_fr) return false
         if (label_en != other.label_en) return false
@@ -325,7 +328,7 @@ abstract class Form(
 
     @Suppress("unused")
     open fun debug() =
-        "$className(namespace='$namespace', icon='$icon', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', variables=$variables)"
+        "$className(namespace='$namespace', icon='$iconPath', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', variables=$variables)"
 }
 
 @Immutable
@@ -391,7 +394,7 @@ class Variable internal constructor(
     val name: String,
     val required: Boolean,
     val type: String,
-    val icon: String,
+    icon: String,
     val min: Long,
     val max: Long,
     val prefix_ar: String,
@@ -410,26 +413,7 @@ class Variable internal constructor(
     val localizer: AbstractLocalizer,
 ) {
 
-    companion object {
-        const val SECTION_VARIABLE_INDEX: Int = -1
-        private val resources = AbstractApplication.INSTANCE.resources
-        fun key(namespace: String, name: String) = "${namespace}.$name"
-
-        private val illegalMobileNumberMessage =
-            ErrorMessage { resources.getString(R.string.illegalMobileNumber) }
-
-        private val illegalLinePhoneNumberMessage =
-            ErrorMessage { resources.getString(R.string.illegal_line_phone_number) }
-
-        private val illegalEmailMessage =
-            ErrorMessage { resources.getString(R.string.illegal_email_address) }
-
-        private val inputRequiredMessage =
-            ErrorMessage { resources.getString(R.string.input_required) }
-
-        private val inputIllegalMessage =
-            ErrorMessage { resources.getString(R.string.illegal_value) }
-    }
+    val iconPath: String = iconPath(icon)
 
     private val minDate = localizer.formatSimpleDate(min)
     private val maxDate = localizer.formatSimpleDate(max)
@@ -940,7 +924,7 @@ class Variable internal constructor(
         if (name != other.name) return false
         if (required != other.required) return false
         if (type != other.type) return false
-        if (icon != other.icon) return false
+        if (iconPath != other.iconPath) return false
         if (min != other.min) return false
         if (max != other.max) return false
         if (prefix != other.prefix) return false
@@ -961,5 +945,26 @@ class Variable internal constructor(
 
     @Suppress("unused")
     fun debug() =
-        "Variable(key='$key', required=$required, type='$type', icon='$icon', min=$min, max=$max, prefix='$prefix', suffix='$suffix', default='$default', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', label='$label', desc='$desc')"
+        "Variable(key='$key', required=$required, type='$type', iconPath='$iconPath', min=$min, max=$max, prefix='$prefix', suffix='$suffix', default='$default', label_ar='$label_ar', label_fr='$label_fr', label_en='$label_en', desc_ar='$desc_ar', desc_fr='$desc_fr', desc_en='$desc_en', label='$label', desc='$desc')"
+
+    companion object {
+        const val SECTION_VARIABLE_INDEX: Int = -1
+        private val resources = AbstractApplication.INSTANCE.resources
+        fun key(namespace: String, name: String) = "${namespace}.$name"
+
+        private val illegalMobileNumberMessage =
+            ErrorMessage { resources.getString(R.string.illegalMobileNumber) }
+
+        private val illegalLinePhoneNumberMessage =
+            ErrorMessage { resources.getString(R.string.illegal_line_phone_number) }
+
+        private val illegalEmailMessage =
+            ErrorMessage { resources.getString(R.string.illegal_email_address) }
+
+        private val inputRequiredMessage =
+            ErrorMessage { resources.getString(R.string.input_required) }
+
+        private val inputIllegalMessage =
+            ErrorMessage { resources.getString(R.string.illegal_value) }
+    }
 }

@@ -81,7 +81,7 @@ class TemplatesRepository @Inject constructor(
     }
 
     private suspend fun loadTemplateFile(templateName: String, fileFormat: String): InputStream? =
-        resourcesRepository.loadWithoutCache("$TEMPLATE_RESOURCE_PREFIX$templateName.$fileFormat")
+        resourcesRepository.loadWithoutCache("$templateName.$fileFormat")
             ?.asInputStream()
 
     fun compileTemplateBlocking(templateName: String): PebbleTemplate? {

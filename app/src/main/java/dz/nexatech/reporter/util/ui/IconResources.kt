@@ -48,10 +48,12 @@ class StaticIcon private constructor(@DrawableRes val drawable: Int): AbstractIc
         painterResource(drawable)
 }
 
+fun iconPath(name: String) = "$ICON_RESOURCE_PREFIX$name.$ICON_RESOURCE_EXTENSION"
+
 abstract class AbstractPrintableIconResource(
     val name: String,
-) : AssetResource("$ICON_RESOURCE_PREFIX$name.$ICON_RESOURCE_EXTENSION", ICON_RESOURCE_MIME_TYPE), AbstractIcon {
-    final override fun toString() = name
+) : AssetResource(iconPath(name), ICON_RESOURCE_MIME_TYPE), AbstractIcon {
+    final override fun toString() = path
 }
 
 private class StaticPrintableIconResource(

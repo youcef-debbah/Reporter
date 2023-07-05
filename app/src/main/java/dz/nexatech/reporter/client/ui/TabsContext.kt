@@ -339,7 +339,7 @@ class TabsContext(
                 template,
                 section.label,
                 section.label,
-                tabIcon(section.icon),
+                tabIcon(section.iconPath),
                 "section_$i",
                 tabsBuilder,
                 sectionState.badgeText,
@@ -356,7 +356,7 @@ class TabsContext(
                 template,
                 record.label,
                 record.label,
-                tabIcon(record.icon),
+                tabIcon(record.iconPath),
                 "record_" + record.name,
                 tabsBuilder,
                 recordState.badgeText,
@@ -761,8 +761,8 @@ private class TemplateTab(
     }
 }
 
-private fun tabIcon(icon: String): AbstractIcon =
-    iconsAssetsResources[icon] ?: StaticIcon.baseline_table_rows
+private fun tabIcon(iconPath: String): AbstractIcon =
+    iconsAssetsResources[iconPath] ?: StaticIcon.baseline_table_rows
 
 @Composable
 private fun TabScaffold(
