@@ -38,6 +38,8 @@ class TemplatesRepository @Inject constructor(
         }
     }
     private val templateLoader = TemplateLoader(loader, checker)
+
+    @Volatile
     private var pebbleEngine: PebbleEngine? = null
 
     @SuppressLint("MutableCollectionMutableState")

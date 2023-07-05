@@ -37,6 +37,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     private val context = AbstractApplication.INSTANCE
 
+    @Volatile
     private var currentTabsContext: TabsContext? = null
 
     private val _templateImporting: MutableState<Int> = mutableStateOf(0)
