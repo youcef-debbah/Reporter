@@ -52,7 +52,6 @@ abstract class AbstractLocalizer {
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
-                add(Calendar.DAY_OF_MONTH, 1)
             }
 
         val monthsIndexes = ImmutableMap.builder<String, Int>()
