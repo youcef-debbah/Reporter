@@ -121,8 +121,8 @@ class ResourcesRepository @Inject constructor(
     }
 
     suspend fun loadFontFamilies(): ImmutableSet<String> = ImmutableSet.Builder<String>().apply {
-        addFamilies(fontAssetsResources.keys)
         addFamilies(resourcesDAO.get().loadAvailableDynamicFonts())
+        addFamilies(fontAssetsResources.keys)
     }.build()
 
     private fun ImmutableSet.Builder<String>.addFamilies(fontPaths: Iterable<String>) {
