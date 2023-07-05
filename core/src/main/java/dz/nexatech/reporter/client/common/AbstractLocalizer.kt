@@ -43,6 +43,8 @@ abstract class AbstractLocalizer {
 
         fun newCalendar(): Calendar = Calendar.getInstance(utcTimeZone)
 
+        fun newCalendar(epoch: Long): Calendar = newCalendar().apply { timeInMillis = epoch }
+
         fun newCalendar(year: Int, month: Int, day: Int): Calendar =
             newCalendar().apply {
                 set(Calendar.YEAR, year)
