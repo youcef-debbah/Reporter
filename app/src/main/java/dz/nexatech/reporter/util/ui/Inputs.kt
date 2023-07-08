@@ -47,6 +47,7 @@ import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.harmony.ColorHarmonyMode
 import com.godaddy.android.colorpicker.harmony.HarmonyColorPicker
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.client.common.AbstractLocalizer
 import dz.nexatech.reporter.client.common.Texts
 import dz.nexatech.reporter.client.model.COLOR_PICKER_SIZE
 import dz.nexatech.reporter.client.model.OUTLINED_FIELD_DROP_MENU_OFFSET
@@ -370,8 +371,8 @@ fun DateInput(variableState: VariableState, modifier: Modifier) {
 
     if (showDialog.value) {
         val yearsRange = remember(variable.min, variable.max) {
-            val minDate = Localizer.newCalendar().apply { timeInMillis = variable.min }
-            val maxDate = Localizer.newCalendar().apply { timeInMillis = variable.max }
+            val minDate = AbstractLocalizer.newCalendar().apply { timeInMillis = variable.min }
+            val maxDate = AbstractLocalizer.newCalendar().apply { timeInMillis = variable.max }
             IntRange(minDate.get(Calendar.YEAR), maxDate.get(Calendar.YEAR))
         }
         val datePickerState = rememberDatePickerState(
@@ -736,7 +737,8 @@ private fun InputPreview() {
         ContentCard(Modifier.width(700.dp)) {
             val variable = rememberFakeVar()
             val state = rememberSaveable { mutableStateOf(variable.default) }
-            val variableState = remember { VariableState.from(variable, state) { state.value = it } }
+            val variableState =
+                remember { VariableState.from(variable, state) { state.value = it } }
             PaddedColumn {
                 repeat(2) {
                     Line {

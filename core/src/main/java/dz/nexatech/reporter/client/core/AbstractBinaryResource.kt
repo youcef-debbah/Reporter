@@ -35,9 +35,7 @@ abstract class AbstractBinaryResource {
 
     final override fun hashCode() = path.hashCode()
 
-    override fun toString(): String {
-        return "BinaryResource(path='$path', mimeType='$mimeType')"
-    }
+    final override fun toString() = path
 }
 
 class SimpleBinaryResource(

@@ -56,8 +56,6 @@ class Resource(
     override fun asInputStream(): InputStream = ByteArrayInputStream(data)
 
     override fun asByteArray(): ByteArray = data
-
-    override fun toString() = "Resource(path='$path')"
 }
 
 open class AssetResource(

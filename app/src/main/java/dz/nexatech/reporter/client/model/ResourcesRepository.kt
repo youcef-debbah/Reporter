@@ -9,6 +9,9 @@ import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dz.nexatech.reporter.client.common.AsyncConfig
 import dz.nexatech.reporter.client.common.FILE_PATH_SEPARATOR
+import dz.nexatech.reporter.client.common.FilesExtension
+import dz.nexatech.reporter.client.common.MimeType
+import dz.nexatech.reporter.client.common.putValue
 import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.core.AbstractBinaryResource
 import dz.nexatech.reporter.client.core.CachedResource
@@ -23,9 +26,13 @@ import java.io.InputStream
 import java.net.URL
 import javax.inject.Inject
 
+private const val CSS_RESOURCES_PREFIX = "web/"
+
 private val extraAssetsResources: Map<String, AbstractBinaryResource> =
     ImmutableMap.builder<String, AbstractBinaryResource>()
-        // extra loadable assets should be added here
+        .putValue(AssetResource(CSS_RESOURCES_PREFIX + "base." + FilesExtension.CSS,MimeType.TEXT_CSS))
+        .putValue(AssetResource(CSS_RESOURCES_PREFIX + "normalize." + FilesExtension.CSS,MimeType.TEXT_CSS))
+        .putValue(AssetResource(CSS_RESOURCES_PREFIX + "spectre." + FilesExtension.CSS,MimeType.TEXT_CSS))
         .build()
 
 @Stable

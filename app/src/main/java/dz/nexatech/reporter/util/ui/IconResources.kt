@@ -52,9 +52,7 @@ fun iconPath(name: String) = "$ICON_RESOURCE_PREFIX$name.$ICON_RESOURCE_EXTENSIO
 
 abstract class AbstractPrintableIconResource(
     val name: String,
-) : AssetResource(iconPath(name), ICON_RESOURCE_MIME_TYPE), AbstractIcon {
-    final override fun toString() = path
-}
+) : AssetResource(iconPath(name), ICON_RESOURCE_MIME_TYPE), AbstractIcon
 
 private class StaticPrintableIconResource(
     name: String,
