@@ -10,6 +10,7 @@ import dagger.Lazy
 import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.common.mapToSet
 import dz.nexatech.reporter.client.common.withMain
+import dz.nexatech.reporter.client.core.ReporterExtension
 import dz.nexatech.reporter.client.core.TemplateLoader
 import dz.nexatech.reporter.util.model.Teller
 import io.pebbletemplates.pebble.PebbleEngine
@@ -91,6 +92,7 @@ class TemplatesRepository @Inject constructor(
                 val newEngine = PebbleEngine.Builder()
                     .newLineTrimming(false)
                     .autoEscaping(true)
+                    .extension(ReporterExtension)
                     .loader(templateLoader)
                     .build()
                 pebbleEngine = newEngine

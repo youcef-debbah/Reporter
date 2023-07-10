@@ -23,3 +23,6 @@ fun Long.duration(anotherNanoTime: Long = System.nanoTime()): String {
     else
         return String.format("%.3f sec", nanos.toFloat() / SEC_IN_NANOS)
 }
+
+fun Any.asDoubleOrNull(): Double? =
+    if (this is Number) toDouble() else toString().toDoubleOrNull()
