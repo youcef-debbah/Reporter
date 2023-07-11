@@ -26,7 +26,8 @@ import java.io.InputStream
 import java.net.URL
 import javax.inject.Inject
 
-private const val CSS_RESOURCES_PREFIX = "web/"
+const val RESOURCE_PREFIX = "common/"
+private const val CSS_RESOURCES_PREFIX = RESOURCE_PREFIX + "web/"
 
 private val extraAssetsResources: Map<String, AbstractBinaryResource> =
     ImmutableMap.builder<String, AbstractBinaryResource>()

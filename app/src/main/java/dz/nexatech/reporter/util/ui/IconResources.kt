@@ -10,8 +10,9 @@ import dz.nexatech.reporter.client.common.FilesExtension
 import dz.nexatech.reporter.client.common.MimeType
 import dz.nexatech.reporter.client.common.putValue
 import dz.nexatech.reporter.client.model.AssetResource
+import dz.nexatech.reporter.client.model.RESOURCE_PREFIX
 
-const val ICON_RESOURCE_PREFIX = "icons/"
+const val ICON_RESOURCE_PREFIX = RESOURCE_PREFIX + "common/icons/"
 const val ICON_RESOURCE_EXTENSION = FilesExtension.SVG
 const val ICON_RESOURCE_MIME_TYPE = MimeType.SVG
 

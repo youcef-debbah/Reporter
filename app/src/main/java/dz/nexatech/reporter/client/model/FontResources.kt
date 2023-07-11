@@ -9,7 +9,7 @@ import dz.nexatech.reporter.client.common.breakCamlCase
 import dz.nexatech.reporter.client.core.AbstractBinaryResource
 import java.util.NavigableMap
 
-const val FONT_RESOURCE_PREFIX = "fonts/"
+const val FONT_RESOURCE_PREFIX = RESOURCE_PREFIX + "common/fonts/"
 const val FONT_RESOURCE_PREFIX_LENGTH = FONT_RESOURCE_PREFIX.length
 
 private val fontWeights: NavigableMap<Int, String> =
