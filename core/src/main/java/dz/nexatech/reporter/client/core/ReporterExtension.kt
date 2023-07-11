@@ -18,7 +18,7 @@ object ReporterExtension : AbstractExtension() {
         override fun getArgumentNames(): MutableList<String>? = null
 
         override fun execute(
-            args: MutableMap<String, Any>?,
+            args: MutableMap<String, Any?>?,
             self: PebbleTemplate?,
             context: EvaluationContext?,
             lineNumber: Int,
@@ -30,7 +30,7 @@ object ReporterExtension : AbstractExtension() {
                 if (entry.key == "0") {
                     format = entry.value.toString()
                 } else {
-                    val doubleArg = entry.value.asDoubleOrNull() ?: continue
+                    val doubleArg = entry.value?.asDoubleOrNull() ?: continue
                     doubleArgs.add(doubleArg)
                 }
             }
@@ -56,7 +56,7 @@ object ReporterExtension : AbstractExtension() {
         override fun getArgumentNames(): MutableList<String>? = null
 
         override fun execute(
-            args: MutableMap<String, Any>?,
+            args: MutableMap<String, Any?>?,
             self: PebbleTemplate?,
             context: EvaluationContext?,
             lineNumber: Int,
@@ -64,7 +64,7 @@ object ReporterExtension : AbstractExtension() {
             var result: Double? = null
             if (args != null) {
                 for (value in args.values) {
-                    val doubleValue = value.asDoubleOrNull() ?: continue
+                    val doubleValue = value?.asDoubleOrNull() ?: continue
                     result = aggregate(result, doubleValue)
                 }
             }
