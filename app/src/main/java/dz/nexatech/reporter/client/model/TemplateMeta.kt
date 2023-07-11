@@ -138,9 +138,9 @@ class TemplateMeta private constructor(
                                 variableJsonObject.getString("label_ar"),
                                 variableJsonObject.getString("label_fr"),
                                 variableJsonObject.getString("label_en"),
-                                variableJsonObject.getString("desc_ar"),
-                                variableJsonObject.getString("desc_fr"),
-                                variableJsonObject.getString("desc_en"),
+                                variableJsonObject.optString("desc_ar"),
+                                variableJsonObject.optString("desc_fr"),
+                                variableJsonObject.optString("desc_en"),
                                 localizer,
                             )
 
@@ -154,9 +154,9 @@ class TemplateMeta private constructor(
                                 sectionJsonObject.getString("label_ar"),
                                 sectionJsonObject.getString("label_fr"),
                                 sectionJsonObject.getString("label_en"),
-                                sectionJsonObject.getString("desc_ar"),
-                                sectionJsonObject.getString("desc_fr"),
-                                sectionJsonObject.getString("desc_en"),
+                                sectionJsonObject.optString("desc_ar"),
+                                sectionJsonObject.optString("desc_fr"),
+                                sectionJsonObject.optString("desc_en"),
                                 variablesBuilder.build(),
                                 localizer,
                             )
@@ -219,9 +219,9 @@ class TemplateMeta private constructor(
                                     variableJsonObject.getString("label_ar"),
                                     variableJsonObject.getString("label_fr"),
                                     variableJsonObject.getString("label_en"),
-                                    variableJsonObject.getString("desc_ar"),
-                                    variableJsonObject.getString("desc_fr"),
-                                    variableJsonObject.getString("desc_en"),
+                                    variableJsonObject.optString("desc_ar"),
+                                    variableJsonObject.optString("desc_fr"),
+                                    variableJsonObject.optString("desc_en"),
                                     localizer,
                                 )
                                 variablesBuilder.add(variable)
@@ -236,9 +236,9 @@ class TemplateMeta private constructor(
                                     recordJsonObject.getString("label_ar"),
                                     recordJsonObject.getString("label_fr"),
                                     recordJsonObject.getString("label_en"),
-                                    recordJsonObject.getString("desc_ar"),
-                                    recordJsonObject.getString("desc_fr"),
-                                    recordJsonObject.getString("desc_en"),
+                                    recordJsonObject.optString("desc_ar"),
+                                    recordJsonObject.optString("desc_fr"),
+                                    recordJsonObject.optString("desc_en"),
                                     variablesBuilder.build(),
                                     localizer,
                                 )
