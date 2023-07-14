@@ -2,7 +2,6 @@ package dz.nexatech.reporter.client.model
 
 import android.net.Uri
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -29,7 +28,6 @@ import kotlinx.coroutines.Job
 import javax.inject.Inject
 
 @HiltViewModel
-@Stable
 class MainViewModel @Inject constructor(
     val resourcesRepository: ResourcesRepository,
     private val templatesRepository: TemplatesRepository,

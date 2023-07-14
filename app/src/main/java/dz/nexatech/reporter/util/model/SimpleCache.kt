@@ -1,16 +1,16 @@
 package dz.nexatech.reporter.util.model
 
-import com.google.common.collect.MapMaker
-import java.util.concurrent.ConcurrentMap
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class SimpleCache<T> {
 
-    private val cache: ConcurrentMap<String, T> = MapMaker()
-        .concurrencyLevel(Runtime.getRuntime().availableProcessors() * 2)
-        .makeMap()
+    private val mutex = Mutex()
+    private var cache: MutableMap<String, T> = HashMap()
 
-    suspend fun load(key: String, provider: suspend () -> T?): T? =
+    suspend fun load(key: String, provider: suspend () -> T?): T? = mutex.withLock {
         cache[key] ?: loadNewValue(provider, key)
+    }
 
     private suspend fun loadNewValue(provider: suspend () -> T?, key: String): T? {
         val newValue = provider()
@@ -20,8 +20,7 @@ class SimpleCache<T> {
         return newValue
     }
 
-    fun clear() {
-        cache.clear()
+    suspend fun clear() = mutex.withLock {
+        cache = HashMap(cache.size)
     }
-
 }

@@ -1,7 +1,6 @@
 package dz.nexatech.reporter.client.model
 
 import android.content.Context
-import androidx.compose.runtime.Stable
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
 import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
@@ -36,7 +35,6 @@ private val extraAssetsResources: Map<String, AbstractBinaryResource> =
         .putValue(AssetResource(CSS_RESOURCES_PREFIX + "spectre." + FilesExtension.CSS,MimeType.TEXT_CSS))
         .build()
 
-@Stable
 class ResourcesRepository @Inject constructor(
     @ApplicationContext
     private val context: Context,
@@ -67,7 +65,7 @@ class ResourcesRepository @Inject constructor(
         path?.let { loadCachedBinaryResource(it.removePrefix(FILE_PATH_SEPARATOR)) }
     }
 
-    fun clearCache() {
+    suspend fun clearCache() {
         cache.clear()
     }
 
@@ -125,7 +123,7 @@ class ResourcesRepository @Inject constructor(
         loadBlocking(url.path)?.asByteArray()
 
     suspend fun updateResources(resources: List<Resource>?) {
-        resources?.let { resourcesDAO.get().updateAll(it) }
+        resources?.let { resourcesDAO.get().replaceAll(it) }
     }
 
     suspend fun loadFontFamilies(): ImmutableSet<String> = ImmutableSet.Builder<String>().apply {

@@ -2,6 +2,7 @@ package dz.nexatech.reporter.util.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import com.google.common.collect.ImmutableMap
@@ -16,12 +17,17 @@ const val ICON_RESOURCE_PREFIX = RESOURCE_PREFIX + "icons/"
 const val ICON_RESOURCE_EXTENSION = FilesExtension.SVG
 const val ICON_RESOURCE_MIME_TYPE = MimeType.SVG
 
+@Stable
 interface AbstractIcon {
     @Composable
     fun painterResource(): Painter
 }
 
+@Stable
 class StaticIcon private constructor(@DrawableRes val drawable: Int): AbstractIcon {
+    @Composable
+    override fun painterResource(): Painter =
+        painterResource(drawable)
 
     companion object {
         val baseline_settings = StaticIcon(R.drawable.baseline_settings_24)
@@ -43,18 +49,16 @@ class StaticIcon private constructor(@DrawableRes val drawable: Int): AbstractIc
         val baseline_exposure = StaticIcon(R.drawable.baseline_exposure_24)
         val baseline_notes = StaticIcon(R.drawable.baseline_notes_24)
     }
-
-    @Composable
-    override fun painterResource(): Painter =
-        painterResource(drawable)
 }
 
 fun iconPath(name: String) = "$ICON_RESOURCE_PREFIX$name.$ICON_RESOURCE_EXTENSION"
 
+@Stable
 abstract class AbstractPrintableIconResource(
     val name: String,
 ) : AssetResource(iconPath(name), ICON_RESOURCE_MIME_TYPE), AbstractIcon
 
+@Stable
 private class StaticPrintableIconResource(
     name: String,
     @DrawableRes val drawable: Int

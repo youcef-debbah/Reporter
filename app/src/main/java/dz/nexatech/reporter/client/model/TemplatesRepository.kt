@@ -2,7 +2,6 @@ package dz.nexatech.reporter.client.model
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
@@ -22,7 +21,6 @@ import java.util.function.Function
 import java.util.function.Predicate
 import javax.inject.Inject
 
-@Stable
 class TemplatesRepository @Inject constructor(
     private val resourcesRepository: ResourcesRepository,
     private val templatesDao: Lazy<TemplatesDAO>,
@@ -107,9 +105,9 @@ class TemplatesRepository @Inject constructor(
     }
 
     suspend fun updateTemplates(templates: List<Template>, resources: List<Resource>?) {
+        firstRefreshJob.join()
         templatesDao.get().updateAll(templates)
         resourcesRepository.updateResources(resources)
-        firstRefreshJob.join()
         refresh()
     }
 }

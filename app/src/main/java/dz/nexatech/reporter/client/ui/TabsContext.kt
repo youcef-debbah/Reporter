@@ -36,7 +36,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,6 +75,7 @@ import dz.nexatech.reporter.client.model.TemplatesRepository
 import dz.nexatech.reporter.client.model.VariableState
 import dz.nexatech.reporter.client.model.asWebResourceResponse
 import dz.nexatech.reporter.client.model.evaluateState
+import dz.nexatech.reporter.util.model.Teller
 import dz.nexatech.reporter.util.model.loadContent
 import dz.nexatech.reporter.util.model.newDynamicWebView
 import dz.nexatech.reporter.util.model.rememberColumnsCount
@@ -165,6 +166,8 @@ class TabsContext(
                     it.route?.startsWith(TemplateTab.TEMPLATE_ROUTE_PREFIX) ?: false
                 }
             tabsScope.cancel()
+        } else {
+            Teller.logUnexpectedCondition("context_cleared", "tabs context is already cleared!")
         }
     }
 
@@ -732,7 +735,7 @@ class TabsContext(
     }
 }
 
-@Immutable
+@Stable
 private class TemplateTab(
     val template: Template,
     val title: String,

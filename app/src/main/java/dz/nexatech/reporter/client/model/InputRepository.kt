@@ -1,7 +1,5 @@
 package dz.nexatech.reporter.client.model
 
-import androidx.compose.runtime.Stable
-import dz.nexatech.reporter.client.common.duration
 import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.core.AbstractInputRepository
 import dz.nexatech.reporter.client.core.AbstractValue
@@ -11,7 +9,6 @@ import kotlinx.coroutines.channels.Channel
 import java.util.TreeSet
 import javax.inject.Inject
 
-@Stable
 class InputRepository @Inject constructor(
     private val valuesDaoLoader: dagger.Lazy<ValuesDAO>,
 ) : AbstractInputRepository() {
@@ -59,7 +56,6 @@ class InputRepository @Inject constructor(
         operation: ValueOperation,
         valuesDAO: ValuesDAO,
     ) {
-        val execution = System.nanoTime()
         @Suppress("UNCHECKED_CAST")
         when (operation) {
             is ValueOperation.UpdateValue -> valuesDAO.updateValue(
@@ -90,7 +86,6 @@ class InputRepository @Inject constructor(
                 )
             )
         }
-        Teller.test(operation.toString() + " done in: " + execution.duration())
     }
 
     override fun execute(operation: ValueOperation) {

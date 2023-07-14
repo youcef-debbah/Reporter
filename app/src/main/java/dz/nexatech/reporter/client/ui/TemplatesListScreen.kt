@@ -10,6 +10,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.Button
@@ -19,6 +20,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -27,11 +29,16 @@ import androidx.navigation.NavOptions
 import com.google.accompanist.navigation.animation.composable
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.MimeType
+import dz.nexatech.reporter.client.common.backgroundLaunch
+import dz.nexatech.reporter.client.common.ioLaunch
+import dz.nexatech.reporter.client.common.withIO
+import dz.nexatech.reporter.client.core.SimpleBinaryResource
 import dz.nexatech.reporter.client.model.MainViewModel
 import dz.nexatech.reporter.client.model.TEMPLATES_LIST_LOADING_ANIMATION_ENABLED
 import dz.nexatech.reporter.client.model.Template
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.TEMPLATES_DOWNLOADING_LINK
+import dz.nexatech.reporter.util.model.Teller
 import dz.nexatech.reporter.util.model.rememberLayoutWidth
 import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.Body
