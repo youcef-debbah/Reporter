@@ -41,7 +41,9 @@ class ResourcesRepository @Inject constructor(
     private val resourcesDAO: Lazy<ResourcesDAO>,
 ) : IResourceRetriever {
 
-    private val cache = SimpleCache<AbstractBinaryResource>()
+    companion object {
+        private val cache = SimpleCache<AbstractBinaryResource>()
+    }
 
     suspend fun loadFonts(
         fontNames: Collection<String>
