@@ -38,11 +38,10 @@ class MainViewModel @Inject constructor(
     @Volatile
     private var currentTabsContext: TabsContext? = null
 
+    val activeDestinations: DestinationsRegistry = DestinationsRegistry()
+
     private val _templateImporting: MutableState<Int> = mutableStateOf(0)
     val templateImporting: State<Int> = _templateImporting
-
-    // not stable but never called from composable fun
-    val activeDestinations: DestinationsRegistry = DestinationsRegistry()
 
     fun navigateToTemplateTabs(
         template: Template,
