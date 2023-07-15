@@ -141,4 +141,8 @@ class ResourcesRepository @Inject constructor(
             }
         }
     }
+
+    fun deleteAll() {
+        resourcesDAO.get().deleteAll()
+    }
 }

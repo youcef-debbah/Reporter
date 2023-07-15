@@ -39,6 +39,7 @@
     <string name="app_name">Reporter</string>
     <string name="import_template_menu_item">Import Template</string>
     <string name="download_template_menu_item">Download Template</string>
+    <string name="delete_templates_menu_item">Delete All Templates</string>
     <string name="templates_list_title">Available Templates</string>
     <string name="templates_list_label">Home</string>
     <string name="template_tab_preview_title">Preview: %s</string>
@@ -91,6 +92,8 @@
     <string name="tuple_title">Entity#%d</string>
     <string name="reset">Reset</string>
     <string name="save">Save</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="cancel">Cancel</string>
     <string name="disable">Disable</string>
     <string name="enable">Enable</string>
@@ -101,4 +104,6 @@
     <string name="illegal_line_phone_number">Invalid line phone number, you can use: 023123456 or 023\u00A012\u00A034\u00A056</string>
     <string name="inc_counter">Increment the counter</string>
     <string name="dec_counter">Decrement the counter</string>
+    <string name="dialog_title_delete_confirmation">Delete Confirmation</string>
+    <string name="confirm_deleting_all_templates">Are you sure you want to delete all\u00A0templates?</string>
 </resources>

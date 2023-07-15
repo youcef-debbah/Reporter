@@ -62,7 +62,7 @@ class MainViewModel @Inject constructor(
         newContext.loadTemplateAndNavigateToPreviewTab(this, navController)
     }
 
-    fun templates(): State<Map<String, Template>?> = templatesRepository.templates
+    val templates: State<Map<String, Template>?> = templatesRepository.templates
 
     suspend fun newTemplateState(meta: TemplateMeta) =
         TemplateState.from(meta, inputRepository)
@@ -115,6 +115,12 @@ class MainViewModel @Inject constructor(
                     _templateImporting.value--
                 }
             }
+        }
+    }
+
+    fun deleteAllTemplates() {
+        mainLaunch {
+            templatesRepository.deleteAllTemplates()
         }
     }
 }

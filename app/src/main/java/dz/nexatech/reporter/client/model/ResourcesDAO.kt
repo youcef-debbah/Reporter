@@ -20,4 +20,7 @@ interface ResourcesDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun replaceAll(resources: List<Resource>)
+
+    @Query("delete from resource")
+    fun deleteAll()
 }

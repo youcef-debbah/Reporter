@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableSet
 import dagger.Lazy
 import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.common.mapToSet
+import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.common.withMain
 import dz.nexatech.reporter.client.core.ReporterExtension
 import dz.nexatech.reporter.client.core.TemplateLoader
@@ -43,6 +44,7 @@ class TemplatesRepository @Inject constructor(
 
     @SuppressLint("MutableCollectionMutableState")
     val templates: MutableState<ImmutableMap<String, Template>?> = mutableStateOf(null)
+
     @SuppressLint("MutableCollectionMutableState")
     val fontFamilies: MutableState<ImmutableSet<String>> =
         mutableStateOf(fontAssetsResources.keys.mapToSet(::fontFamilyName))
@@ -65,7 +67,7 @@ class TemplatesRepository @Inject constructor(
 
     suspend fun loadedTemplates(): ImmutableMap<String, Template> {
         firstRefreshJob.join()
-        return templates.value!!
+        return templates.value ?: ImmutableMap.of()
     }
 
     suspend fun templateExists(templateName: String): Boolean =
@@ -109,5 +111,16 @@ class TemplatesRepository @Inject constructor(
         templatesDao.get().updateAll(templates)
         resourcesRepository.updateResources(resources)
         refresh()
+    }
+
+    suspend fun deleteAllTemplates() {
+        withMain {
+            templates.value = null
+        }
+        withIO {
+            templatesDao.get().deleteAll()
+            resourcesRepository.deleteAll()
+            refresh()
+        }
     }
 }
