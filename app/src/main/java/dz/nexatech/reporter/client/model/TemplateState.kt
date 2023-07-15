@@ -55,12 +55,14 @@ class TemplateState private constructor(
     ) {
         ThreadUtil.ensureMainThread()
         val index = recordState.maxIndex.value + 1
-        val variables = recordState.record.variables
+        val record = recordState.record
+        val variables = record.variables
         val tupleValues = ArrayList<Value>(variables.size)
         val newTuple = newTuple(variables, index, tupleValues, source)
         InputHandler.execute(ValueOperation.SaveAll(tupleValues))
         recordState.maxIndex.value = index
         recordState.tuples.add(newTuple)
+        lastUpdate.tryEmit(record.namespace)
     }
 
     private fun newTuple(
@@ -147,6 +149,8 @@ class TemplateState private constructor(
                     else -> it
                 }
             }
+
+            lastUpdate.tryEmit(recordState.record.namespace)
         }
     }
 
@@ -215,6 +219,7 @@ class TemplateState private constructor(
                 )
             }
             InputHandler.execute(ValueOperation.DeleteAll(toDelete))
+            lastUpdate.tryEmit(recordState.record.namespace)
         }
     }
 
@@ -235,7 +240,6 @@ class TemplateState private constructor(
                 extraBufferCapacity = 0,
                 onBufferOverflow = BufferOverflow.DROP_OLDEST
             )
-            lastUpdate.tryEmit("")
 
             buildEmptyState(
                 meta = meta,
