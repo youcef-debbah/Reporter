@@ -518,11 +518,12 @@ class TabsContext(
                 .contentPadding()
                 .fillMaxWidth()
         ) {
+            val dimens = Theme.dimens
+            val titlePaddings = remember { dimens.content_padding.copy(bottom = dimens.content_padding.bottom + 2.dp) * 2 }
             Title(
                 desc,
                 Modifier
-                    .contentPadding()
-                    .padding(bottom = 4.dp)
+                    .padding(titlePaddings)
                     .width(width)
             )
         }
