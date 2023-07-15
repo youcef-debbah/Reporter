@@ -686,7 +686,7 @@ private fun InfoButton(
 ) {
     if (variable.desc.isNotBlank()) {
         IconButton(onClick = onClick) {
-            InfoIcon(icon = R.drawable.baseline_info_24, desc = R.string.input_description)
+            InfoIcon(icon = R.drawable.baseline_info_24, desc = R.string.input_desc)
         }
     }
 }
