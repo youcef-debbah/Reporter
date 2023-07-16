@@ -91,7 +91,7 @@ object Version {
         const val COMPILER = "1.4.7"
         const val FOUNDATION = "1.4.3"
         const val MATERIAL = "1.4.3"
-        const val MATERIAL3 = "1.1.0"
+        const val MATERIAL3 = "1.1.1"
         const val RUNTIME = "1.4.3"
         const val UI = "1.4.3"
     }
