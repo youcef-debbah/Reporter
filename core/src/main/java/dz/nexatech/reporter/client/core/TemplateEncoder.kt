@@ -4,10 +4,10 @@ import dz.nexatech.reporter.client.common.AbstractLocalizer
 import dz.nexatech.reporter.client.common.FilesExtension
 import dz.nexatech.reporter.client.common.MimeType
 import dz.nexatech.reporter.client.common.readAsBytes
+import dz.nexatech.reporter.client.common.loadProperties
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.LinkedList
-import java.util.Properties
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -27,18 +27,10 @@ object TemplateEncoder {
             while (entry != null) {
                 val entryName = entry.name
                 if (entry.isDirectory.not()) {
+                    val entryBytes = zipStream.readAsBytes(entry.size.toInt(), false)
                     if (entryName.endsWith(TEMPLATE_INFO_EXTENSION)) {
-                        val properties = Properties()
-                        properties.load(
-                            ByteArrayInputStream(
-                                zipStream.readAsBytes(
-                                    entry.size.toInt(),
-                                    false
-                                )
-                            )
-                        )
-                        val templateName: String? =
-                            properties.getProperty(TEMPLATE_COLUMN_NAME)
+                        val properties = loadProperties(ByteArrayInputStream(entryBytes))
+                        val templateName: String? = properties.getProperty(TEMPLATE_COLUMN_NAME)
                         if (templateName != null) {
                             val lang = properties.getProperty(TEMPLATE_COLUMN_LANG)
                             templates.add(
@@ -73,7 +65,7 @@ object TemplateEncoder {
                             SimpleBinaryResource(
                                 path = entryName,
                                 mimeType = MimeType.of(entryName),
-                                data = zipStream.readAsBytes(entry.size.toInt(), false),
+                                data = entryBytes,
                                 lastModified = System.currentTimeMillis(),
                             )
                         )

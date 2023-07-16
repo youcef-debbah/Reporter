@@ -521,3 +521,8 @@ fun breakCamlCase(text: String): String {
         }
     }.toString()
 }
+
+fun loadProperties(input: InputStream, initCapacity: Int = 8): Properties =
+    Properties(initCapacity).apply {
+        load(InputStreamReader(input, StandardCharsets.UTF_8))
+    }
