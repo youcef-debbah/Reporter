@@ -32,9 +32,11 @@ abstract class AbstractTemplate {
     abstract val desc: String
 
     final override fun equals(other: Any?) =
-        this === other || (other is AbstractTemplate && this.name == other.name)
+        this === other || other is AbstractTemplate
+                && this.name == other.name
+                && this.lastUpdate == other.lastUpdate
 
-    final override fun hashCode() = name.hashCode()
+    final override fun hashCode() = name.hashCode() xor lastUpdate.hashCode()
 
     override fun toString() = "Template(name='$name',label=$label)"
 

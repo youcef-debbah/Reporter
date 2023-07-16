@@ -31,9 +31,11 @@ abstract class AbstractBinaryResource {
     abstract fun size(): Int?
 
     final override fun equals(other: Any?): Boolean =
-        this === other || other is AbstractBinaryResource && this.path == other.path
+        this === other || other is AbstractBinaryResource
+                && this.path == other.path
+                && this.lastModified == other.lastModified
 
-    final override fun hashCode() = path.hashCode()
+    final override fun hashCode() = path.hashCode() xor lastModified.hashCode()
 
     final override fun toString() = path
 }
