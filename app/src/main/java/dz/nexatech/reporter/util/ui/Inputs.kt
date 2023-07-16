@@ -31,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,10 +39,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.harmony.ColorHarmonyMode
@@ -307,11 +310,13 @@ fun ColorInput(variableState: VariableState, modifier: Modifier) {
                         text = variable.desc,
                     )
                     PaddedDivider()
-                    HarmonyColorPicker(
-                        modifier = Modifier.size(colorPickerSize),
-                        harmonyMode = ColorHarmonyMode.NONE,
-                        color = selectedColor.value,
-                        onColorChanged = { selectedColor.value = it })
+                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                        HarmonyColorPicker(
+                            modifier = Modifier.size(colorPickerSize),
+                            harmonyMode = ColorHarmonyMode.NONE,
+                            color = selectedColor.value,
+                            onColorChanged = { selectedColor.value = it })
+                    }
                     PaddedDivider()
                     CentredRow(
                         modifier = Modifier.fillMaxWidth(),
