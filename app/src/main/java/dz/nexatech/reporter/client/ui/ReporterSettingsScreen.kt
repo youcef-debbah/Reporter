@@ -10,10 +10,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import com.google.accompanist.navigation.animation.composable
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.util.ui.ContentCard
+import dz.nexatech.reporter.util.ui.ScrollableColumn
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
-import dz.nexatech.reporter.util.ui.PaddedColumn
-import dz.nexatech.reporter.util.ui.Body
 import dz.nexatech.reporter.util.ui.StaticIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
 
@@ -43,8 +43,10 @@ object ReporterSettingsScreen : StaticScreenDestination(
                 )
             },
         ) {
-            PaddedColumn {
-                Body("Settings Page")//TODO
+            ScrollableColumn {
+                ContentCard {
+                    // TODO
+                }
             }
         }
     }

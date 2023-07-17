@@ -3,11 +3,13 @@ package dz.nexatech.reporter.util.model
 import android.annotation.SuppressLint
 import androidx.annotation.AnyThread
 import androidx.compose.runtime.*
+import com.alorma.compose.settings.storage.base.SettingValueState
 import com.google.common.collect.ImmutableMap
 import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue
 import com.tencent.mmkv.MMKV
+import dagger.hilt.android.internal.ThreadUtil
 import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.common.mainLaunch
 import dz.nexatech.reporter.client.model.REPORTER_LOCAL_CONFIGS
@@ -15,6 +17,8 @@ import dz.nexatech.reporter.client.model.REPORTER_REMOTE_CONFIGS_DEFAULTS
 import dz.nexatech.reporter.util.BuildTypeSettings
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import java.util.concurrent.atomic.AtomicReference
+
+private lateinit var localConfig: MMKV
 
 @AnyThread
 object AppConfig {
@@ -32,44 +36,30 @@ object AppConfig {
     @Volatile
     @SuppressLint("StaticFieldLeak")
     private var remoteConfig: FirebaseRemoteConfig? = null
-    private lateinit var localConfig: MMKV
 
-    private val booleanStates: ImmutableMap<String, MutableState<Boolean>>
-    private val longStates: ImmutableMap<String, MutableState<Long>>
-    private val intStates: ImmutableMap<String, MutableState<Int>>
-    private val stringStates: ImmutableMap<String, MutableState<String>>
+    private val booleanStates: ImmutableMap<String, BooleanConfigState>
+    private val longStates: ImmutableMap<String, LongConfigState>
+    private val intStates: ImmutableMap<String, IntConfigState>
+    private val stringStates: ImmutableMap<String, StringConfigState>
 
     private val remoteConfigCache: ImmutableMap<String, AtomicReference<FirebaseRemoteConfigValue?>>
 
     init {
-        val localBooleans: ImmutableMap.Builder<String, MutableState<Boolean>> =
+        val localBooleans: ImmutableMap.Builder<String, BooleanConfigState> =
             ImmutableMap.builder()
-        val localLongs: ImmutableMap.Builder<String, MutableState<Long>> = ImmutableMap.builder()
-        val localInts: ImmutableMap.Builder<String, MutableState<Int>> = ImmutableMap.builder()
-        val localStrings: ImmutableMap.Builder<String, MutableState<String>> =
+        val localLongs: ImmutableMap.Builder<String, LongConfigState> =
+            ImmutableMap.builder()
+        val localInts: ImmutableMap.Builder<String, IntConfigState> =
+            ImmutableMap.builder()
+        val localStrings: ImmutableMap.Builder<String, StringConfigState> =
             ImmutableMap.builder()
 
         for (entry in LOCAL_CONFIGS) {
             when (val config = entry.value) {
-                is LocalConfig.Boolean -> localBooleans.put(
-                    entry.key,
-                    mutableStateOf(config.default)
-                )
-
-                is LocalConfig.Long -> localLongs.put(
-                    entry.key,
-                    mutableStateOf(config.default)
-                )
-
-                is LocalConfig.Int -> localInts.put(
-                    entry.key,
-                    mutableStateOf(config.default)
-                )
-
-                is LocalConfig.String -> localStrings.put(
-                    entry.key,
-                    mutableStateOf(config.default)
-                )
+                is LocalConfig.Boolean -> localBooleans.put(entry.key, BooleanConfigState(config))
+                is LocalConfig.Long -> localLongs.put(entry.key, LongConfigState(config))
+                is LocalConfig.Int -> localInts.put(entry.key, IntConfigState(config))
+                is LocalConfig.String -> localStrings.put(entry.key, StringConfigState(config))
             }
         }
 
@@ -106,19 +96,19 @@ object AppConfig {
         val mmkv = MMKV.mmkvWithID("local_config")
         for (entry in booleanStates) {
             val state = entry.value
-            state.value = mmkv.getBoolean(entry.key, state.value)
+            state.updateInMemoryState(mmkv.decodeBool(entry.key, state.value))
         }
         for (entry in longStates) {
             val state = entry.value
-            state.value = mmkv.getLong(entry.key, state.value)
+            state.updateInMemoryState(mmkv.decodeLong(entry.key, state.value))
         }
         for (entry in intStates) {
             val state = entry.value
-            state.value = mmkv.getInt(entry.key, state.value)
+            state.updateInMemoryState(mmkv.decodeInt(entry.key, state.value))
         }
         for (entry in stringStates) {
             val state = entry.value
-            state.value = mmkv.getString(entry.key, state.value)!!
+            state.updateInMemoryState(mmkv.decodeString(entry.key, state.value)!!)
         }
         localConfig = mmkv
     }
@@ -177,95 +167,53 @@ object AppConfig {
     fun get(remoteBoolean: RemoteConfig<Boolean>): Boolean =
         getRemoteValue(remoteBoolean.key)?.asBoolean() ?: remoteBoolean.default
 
-    fun stringState(localString: LocalConfig<String>): State<String> =
-        mutableStringState(localString)
-
-    private fun mutableStringState(localString: LocalConfig<String>) =
+    fun stringState(localString: LocalConfig<String>): StringConfigState =
         stringStates[localString.key]
             ?: throw IllegalArgumentException("String state not found: ${localString.key}")
 
-    fun intState(localInt: LocalConfig<Int>): State<Int> = intMutableState(localInt)
-
-    private fun intMutableState(localInt: LocalConfig<Int>) =
+    fun intState(localInt: LocalConfig<Int>): IntConfigState =
         intStates[localInt.key]
             ?: throw IllegalArgumentException("Int state not found: ${localInt.key}")
 
-    fun longState(localLong: LocalConfig<Long>): State<Long> = longMutableState(localLong)
-
-    private fun longMutableState(localLong: LocalConfig<Long>) =
+    fun longState(localLong: LocalConfig<Long>): LongConfigState =
         longStates[localLong.key]
             ?: throw IllegalArgumentException("Long state not found: ${localLong.key}")
 
-    fun booleanState(localBoolean: LocalConfig<Boolean>): State<Boolean> =
-        booleanMutableState(localBoolean)
-
-    private fun booleanMutableState(localBoolean: LocalConfig<Boolean>) =
+    fun booleanState(localBoolean: LocalConfig<Boolean>): BooleanConfigState =
         booleanStates[localBoolean.key]
             ?: throw IllegalArgumentException("Boolean state not found: ${localBoolean.key}")
 
-    fun set(localString: LocalConfig<String>, value: String): String {
-        val newValue = try {
-            localConfig.putString(localString.key, value)
-            value
-        } catch (e: Exception) { // not suspended
-            Teller.warn("failed to set local string config: $localString to: $value", e)
-            get(localString)
+    fun set(localString: LocalConfig<String>, value: String): String =
+        set(localString, value) {
+            mainLaunch {
+                stringStates[localString.key]?.updateInMemoryState(it)
+            }
         }
 
-        mainLaunch {
-            stringStates[localString.key]?.value = newValue
-        }
-        return newValue
-    }
-
-    fun set(localInt: LocalConfig<Int>, value: Int): Int {
-        val newValue = try {
-            localConfig.putInt(localInt.key, value)
-            value
-        } catch (e: Exception) { // not suspended
-            Teller.warn("failed to set local int config: $localInt to: $value", e)
-            get(localInt)
+    fun set(localInt: LocalConfig<Int>, value: Int): Int =
+        set(localInt, value) {
+            mainLaunch {
+                intStates[localInt.key]?.updateInMemoryState(it)
+            }
         }
 
-        mainLaunch {
-            intStates[localInt.key]?.value = newValue
-        }
-        return newValue
-    }
-
-    fun set(localLong: LocalConfig<Long>, value: Long): Long {
-        val newValue = try {
-            localConfig.putLong(localLong.key, value)
-            value
-        } catch (e: Exception) { // not suspended
-            Teller.warn("failed to set local long config: $localLong to: $value", e)
-            get(localLong)
+    fun set(localLong: LocalConfig<Long>, value: Long): Long =
+        set(localLong, value) {
+            mainLaunch {
+                longStates[localLong.key]?.updateInMemoryState(it)
+            }
         }
 
-        mainLaunch {
-            longStates[localLong.key]?.value = newValue
+    fun set(localBoolean: LocalConfig<Boolean>, value: Boolean): Boolean =
+        set(localBoolean, value) {
+            mainLaunch {
+                booleanStates[localBoolean.key]?.updateInMemoryState(it)
+            }
         }
-        return newValue
-    }
-
-    fun set(localBoolean: LocalConfig<Boolean>, value: Boolean): Boolean {
-        val newValue = try {
-            localConfig.putBoolean(localBoolean.key, value)
-            value
-        } catch (e: Exception) { // not suspended
-            Teller.warn("failed to set local boolean config: $localBoolean to: $value", e)
-            get(localBoolean)
-        }
-
-        mainLaunch {
-            booleanStates[localBoolean.key]?.value = newValue
-        }
-        return newValue
-    }
 
     fun get(localString: LocalConfig<String>, defaultString: String = localString.default): String {
         try {
-            return localConfig.getString(localString.key, defaultString)!!
+            return localConfig.decodeString(localString.key, defaultString)!!
         } catch (e: Exception) { // not suspended
             Teller.warn("failed to load local string config: $localString", e)
         }
@@ -274,7 +222,7 @@ object AppConfig {
 
     fun get(localInt: LocalConfig<Int>, defaultInt: Int = localInt.default): Int {
         try {
-            return localConfig.getInt(localInt.key, defaultInt)
+            return localConfig.decodeInt(localInt.key, defaultInt)
         } catch (e: Exception) { // not suspended
             Teller.warn("failed to load local int config: $localInt", e)
         }
@@ -283,7 +231,7 @@ object AppConfig {
 
     fun get(localLong: LocalConfig<Long>, defaultLong: Long = localLong.default): Long {
         try {
-            return localConfig.getLong(localLong.key, defaultLong)
+            return localConfig.decodeLong(localLong.key, defaultLong)
         } catch (e: Exception) { // not suspended
             Teller.warn("failed to load local long config: $localLong", e)
         }
@@ -292,10 +240,10 @@ object AppConfig {
 
     fun get(
         localBoolean: LocalConfig<Boolean>,
-        defaultBoolean: Boolean = localBoolean.default
+        defaultBoolean: Boolean = localBoolean.default,
     ): Boolean {
         try {
-            return localConfig.getBoolean(localBoolean.key, defaultBoolean)
+            return localConfig.decodeBool(localBoolean.key, defaultBoolean)
         } catch (e: Exception) { // not suspended
             Teller.warn("failed to load local boolean config: $localBoolean", e)
         }
@@ -343,3 +291,134 @@ fun ImmutableMap.Builder<String, Any>.putRemoteConfigDefault(config: RemoteConfi
 
 fun ImmutableMap.Builder<String, LocalConfig<*>>.putLocalConfig(config: LocalConfig<*>): ImmutableMap.Builder<String, LocalConfig<*>> =
     put(config.key, config)
+
+
+private fun set(
+    localString: LocalConfig<String>,
+    value: String,
+    stateUpdater: (String) -> Unit,
+): String {
+    val newValue = try {
+        localConfig.encode(localString.key, value)
+        value
+    } catch (e: Exception) { // not suspended
+        Teller.warn("failed to set local string config: $localString to: $value", e)
+        AppConfig.get(localString)
+    }
+    stateUpdater.invoke(newValue)
+    return newValue
+}
+
+private fun set(
+    localInt: LocalConfig<Int>,
+    value: Int,
+    stateUpdater: (Int) -> Unit,
+): Int {
+    val newValue = try {
+        localConfig.encode(localInt.key, value)
+        value
+    } catch (e: Exception) { // not suspended
+        Teller.warn("failed to set local int config: $localInt to: $value", e)
+        AppConfig.get(localInt)
+    }
+    stateUpdater.invoke(newValue)
+    return newValue
+}
+
+private fun set(
+    localLong: LocalConfig<Long>,
+    value: Long,
+    stateUpdater: (Long) -> Unit,
+): Long {
+    val newValue = try {
+        localConfig.encode(localLong.key, value)
+        value
+    } catch (e: Exception) { // not suspended
+        Teller.warn("failed to set local long config: $localLong to: $value", e)
+        AppConfig.get(localLong)
+    }
+    stateUpdater.invoke(newValue)
+    return newValue
+}
+
+private fun set(
+    localBoolean: LocalConfig<Boolean>,
+    value: Boolean,
+    stateUpdater: (Boolean) -> Unit,
+): Boolean {
+    val newValue = try {
+        localConfig.encode(localBoolean.key, value)
+        value
+    } catch (e: Exception) { // not suspended
+        Teller.warn("failed to set local boolean config: $localBoolean to: $value", e)
+        AppConfig.get(localBoolean)
+    }
+    stateUpdater.invoke(newValue)
+    return newValue
+}
+
+sealed class AbstractConfigState<T>(val config: LocalConfig<T>) : MutableState<T>,
+    SettingValueState<T> {
+
+    protected val state: MutableState<T> = mutableStateOf(config.default)
+
+    val setter: (T) -> Unit = {
+        ThreadUtil.ensureMainThread()
+        setNewValue(it)
+    }
+
+    override var value: T
+        get() {
+            ThreadUtil.ensureMainThread()
+            return state.value
+        }
+        set(newValue) {
+            setter.invoke(newValue)
+        }
+
+    protected abstract fun setNewValue(newValue: T)
+
+    fun updateInMemoryState(newValue: T) {
+        state.value = newValue
+    }
+
+    override fun reset() {
+        value = config.default
+    }
+
+    override fun component1(): T = value
+
+    override fun component2(): (T) -> Unit = setter
+}
+
+class BooleanConfigState(config: LocalConfig<Boolean>) : AbstractConfigState<Boolean>(config) {
+    override fun setNewValue(newValue: Boolean) {
+        set(config, newValue) {
+            updateInMemoryState(it)
+        }
+    }
+}
+
+class LongConfigState(config: LocalConfig<Long>) : AbstractConfigState<Long>(config) {
+    override fun setNewValue(newValue: Long) {
+        set(config, newValue) {
+            updateInMemoryState(it)
+        }
+    }
+}
+
+class IntConfigState(config: LocalConfig<Int>) : AbstractConfigState<Int>(config) {
+    override fun setNewValue(newValue: Int) {
+        set(config, newValue) {
+            updateInMemoryState(it)
+        }
+    }
+}
+
+class StringConfigState(config: LocalConfig<String>) : AbstractConfigState<String>(config) {
+    override fun setNewValue(newValue: String) {
+        set(config, newValue) {
+            updateInMemoryState(it)
+        }
+    }
+}
