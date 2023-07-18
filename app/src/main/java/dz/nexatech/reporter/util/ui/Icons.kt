@@ -10,7 +10,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 
-const val DisabledIconOpacity = 0.38f
+const val disabledIconOpacity = 0.38f
+
+fun Color.disabled(disable: Boolean = true) =
+    if (disable) copy(alpha = disabledIconOpacity) else this
 
 @Composable
 fun DecorativeIcon(

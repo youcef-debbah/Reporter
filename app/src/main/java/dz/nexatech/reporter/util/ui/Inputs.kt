@@ -703,7 +703,7 @@ fun InputIcon(
 ) {
     DecorativeIcon(
         icon = iconsAssetsResources[variable.iconPath] ?: defaultIcon,
-        tint = LocalContentColor.current.copy(alpha = DisabledIconOpacity),
+        tint = LocalContentColor.current.disabled(),
     )
 }
 

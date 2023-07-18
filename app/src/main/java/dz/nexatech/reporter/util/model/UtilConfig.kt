@@ -3,6 +3,7 @@ package dz.nexatech.reporter.util.model
 import com.google.common.collect.ImmutableMap
 import dz.nexatech.reporter.client.common.Texts
 import dz.nexatech.reporter.util.ui.AbstractApplication
+import dz.nexatech.reporter.util.ui.ThemeColors
 
 private val DNS_EXCEPTIONS = arrayOf(
     "java.net.SocketException",
@@ -16,7 +17,6 @@ val CONFIG_VERSION =
 
 val NAVIGATION_ANIMATION_DURATION = RemoteConfig.Int("NAVIGATION_ANIMATION_DURATION", 500)
 val CONFIG_SCREEN_NAVIGATION_ANIMATION_ENABLED = RemoteConfig.Boolean("NAVIGATION_ANIMATION_ENABLED", true)
-val DYNAMIC_TONAL_PALETTE_ENABLED = RemoteConfig.Boolean("DYNAMIC_TONAL_PALETTE_ENABLED", true)
 val TEMPLATES_DOWNLOADING_LINK = RemoteConfig.String("TEMPLATES_DOWNLOADING_LINK", "https://drive.google.com/drive/folders/17v9MWlNCxS1AUNLK7ZxZLpSMLmRxgOyy?usp=share_link")
 val DEFAULT_LINE_ELEMENT_WIDTH_LIMIT = RemoteConfig.Int("DEFAULT_LINE_ELEMENT_WIDTH_LIMIT", 380)
 
@@ -25,16 +25,17 @@ val GLOBAL_REMOTE_CONFIG_DEFAULTS: ImmutableMap<String, Any> = ImmutableMap.buil
     .putRemoteConfigDefault(CONFIG_VERSION)
     .putRemoteConfigDefault(NAVIGATION_ANIMATION_DURATION)
     .putRemoteConfigDefault(CONFIG_SCREEN_NAVIGATION_ANIMATION_ENABLED)
-    .putRemoteConfigDefault(DYNAMIC_TONAL_PALETTE_ENABLED)
     .putRemoteConfigDefault(TEMPLATES_DOWNLOADING_LINK)
     .putRemoteConfigDefault(DEFAULT_LINE_ELEMENT_WIDTH_LIMIT)
     .build()
 
 val NO_CONFIG_CACHE = LocalConfig.Boolean("NO_CONFIG_CACHE", false)
-val APPLICATION_THEME = LocalConfig.String("APPLICATION_THEME", "BLUE")
+val APPLICATION_THEME = LocalConfig.String("APPLICATION_THEME", ThemeColors.DEFAULT_THEME.name)
+val DYNAMIC_APPLICATION_THEME = LocalConfig.Boolean("DYNAMIC_APPLICATION_THEME", false)
 
 @Suppress("unused")
 val GLOBAL_LOCAL_CONFIGS: ImmutableMap<String, LocalConfig<*>> = ImmutableMap.builder<String, LocalConfig<*>>()
     .putLocalConfig(NO_CONFIG_CACHE)
     .putLocalConfig(APPLICATION_THEME)
+    .putLocalConfig(DYNAMIC_APPLICATION_THEME)
     .build()

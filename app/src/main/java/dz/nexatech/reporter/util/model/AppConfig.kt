@@ -167,19 +167,19 @@ object AppConfig {
     fun get(remoteBoolean: RemoteConfig<Boolean>): Boolean =
         getRemoteValue(remoteBoolean.key)?.asBoolean() ?: remoteBoolean.default
 
-    fun stringState(localString: LocalConfig<String>): StringConfigState =
+    fun getState(localString: LocalConfig<String>): StringConfigState =
         stringStates[localString.key]
             ?: throw IllegalArgumentException("String state not found: ${localString.key}")
 
-    fun intState(localInt: LocalConfig<Int>): IntConfigState =
+    fun getState(localInt: LocalConfig<Int>): IntConfigState =
         intStates[localInt.key]
             ?: throw IllegalArgumentException("Int state not found: ${localInt.key}")
 
-    fun longState(localLong: LocalConfig<Long>): LongConfigState =
+    fun getState(localLong: LocalConfig<Long>): LongConfigState =
         longStates[localLong.key]
             ?: throw IllegalArgumentException("Long state not found: ${localLong.key}")
 
-    fun booleanState(localBoolean: LocalConfig<Boolean>): BooleanConfigState =
+    fun getState(localBoolean: LocalConfig<Boolean>): BooleanConfigState =
         booleanStates[localBoolean.key]
             ?: throw IllegalArgumentException("Boolean state not found: ${localBoolean.key}")
 

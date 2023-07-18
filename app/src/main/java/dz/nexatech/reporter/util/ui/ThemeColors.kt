@@ -553,4 +553,8 @@ enum class ThemeColors(
     }
 
     fun colorScheme(darkTheme: Boolean): ColorScheme = if (darkTheme) darkColors else lightColors
+
+    companion object {
+        val DEFAULT_THEME: ThemeColors = BLUE
+    }
 }

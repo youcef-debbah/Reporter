@@ -23,7 +23,7 @@
     <string name="no_result_found">لم يتم العثور على نتائج!</string>
     <string name="back">رجوع</string>
     <string name="select_theme">اختر لوناً:</string>
-    <string name="default_theme">اللون الافتراضي:</string>
+    <string name="default_system_theme">اللون الافتراضي:</string>
     <string name="violet_theme_title">اللون البنفسجي</string>
     <string name="blue_theme_title">اللون الأزرق</string>
     <string name="azure_theme_title">اللون الأزرق السماوي</string>

@@ -147,3 +147,15 @@ fun PaddedDivider(
         color = color,
     )
 }
+
+@Composable
+fun SettingsDivider(modifier: Modifier = Modifier) = Divider(
+    modifier = modifier
+        .contentPadding(
+            top = zero_padding,
+            bottom = zero_padding,
+            start = Theme.dimens.content_padding.start * 4,
+            end = Theme.dimens.content_padding.end * 4,
+        )
+        .fillMaxWidth(),
+)

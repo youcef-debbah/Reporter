@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dz.nexatech.reporter.util.model.APPLICATION_THEME
 import dz.nexatech.reporter.util.model.AppConfig
-import dz.nexatech.reporter.util.model.DYNAMIC_TONAL_PALETTE_ENABLED
+import dz.nexatech.reporter.util.model.DYNAMIC_APPLICATION_THEME
 import dz.nexatech.reporter.util.model.Teller
 
 object DefaultColors {
@@ -43,23 +43,17 @@ fun loadColorScheme(
     useDynamicTonalPalette: Boolean,
     isDarkTheme: Boolean,
     themeName: String,
-): ColorScheme =
-    if (useDynamicTonalPalette
-        && AppConfig.get(DYNAMIC_TONAL_PALETTE_ENABLED)
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    ) {
+): ColorScheme? =
+    if (useDynamicTonalPalette && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
     } else {
-        val currentThemeColors = try {
-            ThemeColors.valueOf(themeName)
+        try {
+            ThemeColors.valueOf(themeName).colorScheme(isDarkTheme)
         } catch (e: IllegalArgumentException) {
-            val defaultTheme = APPLICATION_THEME.default
-            Teller.warn("Theme not found: $themeName falling back to: $defaultTheme", e)
-            ThemeColors.valueOf(defaultTheme)
+            Teller.warn("Theme not found: $themeName", e)
+            null
         }
-        currentThemeColors.colorScheme(isDarkTheme)
     }
-
 
 @Composable
 fun DynamicTheme(
@@ -68,16 +62,19 @@ fun DynamicTheme(
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
-    val colorScheme by remember(context, isDarkTheme) {
+    val colorSchemeState = remember(context, isDarkTheme) {
         derivedStateOf {
             loadColorScheme(context, false, isDarkTheme, themeNameState.value)
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        content = content,
-    )
+    val colorScheme = colorSchemeState.value
+    if (colorScheme != null) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            content = content,
+        )
+    }
 }
 
 @Composable
@@ -88,13 +85,15 @@ fun DynamicTheme(
 ) {
     val context = LocalContext.current
     val colorScheme = remember(context, themeName, isDarkTheme) {
-            loadColorScheme(context, false, isDarkTheme, themeName)
+        loadColorScheme(context, false, isDarkTheme, themeName)
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        content = content,
-    )
+    if (colorScheme != null) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            content = content,
+        )
+    }
 }
 
 @Composable
@@ -105,8 +104,10 @@ fun ApplicationTheme(
 ) {
     val colorScheme by remember(isDarkTheme, context) {
         derivedStateOf {
-            val appThemeName = AppConfig.stringState(APPLICATION_THEME)
-            loadColorScheme(context, true, isDarkTheme, appThemeName.value)
+            val appThemeName = AppConfig.getState(APPLICATION_THEME)
+            val useDynamicTheme = AppConfig.getState(DYNAMIC_APPLICATION_THEME)
+            loadColorScheme(context, useDynamicTheme.value, isDarkTheme, appThemeName.value)
+                ?: ThemeColors.DEFAULT_THEME.colorScheme(isDarkTheme).also { appThemeName.reset() }
         }
     }
     val systemUiController = rememberSystemUiController()
