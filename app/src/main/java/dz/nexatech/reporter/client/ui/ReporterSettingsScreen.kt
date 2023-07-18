@@ -59,9 +59,6 @@ object ReporterSettingsScreen : StaticScreenDestination(
             },
         ) {
             ScrollableColumn {
-                Button({ AppConfig.getState(APPLICATION_THEME).setter("abc") }) {
-                    Body("use illegal theme")
-                }
                 ContentCard(Modifier.contentPadding()) {
                     SettingsGroup(title = { Title("Page layout") }) {
 
