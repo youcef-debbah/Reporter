@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -49,6 +50,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavGraphBuilder
@@ -90,12 +92,14 @@ import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
 import dz.nexatech.reporter.util.ui.DefaultNavigationBar
 import dz.nexatech.reporter.util.ui.DestinationsRegistry
+import dz.nexatech.reporter.util.ui.ElevationTokens
 import dz.nexatech.reporter.util.ui.ErrorTheme
 import dz.nexatech.reporter.util.ui.InfoIcon
 import dz.nexatech.reporter.util.ui.Line
 import dz.nexatech.reporter.util.ui.LocalDimens
 import dz.nexatech.reporter.util.ui.PaddedColumn
 import dz.nexatech.reporter.util.ui.PaddedDivider
+import dz.nexatech.reporter.util.ui.RoundedCorner
 import dz.nexatech.reporter.util.ui.ScrollableColumn
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
@@ -456,6 +460,10 @@ class TabsContext(
             themedComposable(tab.route) {
                 val scrollState = rememberScrollState()
                 val coroutineScope = rememberCoroutineScope()
+
+                val columnsCount = rememberColumnsCount()
+                val width = rememberLayoutWidth(columnsCount)
+
                 TabScaffold(
                     destinationsRegistry = destinationsRegistry,
                     navController = controller,
@@ -471,11 +479,39 @@ class TabsContext(
                                 desc = R.string.new_tuple_desc
                             )
                         }
+                    },
+                    header = {
+                        ContentCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCorner.ExtraLargeBottom,
+                            colors = CardDefaults.elevatedCardColors(
+                                containerColor = Theme.colorScheme.surface
+                            ),
+                            elevation = CardDefaults.elevatedCardElevation(
+                                defaultElevation = ElevationTokens.Level2,
+                                pressedElevation = ElevationTokens.Level2,
+                                focusedElevation = ElevationTokens.Level2,
+                                hoveredElevation = ElevationTokens.Level3,
+                                draggedElevation = ElevationTokens.Level4,
+                                disabledElevation = ElevationTokens.Level1,
+                            ),
+                        ) {
+                            val dimens = Theme.dimens
+                            val titlePaddings =
+                                remember { dimens.content_padding.copy(bottom = dimens.content_padding.bottom + 2.dp) * 2 }
+                            Title(
+                                recordDesc,
+                                Modifier
+                                    .padding(titlePaddings)
+                                    .width(width.value)
+                            )
+                        }
                     }
                 ) {
                     RecordTuples(
                         tuples = recordState.tuples,
-                        desc = recordDesc,
+                        columnsCount = columnsCount.value,
+                        width = width.value,
                         onMoveUp = {
                             templateState.moveTupleUp(recordState, it)
                         },
@@ -508,29 +544,25 @@ class TabsContext(
     @Composable
     private fun RecordTuples(
         tuples: SnapshotStateList<ImmutableMap<String, VariableState>>,
-        desc: String,
+        columnsCount: Int,
+        width: Dp,
         onMoveUp: (ImmutableMap<String, VariableState>) -> Unit,
         onMoveDown: (ImmutableMap<String, VariableState>) -> Unit,
         onCopy: (ImmutableMap<String, VariableState>) -> Unit,
         onDelete: (ImmutableMap<String, VariableState>) -> Unit,
     ) {
-        val columnsCount = rememberColumnsCount()
-        val width by rememberLayoutWidth(columnsCount)
-
-        ContentCard(
-            Modifier
-                .contentPadding()
-                .fillMaxWidth()
-        ) {
-            val dimens = Theme.dimens
-            val titlePaddings =
-                remember { dimens.content_padding.copy(bottom = dimens.content_padding.bottom + 2.dp) * 2 }
-            Title(
-                desc,
-                Modifier
-                    .padding(titlePaddings)
-                    .width(width)
-            )
+        if (tuples.isEmpty()) {
+            ContentCard(
+                modifier = Modifier.contentPadding(),
+            ) {
+                Title(
+                    R.string.no_entries_found,
+                    Modifier
+                        .padding(Theme.dimens.content_padding * 2)
+                        .padding(bottom = Theme.dimens.content_padding.bottom)
+                        .fillMaxWidth()
+                )
+            }
         }
 
         for ((i, tuple) in tuples.withIndex()) {
@@ -580,7 +612,7 @@ class TabsContext(
                             }
                         }
                         val variableStateRows = remember(columnsCount, tuple) {
-                            values.slice(columnsCount.value)
+                            values.slice(columnsCount)
                         }
                         for (variableStateRow in variableStateRows) {
                             Line(modifier = Modifier.requiredWidth(width)) {
@@ -595,6 +627,7 @@ class TabsContext(
         }
     }
 
+    @OptIn(ExperimentalAnimationApi::class)
     private fun buildSectionTab(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
@@ -779,6 +812,7 @@ private fun TabScaffold(
     navController: NavHostController,
     tab: TemplateTab,
     floatingActionButton: @Composable () -> Unit = {},
+    header: @Composable () -> Unit = {},
     scrollState: ScrollState = rememberScrollState(),
     block: @Composable () -> Unit,
 ) {
@@ -791,6 +825,7 @@ private fun TabScaffold(
         },
         floatingActionButton = floatingActionButton
     ) {
+        header()
         ScrollableColumn(scrollState = scrollState) {
             block()
         }

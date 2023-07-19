@@ -72,6 +72,7 @@
     <string name="templates_updated_successfully">%d modèle(s) mis à jour avec succès</string>
     <string name="templates_importing_failed">Échec de l\'importation des modèles !</string>
     <string name="no_templates_found">Aucun modèle trouvé !</string>
+    <string name="no_entries_found">Aucune entrée trouvée !</string>
     <string name="import_template">Importer</string>
     <string name="download_templates">Télécharger</string>
     <string name="export_pdf">Exporter en PDF</string>

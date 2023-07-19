@@ -74,6 +74,7 @@
     <string name="templates_updated_successfully">%d Template(s) Updated Successfully</string>
     <string name="templates_importing_failed">Templates importing failed!</string>
     <string name="no_templates_found">No template found!</string>
+    <string name="no_entries_found">No entries found!</string>
     <string name="import_template">Import</string>
     <string name="download_templates">Download</string>
     <string name="export_pdf">Export PDF</string>

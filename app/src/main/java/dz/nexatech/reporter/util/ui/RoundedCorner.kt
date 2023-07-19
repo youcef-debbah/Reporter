@@ -14,6 +14,13 @@ internal object RoundedCorner {
             bottomEnd = 0.0.dp,
             bottomStart = 0.0.dp
         )
+    val ExtraLargeBottom =
+        RoundedCornerShape(
+            topStart = 0.0.dp,
+            topEnd = 0.0.dp,
+            bottomEnd = 28.0.dp,
+            bottomStart = 28.0.dp
+        )
     val ExtraSmall = RoundedCornerShape(4.0.dp)
     val ExtraSmallTop = RoundedCornerShape(
         topStart = 4.0.dp,
