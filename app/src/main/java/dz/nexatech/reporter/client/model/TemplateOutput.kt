@@ -74,7 +74,8 @@ class TemplateOutput(
         resourcesRepository.loadFonts(templateState.fontsVariablesStates.map { it.state.value })
     }
 
-    fun exportTemplateAsPDF(uri: Uri) {
+    fun exportTemplateAsPDF(uri: Uri): Boolean {
+        var result = false
         _pdfGenerating.value++
         ioLaunch {
             try {
@@ -86,6 +87,7 @@ class TemplateOutput(
                     withMain {
                         Toasts.short(R.string.pdf_exporting_succeed, context)
                         latestUri.value = uri
+                        result = true
                     }
                 }
             } catch (e: Exception) {
@@ -100,6 +102,8 @@ class TemplateOutput(
                 }
             }
         }
+
+        return result
     }
 
     fun newExportPdfIntent(): Intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {

@@ -117,7 +117,7 @@ fun AnimatedApplicationTheme(
         SetSystemBarsColor(isDarkTheme, it)
         MaterialTheme(
             colorScheme = it,
-            typography = rememberTypography(),
+            typography = rememberDefaultTypography(),
             content = content,
         )
     }
@@ -142,7 +142,7 @@ fun DynamicApplicationTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = rememberTypography(),
+        typography = rememberDefaultTypography(),
         content = content,
     )
 }
@@ -164,13 +164,13 @@ fun StaticApplicationTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = rememberTypography(),
+        typography = rememberDefaultTypography(),
         content = content,
     )
 }
 
 @Composable
-private fun rememberTypography(): Typography {
+fun rememberDefaultTypography(): Typography {
     val materialTypography = MaterialTheme.typography
     val typography = remember(materialTypography) {
         materialTypography.copy(

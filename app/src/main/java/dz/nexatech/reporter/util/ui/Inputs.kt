@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -300,15 +301,23 @@ fun ColorInput(variableState: VariableState, modifier: Modifier) {
                 CentredColumn {
                     Title(
                         modifier = Modifier
-                            .contentPadding(
-                                top = Theme.dimens.content_padding.top * 2,
-                                start = Theme.dimens.content_padding.start * 3,
-                                end = Theme.dimens.content_padding.end * 3,
-                                bottom = Theme.dimens.content_padding.end * 3,
-                            )
+                            .padding(Theme.dimens.content_padding * 2)
                             .fillMaxWidth(),
-                        text = variable.desc,
+                        text = variable.label,
                     )
+                    if (variable.desc.isNotEmpty()) {
+                        Body(
+                            modifier = Modifier
+                                .contentPadding(
+                                    top = zero_padding,
+                                    start = Theme.dimens.content_padding.start * 2,
+                                    end = Theme.dimens.content_padding.end * 2,
+                                    bottom = Theme.dimens.content_padding.bottom * 2,
+                                )
+                                .fillMaxWidth(),
+                            text = variable.desc,
+                        )
+                    }
                     PaddedDivider()
                     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                         HarmonyColorPicker(
@@ -463,17 +472,29 @@ private fun VariableDatePicker(
     DatePicker(
         title = null,
         headline = if (headline) ({
-            Title(
-                modifier = Modifier
-                    .contentPadding(
-                        top = Theme.dimens.content_padding.top * 2,
-                        start = Theme.dimens.content_padding.start * 3,
-                        end = Theme.dimens.content_padding.end * 3,
-                        bottom = Theme.dimens.content_padding.end * 3,
+            CentredColumn(Modifier.fillMaxWidth()) {
+                Body(
+                    modifier = Modifier.contentPadding(
+                        top = zero_padding,
+                        start = Theme.dimens.content_padding.start * 2,
+                        end = Theme.dimens.content_padding.end * 2,
+                        bottom = zero_padding,
+                    ),
+                    text = variable.label,
+                )
+                if (variable.desc.isNotEmpty()) {
+                    Title(
+                        modifier = Modifier.contentPadding(
+                            top = zero_padding,
+                            start = Theme.dimens.content_padding.start * 2,
+                            end = Theme.dimens.content_padding.end * 2,
+                            bottom = zero_padding,
+                        ),
+                        text = variable.desc,
                     )
-                    .fillMaxWidth(),
-                text = variable.desc,
-            )
+                }
+                Spacer(modifier = Modifier.height(Theme.dimens.content_padding.top + Theme.dimens.content_padding.bottom * 2))
+            }
         }) else null,
         state = datePickerState,
         modifier = Modifier.contentPadding(),
@@ -563,7 +584,11 @@ private fun CounterInput(
     ) {
         val showInfo = rememberSaveable { mutableStateOf(false) }
         AnimatedVisibility(visible = showInfo.value) {
-            Body(variable.desc)
+            Body(
+                variable.desc,
+                style = Theme.typography.labelLarge,
+                color = Theme.colorScheme.outline
+            )
         }
         Row {
             FilledIconButton(
@@ -628,7 +653,11 @@ private fun TextInput(
     ) {
         val showInfo = rememberSaveable { mutableStateOf(false) }
         AnimatedVisibility(visible = showInfo.value) {
-            Body(variable.desc)
+            Body(
+                variable.desc,
+                style = Theme.typography.labelLarge,
+                color = Theme.colorScheme.outline
+            )
         }
         OutlinedTextField(
             singleLine = true,
@@ -663,7 +692,11 @@ private fun LinesInput(
     ) {
         val showInfo = rememberSaveable { mutableStateOf(false) }
         AnimatedVisibility(visible = showInfo.value) {
-            Body(variable.desc)
+            Body(
+                variable.desc,
+                style = Theme.typography.labelLarge,
+                color = Theme.colorScheme.outline
+            )
         }
         OutlinedTextField(
             minLines = max(variable.min.toInt(), 2),
