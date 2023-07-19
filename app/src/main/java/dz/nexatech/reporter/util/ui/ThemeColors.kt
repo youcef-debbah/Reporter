@@ -47,19 +47,21 @@ enum class ThemeColors(
     darkOutlineVariant: Color,
     darkScrim: Color,
 
+    lightBackground: Color = lightSurface,
+    lightOnBackground: Color = lightOnSurface,
+
     lightError: Color = DefaultColors.md_theme_light_error,
     lightErrorContainer: Color = DefaultColors.md_theme_light_errorContainer,
     lightOnError: Color = DefaultColors.md_theme_light_onError,
     lightOnErrorContainer: Color = DefaultColors.md_theme_light_onErrorContainer,
-    lightBackground: Color = DefaultColors.md_theme_light_background,
-    lightOnBackground: Color = DefaultColors.md_theme_light_onBackground,
+
+    darkBackground: Color = darkSurface,
+    darkOnBackground: Color = darkOnSurface,
 
     darkError: Color = DefaultColors.md_theme_dark_error,
     darkErrorContainer: Color = DefaultColors.md_theme_dark_errorContainer,
     darkOnError: Color = DefaultColors.md_theme_dark_onError,
     darkOnErrorContainer: Color = DefaultColors.md_theme_dark_onErrorContainer,
-    darkBackground: Color = DefaultColors.md_theme_dark_background,
-    darkOnBackground: Color = DefaultColors.md_theme_dark_onBackground,
 ) {
 
     VIOLET(

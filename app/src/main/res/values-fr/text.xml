@@ -107,5 +107,9 @@
     <string name="dec_counter">Décrémenter le compteur</string>
     <string name="dialog_title_delete_confirmation">Confirmation de la suppression</string>
     <string name="confirm_deleting_all_templates">Êtes-vous sûr(e) de vouloir supprimer tous les modèles ?</string>
+    <string name="app_appearance_settings_group">Apparence de l\'application</string>
+    <string name="dynamic_app_theme_title">Utilisez le thème du système</string>
+    <string name="dynamic_app_theme_subtitle">Le thème du système est basé sur votre fond d\'écran actuel</string>
+    <string name="app_theme_title">Thème d\'application</string>
 
 </resources>

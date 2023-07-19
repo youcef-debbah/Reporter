@@ -2,9 +2,11 @@ package dz.nexatech.reporter.util.ui
 
 import android.content.Context
 import android.os.Build
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
@@ -97,7 +99,7 @@ fun DynamicTheme(
 }
 
 @Composable
-fun ApplicationTheme(
+fun AnimatedApplicationTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     context: Context = LocalContext.current,
     content: @Composable () -> Unit,
@@ -110,18 +112,65 @@ fun ApplicationTheme(
                 ?: ThemeColors.DEFAULT_THEME.colorScheme(isDarkTheme).also { appThemeName.reset() }
         }
     }
-    val systemUiController = rememberSystemUiController()
 
-    DisposableEffect(systemUiController, isDarkTheme) {
-
-        systemUiController.setSystemBarsColor(
-            color = colorScheme.surface,
-            darkIcons = !isDarkTheme,
+    Crossfade(colorScheme, label = "theme_animation") {
+        SetSystemBarsColor(isDarkTheme, it)
+        MaterialTheme(
+            colorScheme = it,
+            typography = rememberTypography(),
+            content = content,
         )
+    }
+}
 
-        onDispose {}
+@Composable
+fun DynamicApplicationTheme(
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    context: Context = LocalContext.current,
+    content: @Composable () -> Unit,
+) {
+    val colorScheme by remember(isDarkTheme, context) {
+        derivedStateOf {
+            val appThemeName = AppConfig.getState(APPLICATION_THEME)
+            val useDynamicTheme = AppConfig.getState(DYNAMIC_APPLICATION_THEME)
+            loadColorScheme(context, useDynamicTheme.value, isDarkTheme, appThemeName.value)
+                ?: ThemeColors.DEFAULT_THEME.colorScheme(isDarkTheme).also { appThemeName.reset() }
+        }
     }
 
+    SetSystemBarsColor(isDarkTheme, colorScheme)
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = rememberTypography(),
+        content = content,
+    )
+}
+
+@Composable
+fun StaticApplicationTheme(
+    isDarkTheme: Boolean = isSystemInDarkTheme(),
+    context: Context = LocalContext.current,
+    content: @Composable () -> Unit,
+) {
+    val colorScheme = remember(isDarkTheme, context) {
+        val appThemeName = AppConfig.get(APPLICATION_THEME)
+        val useDynamicTheme = AppConfig.get(DYNAMIC_APPLICATION_THEME)
+        loadColorScheme(context, useDynamicTheme, isDarkTheme, appThemeName)
+            ?: ThemeColors.DEFAULT_THEME.colorScheme(isDarkTheme)
+    }
+
+    SetSystemBarsColor(isDarkTheme, colorScheme)
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = rememberTypography(),
+        content = content,
+    )
+}
+
+@Composable
+private fun rememberTypography(): Typography {
     val materialTypography = MaterialTheme.typography
     val typography = remember(materialTypography) {
         materialTypography.copy(
@@ -135,11 +184,24 @@ fun ApplicationTheme(
             ),
         )
     }
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = typography,
-        content = content,
-    )
+    return typography
+}
+
+@Composable
+fun SetSystemBarsColor(
+    isDarkTheme: Boolean,
+    colorScheme: ColorScheme,
+) {
+    val systemUiController = rememberSystemUiController()
+    DisposableEffect(systemUiController, isDarkTheme) {
+
+        systemUiController.setSystemBarsColor(
+            color = colorScheme.surface,
+            darkIcons = !isDarkTheme,
+        )
+
+        onDispose {}
+    }
 }
 
 @Composable

@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterialNavigationApi::class,)
+@file:OptIn(ExperimentalMaterialNavigationApi::class)
 
 package dz.nexatech.reporter.client.ui
 
@@ -16,6 +16,7 @@ import dz.nexatech.reporter.util.ui.AbstractActivity
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.DestinationsRegistry
 import dz.nexatech.reporter.util.ui.NavigationScaffold
+import dz.nexatech.reporter.util.ui.StaticApplicationTheme
 
 @AndroidEntryPoint
 class MainActivity : AbstractActivity() {
@@ -26,8 +27,10 @@ class MainActivity : AbstractActivity() {
         val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         val destinations = viewModel.activeDestinations
         setContent {
-            NavigationScaffold(destinations, TemplatesListScreen) { navController ->
-                buildNavigationGraph(this, navController, destinations, viewModel)
+            StaticApplicationTheme {
+                NavigationScaffold(destinations, TemplatesListScreen) { navController ->
+                    buildNavigationGraph(this, navController, destinations, viewModel)
+                }
             }
         }
     }
@@ -36,7 +39,7 @@ class MainActivity : AbstractActivity() {
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
         destinations: DestinationsRegistry,
-        viewModel: MainViewModel
+        viewModel: MainViewModel,
     ) {
         if (destinations.isEmpty()) {
             val standardDestinations = AbstractApplication.INSTANCE.config.standardDestinations

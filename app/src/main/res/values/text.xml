@@ -109,4 +109,8 @@
     <string name="dec_counter">Decrement the counter</string>
     <string name="dialog_title_delete_confirmation">Delete Confirmation</string>
     <string name="confirm_deleting_all_templates">Are you sure you want to delete all\u00A0templates?</string>
+    <string name="app_appearance_settings_group">Application Appearance</string>
+    <string name="dynamic_app_theme_title">Use System Theme</string>
+    <string name="dynamic_app_theme_subtitle">The system theme is based on your current wallpaper</string>
+    <string name="app_theme_title">Application Theme</string>
 </resources>

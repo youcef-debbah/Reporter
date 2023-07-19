@@ -34,6 +34,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
@@ -53,7 +54,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.createGraph
-import com.google.accompanist.navigation.animation.composable
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
 import dagger.hilt.android.internal.ThreadUtil
@@ -106,6 +106,7 @@ import dz.nexatech.reporter.util.ui.VariableInput
 import dz.nexatech.reporter.util.ui.contentPadding
 import dz.nexatech.reporter.util.ui.iconsAssetsResources
 import dz.nexatech.reporter.util.ui.stringRes
+import dz.nexatech.reporter.util.ui.themedComposable
 import io.pebbletemplates.pebble.template.PebbleTemplate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -237,19 +238,22 @@ class TabsContext(
         navController: NavHostController,
     ) {
         destinationsRegistry.register(navGraphBuilder, navController) {
-            composable(loadingTab.route) {
+            themedComposable(loadingTab.route) {
                 DisposableEffect(template) {
                     onDispose {
                         loadingScope.cancel()
                     }
                 }
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Body(R.string.template_tab_loading_desc, Modifier.contentPadding())
-                    CircularProgressIndicator(Modifier.contentPadding())
+
+                Surface {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Body(R.string.template_tab_loading_desc, Modifier.contentPadding())
+                        CircularProgressIndicator(Modifier.contentPadding())
+                    }
                 }
             }
 
@@ -285,7 +289,7 @@ class TabsContext(
         errorCode: Int,
     ) {
         destinationsRegistry.register(navGraphBuilder, navController) {
-            composable(errorTab.route) {
+            themedComposable(errorTab.route) {
                 ErrorTheme {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -449,7 +453,7 @@ class TabsContext(
     ) {
         val recordDesc = recordState.record.desc
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
-            composable(tab.route) {
+            themedComposable(tab.route) {
                 val scrollState = rememberScrollState()
                 val coroutineScope = rememberCoroutineScope()
                 TabScaffold(
@@ -519,7 +523,8 @@ class TabsContext(
                 .fillMaxWidth()
         ) {
             val dimens = Theme.dimens
-            val titlePaddings = remember { dimens.content_padding.copy(bottom = dimens.content_padding.bottom + 2.dp) * 2 }
+            val titlePaddings =
+                remember { dimens.content_padding.copy(bottom = dimens.content_padding.bottom + 2.dp) * 2 }
             Title(
                 desc,
                 Modifier
@@ -599,7 +604,7 @@ class TabsContext(
     ) {
         val desc = sectionState.section.desc
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
-            composable(tab.route) {
+            themedComposable(tab.route) {
                 TabScaffold(destinationsRegistry, controller, tab) {
                     ContentCard(Modifier.contentPadding()) {
                         PaddedColumn {
@@ -647,7 +652,7 @@ class TabsContext(
         webView: WebView,
     ) {
         destinationsRegistry.register(navGraphBuilder, navController) { controller ->
-            composable(previewTab.route) {
+            themedComposable(previewTab.route) {
                 val pdfExportingLauncher = rememberLauncherForActivityResult(
                     ActivityResultContracts.StartActivityForResult()
                 ) { result ->

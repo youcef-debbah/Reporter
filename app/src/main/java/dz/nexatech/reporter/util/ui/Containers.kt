@@ -1,7 +1,10 @@
-@file:OptIn(ExperimentalLayoutApi::class)
-
 package dz.nexatech.reporter.util.ui
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDeepLink
+import androidx.navigation.NavGraphBuilder
+import com.google.accompanist.navigation.animation.composable
 
 @Composable
 fun ContentCard(
@@ -47,7 +55,7 @@ inline fun CentredColumn(
     modifier: Modifier = Modifier,
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) = Column(
     modifier = modifier,
     verticalArrangement = verticalArrangement,
@@ -61,7 +69,7 @@ inline fun ScrollableColumn(
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     scrollState: ScrollState = rememberScrollState(),
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     PaddedColumn(
         modifier = modifier
@@ -79,7 +87,7 @@ inline fun PaddedColumn(
     modifier: Modifier = Modifier,
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) = Column(
     modifier = modifier.contentPadding(),
     verticalArrangement = verticalArrangement,
@@ -92,7 +100,7 @@ inline fun PaddedBox(
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.Center,
     propagateMinConstraints: Boolean = false,
-    content: @Composable BoxScope.() -> Unit
+    content: @Composable BoxScope.() -> Unit,
 ) = Box(
     modifier = modifier.contentPadding(),
     contentAlignment = contentAlignment,
@@ -100,13 +108,14 @@ inline fun PaddedBox(
     content = content,
 )
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CentredRow(
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     maxItemsInEachRow: Int = Int.MAX_VALUE,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) = FlowRow(
     modifier = modifier,
     horizontalArrangement = horizontalArrangement,
@@ -115,13 +124,14 @@ fun CentredRow(
     content = content,
 )
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PaddedRow(
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
     maxItemsInEachRow: Int = Int.MAX_VALUE,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) = FlowRow(
     modifier = modifier.contentPadding(),
     horizontalArrangement = horizontalArrangement,
@@ -159,3 +169,33 @@ fun SettingsDivider(modifier: Modifier = Modifier) = Divider(
         )
         .fillMaxWidth(),
 )
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.themedComposable(
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
+    deepLinks: List<NavDeepLink> = emptyList(),
+    enterTransition: (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = null,
+    exitTransition: (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = null,
+    popEnterTransition: (
+    AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?
+    )? = enterTransition,
+    popExitTransition: (
+    AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?
+    )? = exitTransition,
+    content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit,
+) {
+    composable(
+        route = route,
+        arguments = arguments,
+        deepLinks = deepLinks,
+        enterTransition = enterTransition,
+        exitTransition = exitTransition,
+        popEnterTransition = popEnterTransition,
+        popExitTransition = popExitTransition,
+    ) {
+        DynamicApplicationTheme {
+            content(it)
+        }
+    }
+}

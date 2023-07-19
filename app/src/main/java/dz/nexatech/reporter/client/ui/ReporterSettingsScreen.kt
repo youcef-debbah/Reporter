@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalAnimationApi::class)
-
 package dz.nexatech.reporter.client.ui
 
 import android.os.Build
@@ -18,6 +16,7 @@ import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.util.model.APPLICATION_THEME
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.DYNAMIC_APPLICATION_THEME
+import dz.nexatech.reporter.util.ui.AnimatedApplicationTheme
 import dz.nexatech.reporter.util.ui.Body
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.ScrollableColumn
@@ -41,9 +40,14 @@ object ReporterSettingsScreen : StaticScreenDestination(
         navigate(this@ReporterSettingsScreen.route, navOptions)
     }
 
+    @OptIn(ExperimentalAnimationApi::class)
     fun NavGraphBuilder.addSettingsScreen(navController: NavController): ReporterSettingsScreen {
         val thisRoute = this@ReporterSettingsScreen.route
-        composable(thisRoute) { ReporterSettingsView(navController) }
+        composable(thisRoute) {
+            AnimatedApplicationTheme {
+                ReporterSettingsView(navController)
+            }
+        }
         return this@ReporterSettingsScreen
     }
 
@@ -60,7 +64,7 @@ object ReporterSettingsScreen : StaticScreenDestination(
         ) {
             ScrollableColumn {
                 ContentCard(Modifier.contentPadding()) {
-                    SettingsGroup(title = { Title("Page layout") }) {
+                    SettingsGroup(title = { Title(R.string.app_appearance_settings_group) }) {
 
                         val dynamicAppThemeEnabled =
                             AppConfig.getState(DYNAMIC_APPLICATION_THEME)
@@ -69,15 +73,15 @@ object ReporterSettingsScreen : StaticScreenDestination(
                             SettingsDivider()
                             SettingsCheckbox(
                                 state = dynamicAppThemeEnabled,
-                                title = { Title("Use System Theme") },
-                                subtitle = { Body("Use a theme based on your Wallpaper") },
+                                title = { Title(R.string.dynamic_app_theme_title) },
+                                subtitle = { Body(R.string.dynamic_app_theme_subtitle) },
                             )
                         }
 
                         val appTheme = AppConfig.getState(APPLICATION_THEME)
                         SettingsDivider()
                         Title(
-                            text = "Application Theme:",
+                            textRes = R.string.app_theme_title,
                             modifier = Modifier.padding(
                                 top = Theme.dimens.content_padding.top * 2,
                                 bottom = zero_padding,

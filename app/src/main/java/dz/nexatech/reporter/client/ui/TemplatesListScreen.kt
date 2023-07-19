@@ -28,7 +28,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
-import com.google.accompanist.navigation.animation.composable
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.MimeType
 import dz.nexatech.reporter.client.model.MainViewModel
@@ -57,6 +56,7 @@ import dz.nexatech.reporter.util.ui.StaticIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
 import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.contentPadding
+import dz.nexatech.reporter.util.ui.themedComposable
 
 object TemplatesListScreen : StaticScreenDestination(
     route = "templates_list",
@@ -74,7 +74,7 @@ object TemplatesListScreen : StaticScreenDestination(
         viewModel: MainViewModel,
     ): TemplatesListScreen {
         val thisRoute = this@TemplatesListScreen.route
-        composable(thisRoute) { TemplatesListView(navController, viewModel) }
+        themedComposable(thisRoute) { TemplatesListView(navController, viewModel) }
         return this@TemplatesListScreen
     }
 

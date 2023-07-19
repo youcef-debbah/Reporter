@@ -107,5 +107,8 @@
     <string name="dec_counter">تخفيض العداد</string>
     <string name="dialog_title_delete_confirmation">تأكيد الحذف</string>
     <string name="confirm_deleting_all_templates">هل أنت متأكد من رغبتك في حذف جميع القوالب؟</string>
-
+    <string name="app_appearance_settings_group">مظهر التطبيق</string>
+    <string name="dynamic_app_theme_title">استخدم ألوان النظام</string>
+    <string name="dynamic_app_theme_subtitle">ألوان النظام مستنبطة من خلفية الشاشة الحالية</string>
+    <string name="app_theme_title">لون واجهة المستخدم</string>
 </resources>

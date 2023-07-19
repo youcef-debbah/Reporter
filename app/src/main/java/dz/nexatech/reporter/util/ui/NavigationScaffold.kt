@@ -48,21 +48,19 @@ fun NavigationScaffold(
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     builder: NavGraphBuilder.(NavHostController) -> Unit,
 ) {
-    ApplicationTheme {
-        StatelessNavigationScaffold(
-            destinationsRegistry = destinationsRegistry,
-            startDestination = startDestination,
-            bottomSheetNavigator = bottomSheetNavigator,
-            navController = navController,
-            modifier = modifier,
-            topBar = topBar,
-            bottomBar = bottomBar,
-            snackbarHost = snackbarHost,
-            floatingActionButton = floatingActionButton,
-            floatingActionButtonPosition = floatingActionButtonPosition,
-            builder = builder,
-        )
-    }
+    StatelessNavigationScaffold(
+        destinationsRegistry = destinationsRegistry,
+        startDestination = startDestination,
+        bottomSheetNavigator = bottomSheetNavigator,
+        navController = navController,
+        modifier = modifier,
+        topBar = topBar,
+        bottomBar = bottomBar,
+        snackbarHost = snackbarHost,
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = floatingActionButtonPosition,
+        builder = builder,
+    )
 }
 
 @Composable
@@ -84,7 +82,7 @@ private fun StatelessNavigationScaffold(
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     containerColor: Color = Theme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
-    builder: NavGraphBuilder.(NavHostController) -> Unit
+    builder: NavGraphBuilder.(NavHostController) -> Unit,
 ) {
     ModalBottomSheetLayout(bottomSheetNavigator) {
         Scaffold(
@@ -200,7 +198,7 @@ private fun AnimatedContentScope<NavBackStackEntry>.outTransition(goingDeeper: B
 @Composable
 fun DefaultNavigationBar(
     navController: NavHostController,
-    destinationsRegistry: DestinationsRegistry
+    destinationsRegistry: DestinationsRegistry,
 ) {
     val currentScreen = destinationsRegistry.currentDestination(navController)
     val destinations = currentScreen.destinationsOrEmpty()
