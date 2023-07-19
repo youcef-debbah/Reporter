@@ -109,6 +109,7 @@ import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.VariableInput
 import dz.nexatech.reporter.util.ui.contentPadding
 import dz.nexatech.reporter.util.ui.iconsAssetsResources
+import dz.nexatech.reporter.util.ui.small_padding
 import dz.nexatech.reporter.util.ui.stringRes
 import dz.nexatech.reporter.util.ui.themedComposable
 import io.pebbletemplates.pebble.template.PebbleTemplate
@@ -498,7 +499,7 @@ class TabsContext(
                         ) {
                             val dimens = Theme.dimens
                             val titlePaddings =
-                                remember { dimens.content_padding.copy(bottom = dimens.content_padding.bottom + 2.dp) * 2 }
+                                remember { dimens.content_padding.copy(bottom = dimens.content_padding.bottom + 2.dp + small_padding) * 2 }
                             Title(
                                 recordDesc,
                                 Modifier
