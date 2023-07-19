@@ -2,7 +2,9 @@ package dz.nexatech.reporter.client.ui
 
 import android.os.Build
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,6 +18,7 @@ import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.util.model.APPLICATION_THEME
 import dz.nexatech.reporter.util.model.AppConfig
 import dz.nexatech.reporter.util.model.DYNAMIC_APPLICATION_THEME
+import dz.nexatech.reporter.util.model.rememberLayoutWidth
 import dz.nexatech.reporter.util.ui.AnimatedApplicationTheme
 import dz.nexatech.reporter.util.ui.Body
 import dz.nexatech.reporter.util.ui.ContentCard
@@ -31,6 +34,7 @@ import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.contentPadding
 import dz.nexatech.reporter.util.ui.zero_padding
 
+@OptIn(ExperimentalLayoutApi::class)
 object ReporterSettingsScreen : StaticScreenDestination(
     route = "settings",
     icon = StaticIcon.baseline_settings,
@@ -62,8 +66,12 @@ object ReporterSettingsScreen : StaticScreenDestination(
                 )
             },
         ) {
+            val width by rememberLayoutWidth()
             ScrollableColumn {
-                ContentCard(Modifier.contentPadding()) {
+                ContentCard(
+                    Modifier
+                        .contentPadding()
+                        .width(width)) {
                     SettingsGroup(title = { Title(R.string.app_appearance_settings_group) }) {
 
                         val dynamicAppThemeEnabled =
@@ -90,12 +98,7 @@ object ReporterSettingsScreen : StaticScreenDestination(
                             ),
                         )
                         ThemePicker(
-                            modifier = Modifier.padding(
-                                Theme.dimens.content_padding.copy(
-                                    start = zero_padding,
-                                    end = zero_padding
-                                ) * 2
-                            ),
+                            modifier = Modifier.padding(Theme.dimens.content_padding * 2),
                             selectedTheme = appTheme.value,
                             onThemeSelected = { appTheme.value = it.name },
                             enabled = dynamicAppThemeEnabled.value.not(),

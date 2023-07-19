@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalLayoutApi::class)
-
 package dz.nexatech.reporter.util.ui
 
 import androidx.compose.foundation.background
@@ -8,9 +6,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.IconButton
@@ -27,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.util.model.APPLICATION_THEME
-import dz.nexatech.reporter.util.model.rememberLayoutWidth
 
 val themePreviewSize = 60.dp
 val themePreviewPadding = padding_unit * 6
@@ -57,6 +54,7 @@ private fun ThemePreviewIcon(
     )
 }
 
+@ExperimentalLayoutApi
 @Composable
 fun ThemePicker(
     selectedTheme: String,
@@ -76,13 +74,12 @@ fun ThemePicker(
     footer: @Composable () -> Unit = {},
     onThemeSelected: (ThemeColors) -> Unit,
 ) {
-    val width by rememberLayoutWidth()
     val currentColorScheme = Theme.colorScheme
     val surfaceColor = Color.Transparent
 
-    PaddedColumn(Modifier.width(width)) {
+    PaddedColumn {
         header()
-        FlowRow(modifier = modifier, horizontalArrangement = Arrangement.Center) {
+        FlowRow(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             for (theme in ThemeColors.values()) {
                 key(theme.name) {
                     val colorScheme = theme.colorScheme(isDarkColors)
@@ -132,6 +129,7 @@ fun ThemeIconButton(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Preview(showBackground = true)
 @Composable
 private fun ThemePickerPreview() {
