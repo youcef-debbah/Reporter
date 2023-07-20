@@ -4,7 +4,7 @@
     <color name="ic_launcher_background">#4B8BF5</color>
 
     <!-- day configs -->
-    <color name="default_background">#FFE6E6E6</color>
+    <color name="default_background">#FFFFFBFF</color>
     <bool name="light_status_bar">true</bool>
     <bool name="light_navigation_bar">true</bool>
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- night configs -->
-    <color name="default_background">#1F1B1E</color>
+    <color name="default_background">#FF1B1B1F</color>
     <bool name="light_status_bar">false</bool>
     <bool name="light_navigation_bar">false</bool>
 </resources>
