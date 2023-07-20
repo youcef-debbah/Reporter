@@ -93,7 +93,7 @@ object ReporterSettingsScreen : StaticScreenDestination(
                         val dynamicAppThemeEnabled =
                             AppConfig.getState(DYNAMIC_APPLICATION_THEME)
 
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { TODO
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { //TODO
                         SettingsDivider()
                         SettingsCheckbox(
                             icon = { DecorativeIcon(icon = R.drawable.baseline_color_lens_24) },

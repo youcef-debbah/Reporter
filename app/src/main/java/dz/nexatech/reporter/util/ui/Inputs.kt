@@ -33,6 +33,7 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -152,13 +153,14 @@ fun OptionsInput(
                 onValueChange = {},
                 label = { Body(variable.label) },
                 leadingIcon = { InputIcon(variable, StaticIcon.baseline_list) },
-                trailingIcon = {
-                    if (clickable) {
-                        InfoIcon(icon = iconInfo.first, desc = iconInfo.second)
-                    }
-                },
-                prefix = { Body(variable.prefix) },
-                suffix = { Body(variable.suffix) },
+                trailingIcon = if (clickable) ({
+                    InfoIcon(
+                        icon = iconInfo.first,
+                        desc = iconInfo.second
+                    )
+                }) else null,
+                prefix = inputPrefix(variable),
+                suffix = inputSuffix(variable),
                 isError = errorMessage != null,
                 supportingText = { Body(errorMessage ?: "") },
             )
@@ -276,8 +278,8 @@ fun ColorInput(variableState: VariableState, modifier: Modifier) {
                 }
             }
         },
-        prefix = { Body(variable.prefix) },
-        suffix = { Body(variable.suffix) },
+        prefix = inputPrefix(variable),
+        suffix = inputSuffix(variable),
         isError = errorMessage != null,
         supportingText = { Body(errorMessage ?: "") },
     )
@@ -377,8 +379,8 @@ fun DateInput(variableState: VariableState, modifier: Modifier) {
                 InfoIcon(icon = R.drawable.baseline_edit_24, desc = R.string.show_date_picker)
             }
         },
-        prefix = { Body(variable.prefix) },
-        suffix = { Body(variable.suffix) },
+        prefix = inputPrefix(variable),
+        suffix = inputSuffix(variable),
         isError = errorMessage != null,
         supportingText = { Body(errorMessage ?: "") },
     )
@@ -616,9 +618,9 @@ private fun CounterInput(
                 onValueChange = variableState.setter,
                 label = { Body(variable.label) },
                 leadingIcon = { InputIcon(variable, inputType.defaultIcon) },
-                trailingIcon = { InfoButton(variable) { showInfo.toggle() } },
-                prefix = { Body(variable.prefix) },
-                suffix = { Body(variable.suffix) },
+                trailingIcon = descButton(variable, showInfo),
+                prefix = inputPrefix(variable),
+                suffix = inputSuffix(variable),
                 isError = errorMessage != null,
                 supportingText = { Body(errorMessage ?: "") },
                 keyboardOptions = inputType.keyboardOptions,
@@ -634,6 +636,18 @@ private fun CounterInput(
                 InfoIcon(icon = R.drawable.baseline_add_24, desc = R.string.inc_counter)
             }
         }
+    }
+}
+
+@Composable
+private fun descButton(
+    variable: Variable,
+    showInfo: MutableState<Boolean>,
+): (@Composable () -> Unit)? {
+    if (variable.desc.isNotEmpty()) {
+        return { InfoButton { showInfo.toggle() } }
+    } else {
+        return null
     }
 }
 
@@ -667,9 +681,9 @@ private fun TextInput(
             onValueChange = variableState.setter,
             label = { Body(variable.label) },
             leadingIcon = { InputIcon(variable, inputType.defaultIcon) },
-            trailingIcon = { InfoButton(variable) { showInfo.toggle() } },
-            prefix = { Body(variable.prefix) },
-            suffix = { Body(variable.suffix) },
+            trailingIcon = descButton(variable, showInfo),
+            prefix = inputPrefix(variable),
+            suffix = inputSuffix(variable),
             isError = errorMessage != null,
             supportingText = { Body(errorMessage ?: "") },
             keyboardOptions = inputType.keyboardOptions,
@@ -707,9 +721,9 @@ private fun LinesInput(
             onValueChange = variableState.setter,
             label = { Body(variable.label) },
             leadingIcon = { InputIcon(variable, Type.Lines.defaultIcon) },
-            trailingIcon = { InfoButton(variable) { showInfo.toggle() } },
-            prefix = { Body(variable.prefix) },
-            suffix = { Body(variable.suffix) },
+            trailingIcon = descButton(variable, showInfo),
+            prefix = inputPrefix(variable),
+            suffix = inputSuffix(variable),
             isError = errorMessage != null,
             supportingText = { Body(errorMessage ?: "") },
             keyboardOptions = Type.Lines.keyboardOptions,
@@ -717,15 +731,26 @@ private fun LinesInput(
     }
 }
 
+private fun inputPrefix(variable: Variable): (@Composable () -> Unit)? {
+    if (variable.prefix.isNotEmpty()) {
+        return { Body(variable.prefix) }
+    } else {
+        return null
+    }
+}
+
+private fun inputSuffix(variable: Variable): (@Composable () -> Unit)? {
+    if (variable.suffix.isNotEmpty()) {
+        return { Body(variable.suffix) }
+    } else {
+        return null
+    }
+}
+
 @Composable
-private fun InfoButton(
-    variable: Variable,
-    onClick: () -> Unit,
-) {
-    if (variable.desc.isNotBlank()) {
-        IconButton(onClick = onClick) {
-            InfoIcon(icon = R.drawable.baseline_info_24, desc = R.string.input_desc)
-        }
+private fun InfoButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        InfoIcon(icon = R.drawable.baseline_info_24, desc = R.string.input_desc)
     }
 }
 
