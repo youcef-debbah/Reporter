@@ -400,6 +400,17 @@ class BooleanConfigState(config: LocalConfig<Boolean>) : AbstractConfigState<Boo
 }
 
 class LongConfigState(config: LocalConfig<Long>) : AbstractConfigState<Long>(config) {
+
+    val floatState: SettingValueState<Float> = object : SettingValueState<Float> {
+        override var value: Float
+            get() = this@LongConfigState.value.toFloat()
+            set(value) { this@LongConfigState.value = value.toLong() }
+
+        override fun reset() {
+            this@LongConfigState.reset()
+        }
+    }
+
     override fun setNewValue(newValue: Long) {
         set(config, newValue) {
             updateInMemoryState(it)
@@ -408,6 +419,17 @@ class LongConfigState(config: LocalConfig<Long>) : AbstractConfigState<Long>(con
 }
 
 class IntConfigState(config: LocalConfig<Int>) : AbstractConfigState<Int>(config) {
+
+    val floatState: SettingValueState<Float> = object : SettingValueState<Float> {
+        override var value: Float
+            get() = this@IntConfigState.value.toFloat()
+            set(value) { this@IntConfigState.value = value.toInt() }
+
+        override fun reset() {
+            this@IntConfigState.reset()
+        }
+    }
+
     override fun setNewValue(newValue: Int) {
         set(config, newValue) {
             updateInMemoryState(it)

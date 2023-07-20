@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Reporter</string>
+    <string name="max_column_width">Max column width: %d</string>
+    <string name="min_column_width">Min column width</string>
 </resources>
