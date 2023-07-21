@@ -1,5 +1,6 @@
 package dz.nexatech.reporter.client.ui
 
+import android.os.Build
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -93,25 +94,25 @@ object ReporterSettingsScreen : StaticScreenDestination(
                         val dynamicAppThemeEnabled =
                             AppConfig.getState(DYNAMIC_APPLICATION_THEME)
 
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { //TODO
-                        SettingsDivider()
-                        SettingsCheckbox(
-                            icon = { DecorativeIcon(icon = R.drawable.baseline_color_lens_24) },
-                            state = dynamicAppThemeEnabled,
-                            title = {
-                                Title(
-                                    R.string.dynamic_app_theme_title,
-                                    textAlign = TextAlign.Start
-                                )
-                            },
-                            subtitle = {
-                                Body(
-                                    R.string.dynamic_app_theme_subtitle,
-                                    textAlign = TextAlign.Start
-                                )
-                            },
-                        )
-//                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            SettingsDivider()
+                            SettingsCheckbox(
+                                icon = { DecorativeIcon(icon = R.drawable.baseline_color_lens_24) },
+                                state = dynamicAppThemeEnabled,
+                                title = {
+                                    Title(
+                                        R.string.dynamic_app_theme_title,
+                                        textAlign = TextAlign.Start
+                                    )
+                                },
+                                subtitle = {
+                                    Body(
+                                        R.string.dynamic_app_theme_subtitle,
+                                        textAlign = TextAlign.Start
+                                    )
+                                },
+                            )
+                        }
 
                         val appTheme = AppConfig.getState(APPLICATION_THEME)
                         SettingsDivider(Modifier.padding(bottom = Theme.dimens.content_padding.bottom * 2))
