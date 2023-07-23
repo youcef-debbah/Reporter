@@ -1,7 +1,14 @@
 <resources>
     <string name="app_name" translatable="false">Reporter</string>
+    <string name="company_name" translatable="false">Nexatech</string>
+
     <string name="max_column_width">Max column width: %d</string>
     <string name="min_column_width">Min column width</string>
     <string name="reporter_help_title">Help</string>
     <string name="reporter_about_title">About us</string>
+    <string name="contact_us">Contact us</string>
+    <string name="website">Website</string>
+    <string name="source_code">Source Code</string>
+    <string name="company_desc_1">This application is developed by</string>
+    <string name="company_desc_2">where the next generation of software solutions are crafted!</string>
 </resources>

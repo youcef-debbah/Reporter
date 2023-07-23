@@ -30,6 +30,7 @@ class StaticIcon private constructor(@DrawableRes val drawable: Int): AbstractIc
         painterResource(drawable)
 
     companion object {
+        val company_icon = StaticIcon(R.drawable.baseline_corporate_fare_24)
         val baseline_settings = StaticIcon(R.drawable.baseline_settings_24)
         val baseline_downloading = StaticIcon(R.drawable.baseline_downloading_24)
         val baseline_warning = StaticIcon(R.drawable.baseline_warning_24)
