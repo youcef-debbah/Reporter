@@ -49,6 +49,8 @@ class StaticIcon private constructor(@DrawableRes val drawable: Int): AbstractIc
         val baseline_exposure = StaticIcon(R.drawable.baseline_exposure_24)
         val baseline_notes = StaticIcon(R.drawable.baseline_notes_24)
         val baseline_delete_forever = StaticIcon(R.drawable.baseline_delete_forever_24)
+        val baseline_help = StaticIcon(R.drawable.baseline_help_24)
+        val baseline_info = StaticIcon(R.drawable.baseline_info_24)
     }
 }
 

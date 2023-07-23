@@ -701,7 +701,7 @@ class TabsContext(
                 SimpleScaffold(
                     topBar = {
                         CentredColumn {
-                            StandardAppBar(controller, previewTab.title())
+                            StandardAppBar(controller, previewTab.route, previewTab.title())
                             DefaultNavigationBar(controller, destinationsRegistry)
                         }
                     }) {
@@ -820,7 +820,7 @@ private fun TabScaffold(
     SimpleScaffold(
         topBar = {
             CentredColumn {
-                StandardAppBar(navController, tab.title())
+                StandardAppBar(navController, tab.route, tab.title())
                 DefaultNavigationBar(navController, destinationsRegistry)
             }
         },

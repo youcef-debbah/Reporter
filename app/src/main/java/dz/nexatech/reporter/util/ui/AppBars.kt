@@ -1,8 +1,5 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package dz.nexatech.reporter.util.ui
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,50 +22,64 @@ import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.util.model.toggle
 
 @Composable
-fun SimpleAppBar(@StringRes title: Int, @DrawableRes icon: Int? = null) {
+fun SimpleAppBar(@StringRes title: Int, icon: AbstractIcon? = null) {
     SimpleAppBar(title = stringRes(title), icon = icon)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleAppBar(
     title: String = AbstractApplication.INSTANCE.config.applicationName,
-    @DrawableRes icon: Int? = null,
+    icon: AbstractIcon? = null,
 ) {
     TopAppBar(
         title = {
             Body(title)
         },
         navigationIcon = {
-            SimpleScreenIcon(icon)
+            if (icon != null) {
+                SimpleScreenIcon(icon)
+            }
         }
     )
 }
 
 @Composable
-fun SimpleScreenIcon(@DrawableRes icon: Int?) {
-    if (icon != null) {
-        IconButton(onClick = {}, enabled = false) {
-            InfoIcon(icon = icon, desc = null)
-        }
+fun SimpleScreenIcon(icon: AbstractIcon) {
+    IconButton(onClick = {}, enabled = false) {
+        InfoIcon(icon = icon, desc = null)
     }
 }
 
 @Composable
 fun StandardAppBar(
+    currentRoute: String,
     navController: NavController,
     @StringRes title: Int,
     navigationIcon: @Composable () -> Unit = { StandardBackButton(navController) },
-    actions: @Composable RowScope.() -> Unit = { StandardAppBarDropdownMenu(navController) },
+    actions: @Composable RowScope.() -> Unit = {
+        StandardAppBarDropdownMenu(
+            currentRoute,
+            navController
+        )
+    },
 ) {
-    StandardAppBar(navController, stringRes(title), navigationIcon, actions)
+    StandardAppBar(navController, currentRoute, stringRes(title), navigationIcon, actions)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StandardAppBar(
     navController: NavController,
+    currentRoute: String,
     title: String = AbstractApplication.INSTANCE.config.applicationName,
     navigationIcon: @Composable () -> Unit = { StandardBackButton(navController) },
-    actions: @Composable RowScope.() -> Unit = { StandardAppBarDropdownMenu(navController) },
+    actions: @Composable RowScope.() -> Unit = {
+        StandardAppBarDropdownMenu(
+            currentRoute,
+            navController
+        )
+    },
 ) {
     TopAppBar(
         title = {
@@ -103,6 +114,7 @@ fun StandardAppbarIcon(icon: AbstractIcon?) {
 
 @Composable
 fun StandardAppBarDropdownMenu(
+    currentRoute: String,
     navController: NavController,
     actions: @Composable (MutableState<Boolean>) -> Unit = {},
 ) {
@@ -116,12 +128,26 @@ fun StandardAppBarDropdownMenu(
     DropdownMenu(expanded = menuExpanded.value, onDismissRequest = { menuExpanded.value = false }) {
         val destinations = remember { AbstractApplication.INSTANCE.config.standardDestinations }
         actions(menuExpanded)
+        ScreenMenuItem(currentRoute, destinations.settingsScreen, menuExpanded, navController)
+        ScreenMenuItem(currentRoute, destinations.helpScreen, menuExpanded, navController)
+        ScreenMenuItem(currentRoute, destinations.aboutScreen, menuExpanded, navController)
+    }
+}
+
+@Composable
+private fun ScreenMenuItem(
+    currentRoute: String,
+    destinationScreen: AbstractDestination,
+    menuExpanded: MutableState<Boolean>,
+    navController: NavController,
+) {
+    if (currentRoute != destinationScreen.route) {
         DropdownMenuTextItem(
-            destinations.settingsScreen.title(),
-            destinations.settingsScreen.icon
+            destinationScreen.title(),
+            destinationScreen.icon
         ) {
             menuExpanded.value = false
-            navController.navigate(destinations.settingsScreen.route) {
+            navController.navigate(destinationScreen.route) {
                 launchSingleTop = true
                 restoreState = true
             }

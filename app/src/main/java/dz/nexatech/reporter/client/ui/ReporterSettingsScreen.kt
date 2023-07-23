@@ -62,8 +62,7 @@ object ReporterSettingsScreen : StaticScreenDestination(
 
     @OptIn(ExperimentalAnimationApi::class)
     fun NavGraphBuilder.addSettingsScreen(navController: NavController): ReporterSettingsScreen {
-        val thisRoute = this@ReporterSettingsScreen.route
-        composable(thisRoute) {
+        composable(this@ReporterSettingsScreen.route) {
             AnimatedApplicationTheme {
                 ReporterSettingsView(navController)
             }
@@ -76,9 +75,9 @@ object ReporterSettingsScreen : StaticScreenDestination(
         SimpleScaffold(
             topBar = {
                 StandardAppBar(
+                    currentRoute = this@ReporterSettingsScreen.route,
                     navController = navController,
                     title = this@ReporterSettingsScreen.titleRes,
-                    actions = {},
                 )
             },
         ) {

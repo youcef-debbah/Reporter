@@ -96,10 +96,11 @@ object TemplatesListScreen : StaticScreenDestination(
             topBar = {
                 StandardAppBar(
                     navController = navController,
+                    currentRoute = this@TemplatesListScreen.route,
                     title = this@TemplatesListScreen.titleRes,
                     navigationIcon = { StandardAppbarIcon(this@TemplatesListScreen.icon) },
                 ) {
-                    StandardAppBarDropdownMenu(navController) { menuOpened ->
+                    StandardAppBarDropdownMenu(this@TemplatesListScreen.route, navController) { menuOpened ->
                         DropdownMenuTextItem(
                             title = R.string.import_template_menu_item,
                             icon = StaticIcon.baseline_upload_file,

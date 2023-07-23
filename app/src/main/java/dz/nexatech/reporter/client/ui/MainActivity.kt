@@ -46,6 +46,8 @@ class MainActivity : AbstractActivity() {
             destinations
                 .register(navGraphBuilder, navController) {
                     standardDestinations.addSettingsScreen(this, it)
+                    standardDestinations.addHelpScreen(this, it)
+                    standardDestinations.addAboutScreen(this, it)
                 }
                 .register(navGraphBuilder, navController) {
                     addTemplatesListScreen(it, viewModel)
