@@ -112,7 +112,7 @@ object TemplatesListScreen : StaticScreenDestination(
 
                         DropdownMenuTextItem(
                             title = R.string.download_template_menu_item,
-                            icon = StaticIcon.baseline_open_in_browser,
+                            icon = StaticIcon.baseline_cloud_download,
                         ) {
                             menuOpened.value = false
                             ExternalLink.openLink(

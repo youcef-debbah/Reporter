@@ -16,7 +16,7 @@
     <string name="activity_missing_action_link">Could not open the default browser</string>
     <string name="activity_missing_action_dial">Could not open the default phone calls app</string>
     <string name="activity_missing_action_mailto">Could not open the default email app</string>
-    <string name="default_email_content">Hello there,\n</string>
+    <string name="default_email_content">App ID: %s\nHello there,\n</string>
     <string name="not_implemented_yet">This feature is not implemented yet!</string>
     <string name="retry">Retry</string>
     <string name="error_while_loading_content">Content loading failed!</string>
@@ -114,4 +114,6 @@
     <string name="dynamic_app_theme_title">Use System Theme</string>
     <string name="dynamic_app_theme_subtitle">The system theme is based on your current wallpaper</string>
     <string name="app_theme_title">Application Theme</string>
+    <string name="company_desc_1">App developed by</string>
+    <string name="company_desc_2">Where the next generation of\nsoftware solutions is crafted!</string>
 </resources>

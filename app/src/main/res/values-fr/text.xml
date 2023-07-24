@@ -16,7 +16,7 @@
     <string name="activity_missing_action_link">Impossible d\'ouvrir le navigateur par défaut</string>
     <string name="activity_missing_action_dial">Impossible d\'ouvrir l\'application d\'appels téléphoniques par défaut</string>
     <string name="activity_missing_action_mailto">Impossible d\'ouvrir l\'application d\'e-mail par défaut</string>
-    <string name="default_email_content">Bonjour,\n</string>
+    <string name="default_email_content">ID : %s\nBonjour,\n</string>
     <string name="not_implemented_yet">Cette fonctionnalité n\'est pas encore implémentée !</string>
     <string name="retry">Réessayer</string>
     <string name="error_while_loading_content">Échec du chargement du contenu !</string>
@@ -49,7 +49,7 @@
 
     <string name="import_template_menu_item">Importer le modèle</string>
     <string name="download_template_menu_item">Télécharger le modèle</string>
-    <string name="delete_templates_menu_item">Supprimer tous les modèles</string>
+    <string name="delete_templates_menu_item">Supprimer tous</string>
     <string name="templates_list_title">Modèles disponibles</string>
     <string name="templates_list_label">Accueil</string>
     <string name="template_tab_preview_title">Aperçu : %s</string>
@@ -112,5 +112,6 @@
     <string name="dynamic_app_theme_title">Utilisez le thème du système</string>
     <string name="dynamic_app_theme_subtitle">Le thème du système est basé sur votre fond d\'écran actuel</string>
     <string name="app_theme_title">Thème d\'application</string>
-
+    <string name="company_desc_1">Développée par</string>
+    <string name="company_desc_2">où la prochaine génération de\nsolutions logicielles est conçue !</string>
 </resources>

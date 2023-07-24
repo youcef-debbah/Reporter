@@ -5,10 +5,15 @@
     <string name="max_column_width">Max column width: %d</string>
     <string name="min_column_width">Min column width</string>
     <string name="reporter_help_title">Help</string>
-    <string name="reporter_about_title">About us</string>
+    <string name="reporter_about_title">About</string>
     <string name="contact_us">Contact us</string>
     <string name="website">Website</string>
     <string name="source_code">Source Code</string>
-    <string name="company_desc_1">This application is developed by</string>
-    <string name="company_desc_2">where the next generation of software solutions are crafted!</string>
+    <string name="app_info_title">App info</string>
+    <string name="app_version_title">Version info</string>
+    <string name="build_time">Build Time</string>
+    <string name="app_version">Current application Version</string>
+    <string name="latest_app_version">Latest application version</string>
+    <string name="installation_id">App ID</string>
+    <string name="id_copied_to_clipboard">App ID copied to clipboard</string>
 </resources>

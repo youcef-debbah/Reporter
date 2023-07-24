@@ -16,7 +16,7 @@
     <string name="activity_missing_action_link">تعذر فتح المتصفح الافتراضي</string>
     <string name="activity_missing_action_dial">تعذر فتح تطبيق المكالمات الهاتفية الافتراضي</string>
     <string name="activity_missing_action_mailto">تعذر فتح تطبيق البريد الإلكتروني الافتراضي</string>
-    <string name="default_email_content">مرحبًا،\n</string>
+    <string name="default_email_content">معرف التطبيق: %s\nمرحبًا،\n</string>
     <string name="not_implemented_yet">هذه الميزة غير مُنفّذة بعد!</string>
     <string name="retry">أعد المحاولة</string>
     <string name="error_while_loading_content">فشل تحميل المحتوى!</string>
@@ -112,4 +112,6 @@
     <string name="dynamic_app_theme_title">استخدم ألوان النظام</string>
     <string name="dynamic_app_theme_subtitle">ألوان النظام مستنبطة من خلفية الشاشة الحالية</string>
     <string name="app_theme_title">لون واجهة المستخدم</string>
+    <string name="company_desc_1">تم تطوير هذا التطبيق من طرف</string>
+    <string name="company_desc_2">حيث يصنع الجيل القادم من الحلول الرقمية!</string>
 </resources>

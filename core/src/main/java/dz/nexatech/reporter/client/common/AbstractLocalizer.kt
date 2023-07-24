@@ -13,6 +13,8 @@ abstract class AbstractLocalizer {
 
     abstract fun monthIndex(monthName: String): Int?
 
+    abstract fun formatDateTime(epoch: Long): String
+
     abstract fun formatSimpleDate(epoch: Long?): String?
 
     abstract fun parseSimpleDate(templateDate: String): Long?

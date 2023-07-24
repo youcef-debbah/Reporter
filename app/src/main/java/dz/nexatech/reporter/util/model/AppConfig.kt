@@ -6,11 +6,12 @@ import androidx.compose.runtime.*
 import com.alorma.compose.settings.storage.base.SettingValueState
 import com.google.common.collect.ImmutableMap
 import com.google.firebase.FirebaseApp
+import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.internal.ThreadUtil
-import dz.nexatech.reporter.client.common.ioLaunch
+import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.client.common.mainLaunch
 import dz.nexatech.reporter.client.model.REPORTER_LOCAL_CONFIGS
 import dz.nexatech.reporter.client.model.REPORTER_REMOTE_CONFIGS_DEFAULTS
@@ -86,7 +87,7 @@ object AppConfig {
     ) {
         initLocalConfig(context)
 
-        ioLaunch {
+        backgroundLaunch {
             initRemoteConfig(app)
         }
     }
@@ -111,6 +112,10 @@ object AppConfig {
             state.updateInMemoryState(mmkv.decodeString(entry.key, state.value)!!)
         }
         localConfig = mmkv
+
+        FirebaseInstallations.getInstance().id.addOnSuccessListener {
+            set(INSTALLATION_ID, it)
+        }
     }
 
     private fun initRemoteConfig(app: dagger.Lazy<FirebaseApp>) {
@@ -211,7 +216,10 @@ object AppConfig {
             }
         }
 
-    fun get(localString: LocalConfig<String>, defaultString: String = localString.default): String {
+    fun get(
+        localString: LocalConfig<String>,
+        defaultString: String = localString.default,
+    ): String {
         try {
             return localConfig.decodeString(localString.key, defaultString)!!
         } catch (e: Exception) { // not suspended
@@ -256,7 +264,8 @@ interface Config<T> {
     val default: T
 }
 
-sealed class RemoteConfig<T>(override val key: kotlin.String, override val default: T) : Config<T> {
+sealed class RemoteConfig<T>(override val key: kotlin.String, override val default: T) :
+    Config<T> {
     override fun toString() = key
     final override fun hashCode() = key.hashCode()
     final override fun equals(other: Any?) =
@@ -265,13 +274,16 @@ sealed class RemoteConfig<T>(override val key: kotlin.String, override val defau
     class Boolean(key: kotlin.String, default: kotlin.Boolean) :
         RemoteConfig<kotlin.Boolean>(key, default)
 
-    class Long(key: kotlin.String, default: kotlin.Long) : RemoteConfig<kotlin.Long>(key, default)
+    class Long(key: kotlin.String, default: kotlin.Long) :
+        RemoteConfig<kotlin.Long>(key, default)
+
     class Int(key: kotlin.String, default: kotlin.Int) : RemoteConfig<kotlin.Int>(key, default)
     class String(key: kotlin.String, default: kotlin.String) :
         RemoteConfig<kotlin.String>(key, default)
 }
 
-sealed class LocalConfig<T>(override val key: kotlin.String, override val default: T) : Config<T> {
+sealed class LocalConfig<T>(override val key: kotlin.String, override val default: T) :
+    Config<T> {
     override fun toString() = key
     final override fun hashCode() = key.hashCode()
     final override fun equals(other: Any?) =
@@ -280,7 +292,9 @@ sealed class LocalConfig<T>(override val key: kotlin.String, override val defaul
     class Boolean(key: kotlin.String, default: kotlin.Boolean) :
         LocalConfig<kotlin.Boolean>(key, default)
 
-    class Long(key: kotlin.String, default: kotlin.Long) : LocalConfig<kotlin.Long>(key, default)
+    class Long(key: kotlin.String, default: kotlin.Long) :
+        LocalConfig<kotlin.Long>(key, default)
+
     class Int(key: kotlin.String, default: kotlin.Int) : LocalConfig<kotlin.Int>(key, default)
     class String(key: kotlin.String, default: kotlin.String) :
         LocalConfig<kotlin.String>(key, default)
@@ -404,7 +418,9 @@ class LongConfigState(config: LocalConfig<Long>) : AbstractConfigState<Long>(con
     val floatState: SettingValueState<Float> = object : SettingValueState<Float> {
         override var value: Float
             get() = this@LongConfigState.value.toFloat()
-            set(value) { this@LongConfigState.value = value.toLong() }
+            set(value) {
+                this@LongConfigState.value = value.toLong()
+            }
 
         override fun reset() {
             this@LongConfigState.reset()
@@ -423,7 +439,9 @@ class IntConfigState(config: LocalConfig<Int>) : AbstractConfigState<Int>(config
     val floatState: SettingValueState<Float> = object : SettingValueState<Float> {
         override var value: Float
             get() = this@IntConfigState.value.toFloat()
-            set(value) { this@IntConfigState.value = value.toInt() }
+            set(value) {
+                this@IntConfigState.value = value.toInt()
+            }
 
         override fun reset() {
             this@IntConfigState.reset()

@@ -12,15 +12,15 @@ import java.util.*
 class Localizer private constructor(formattingLang: String?) : AbstractLocalizer() {
 
     override val locale: Locale = when (formattingLang) {
-        Texts.LANG_EN -> ENGLISH_LOCALE
+        Texts.LANG_FR -> FRENCH_LOCALE
         Texts.LANG_AR -> ARABIC_LOCALE
-        else -> FRENCH_LOCALE
+        else -> ENGLISH_LOCALE
     }
 
     val monthsNames: Array<String> = when (formattingLang) {
-        Texts.LANG_EN -> englishMonths
+        Texts.LANG_FR -> frenchMonths
         Texts.LANG_AR -> arabicMonths
-        else -> frenchMonths
+        else -> englishMonths
     }
 
     val isArabic: Boolean = formattingLang == Texts.LANG_AR
@@ -28,6 +28,41 @@ class Localizer private constructor(formattingLang: String?) : AbstractLocalizer
     override fun formatMonthName(monthIndex: Int): String = monthsNames[monthIndex % 12]
 
     override fun monthIndex(monthName: String): Int? = monthsIndexes[monthName]
+
+    override fun formatDateTime(epoch: Long): String {
+        val date = newCalendar().apply {
+            this.timeInMillis = epoch
+        }
+
+        val year = date.get(Calendar.YEAR)
+        val month = date.get(Calendar.MONTH)
+        val day = date.get(Calendar.DAY_OF_MONTH)
+        val hour = date.get(Calendar.HOUR_OF_DAY)
+        val min = date.get(Calendar.MINUTE)
+        val sec = date.get(Calendar.SECOND)
+
+        return if (isArabic) {
+            String.format(
+                "%04d/%s/%02d %02d:%02d:%02d",
+                year,
+                month + 1,
+                day,
+                hour,
+                min,
+                sec,
+            )
+        } else {
+            String.format(
+                "%02d %s %04d %02d:%02d:%02d",
+                day,
+                formatMonthName(month),
+                year,
+                hour,
+                min,
+                sec,
+            )
+        }
+    }
 
     override fun formatSimpleDate(epoch: Long?): String? {
         if (epoch == null) return null

@@ -32,7 +32,7 @@ fun ThemedLink(
         contentPadding = Theme.dimens.rounded_component,
         onClick = onClick
     ) {
-        DecorativeIcon(icon = icon)
+        DecorativeIcon(icon = icon, modifier = Modifier.textPadding())
         Body(
             text = text,
             style = Theme.typography.bodyMedium,

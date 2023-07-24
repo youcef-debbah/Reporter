@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.util.model.AppConfig
+import dz.nexatech.reporter.util.model.INSTALLATION_ID
 import dz.nexatech.reporter.util.model.Teller
 
 object ExternalLink {
@@ -45,7 +47,7 @@ object ExternalLink {
             val intent = Intent()
             intent.data = Uri.parse(PROTOCOL_MAILTO)
             intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-            intent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.default_email_content))
+            intent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.default_email_content, AppConfig.get(INSTALLATION_ID)))
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
