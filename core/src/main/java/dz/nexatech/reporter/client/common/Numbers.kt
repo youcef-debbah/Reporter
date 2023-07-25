@@ -1,6 +1,7 @@
 package dz.nexatech.reporter.client.common
 
 import kotlin.math.abs
+import kotlin.math.sqrt
 
 const val MICRO_SEC_IN_NANOS = 1000L
 const val MILLI_SEC_IN_NANOS = MICRO_SEC_IN_NANOS * 1000
@@ -11,6 +12,8 @@ const val MINUTES_IN_MILLIS = 1000 * 60
 const val HOUR_IN_MILLIS = MINUTES_IN_MILLIS * 60
 const val DAY_IN_MILLIS = HOUR_IN_MILLIS * 24
 const val YEAR_IN_MILLIS: Long = (DAY_IN_MILLIS * 365.242196).toLong()
+
+val silverRatio = sqrt(2.0)
 
 fun Long.duration(anotherNanoTime: Long = System.nanoTime()): String {
     val nanos: Long = abs(this - anotherNanoTime)

@@ -10,6 +10,7 @@ import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.layout.font.FontProvider
 import com.itextpdf.layout.font.FontSet
 import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
+import dz.nexatech.reporter.client.common.silverRatio
 import java.io.OutputStream
 
 class PdfConverter(
@@ -33,8 +34,9 @@ class PdfConverter(
         }
 
     suspend fun generatePDF(
+        pageWidth: Float,
         outputStream: OutputStream,
-        html: String
+        html: String,
     ) {
         val pdfWriter = PdfWriter(outputStream).apply {
             compressionLevel = pdfWriterCompressionLevel
@@ -42,7 +44,7 @@ class PdfConverter(
         }
 
         PdfDocument(pdfWriter).apply {
-            defaultPageSize = PageSize.A4
+            defaultPageSize = PageSize(pageWidth, (pageWidth * silverRatio).toFloat())
         }.use { pdfDocument ->
             val document = HtmlConverter.convertToDocument(
                 html,

@@ -81,6 +81,7 @@ class TemplateOutput(
             try {
                 context.useOutputStream(uri) { outputStream ->
                     pdfConverter.generatePDF(
+                        pageWidth(),
                         outputStream,
                         htmlContent.value
                     )
@@ -105,6 +106,9 @@ class TemplateOutput(
 
         return result
     }
+
+    private fun pageWidth(): Float =
+        (templateState.sectionsVariableStates["page_width"]?.state?.value)?.toFloatOrNull() ?: 595f
 
     fun newExportPdfIntent(): Intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)
