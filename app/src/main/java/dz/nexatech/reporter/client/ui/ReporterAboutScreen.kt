@@ -129,7 +129,10 @@ object ReporterAboutScreen : StaticScreenDestination(
                     VerticalSpacer(1.5f)
 
                     Body("This software is published under", style = Theme.typography.labelLarge)
-                    ThemedLink(text = "The GNU General Public License (v3.0)") {
+                    ThemedLink(
+                        text = "The GNU General Public License (v3.0)",
+                        R.drawable.baseline_open_in_browser_24
+                    ) {
                         ExternalLink.openLink("https://www.gnu.org/licenses/gpl-3.0-standalone.html")
                     }
                     VerticalSpacer()
@@ -152,7 +155,10 @@ object ReporterAboutScreen : StaticScreenDestination(
 
                     PaddedRow {
                         Body(R.string.latest_app_version, fontWeight = FontWeight.Bold)
-                        ThemedLink(AppConfig.get(LATEST_VERSION_NAME), R.drawable.baseline_cloud_download_24) {
+                        ThemedLink(
+                            AppConfig.get(LATEST_VERSION_NAME),
+                            R.drawable.baseline_cloud_download_24
+                        ) {
                             ExternalLink.openLink(AppConfig.get(APP_DOWNLOAD_LINK))
                         }
                     }

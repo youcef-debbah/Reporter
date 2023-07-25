@@ -1,5 +1,6 @@
 package dz.nexatech.reporter.util.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -99,7 +100,7 @@ fun Body(
 
 @Composable
 fun Title(
-    textRes: Int,
+    @StringRes textRes: Int,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,

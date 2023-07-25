@@ -23,6 +23,9 @@ val defaultDensity = AbstractApplication.INSTANCE.resources.displayMetrics.densi
 fun Dp.toPixels(density: Float = defaultDensity) =
     (value * density + 0.5f).toInt()
 
+fun Int.toPixels(density: Float = defaultDensity) =
+    (this * density + 0.5f).toInt()
+
 @Composable
 @ReadOnlyComposable
 fun stringRes(@StringRes id: Int): String = stringResource(id)

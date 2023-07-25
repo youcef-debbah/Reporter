@@ -1,18 +1,39 @@
 package dz.nexatech.reporter.client.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import dz.nexatech.reporter.client.R
+import dz.nexatech.reporter.client.common.backgroundLaunch
 import dz.nexatech.reporter.util.ui.Body
-import dz.nexatech.reporter.util.ui.PaddedColumn
+import dz.nexatech.reporter.util.ui.ContentCard
+import dz.nexatech.reporter.util.ui.InfoIcon
+import dz.nexatech.reporter.util.ui.PaddedDivider
+import dz.nexatech.reporter.util.ui.ScrollableColumn
 import dz.nexatech.reporter.util.ui.SimpleScaffold
 import dz.nexatech.reporter.util.ui.StandardAppBar
 import dz.nexatech.reporter.util.ui.StaticIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
+import dz.nexatech.reporter.util.ui.Theme
+import dz.nexatech.reporter.util.ui.ThemedLink
+import dz.nexatech.reporter.util.ui.Title
+import dz.nexatech.reporter.util.ui.contentPadding
 import dz.nexatech.reporter.util.ui.themedComposable
+import dz.nexatech.reporter.util.ui.toPixels
+import dz.nexatech.reporter.util.ui.zero_padding
+import kotlinx.coroutines.CoroutineScope
 
 object ReporterHelpScreen : StaticScreenDestination(
     route = "reporter_help",
@@ -33,6 +54,16 @@ object ReporterHelpScreen : StaticScreenDestination(
 
     @Composable
     private fun ReporterHelpView(navController: NavController) {
+        val scope = rememberCoroutineScope()
+        val scrollState = rememberScrollState()
+        val scrollPosition00 = remember { mutableStateOf(0f) }
+
+        val screenHeightDp = LocalConfiguration.current.screenHeightDp
+        val showFab = remember(screenHeightDp) {
+            val threshold = screenHeightDp.toPixels() * 2
+            derivedStateOf(structuralEqualityPolicy()) { scrollState.value > threshold }
+        }
+
         SimpleScaffold(
             topBar = {
                 StandardAppBar(
@@ -41,9 +72,76 @@ object ReporterHelpScreen : StaticScreenDestination(
                     this@ReporterHelpScreen.title(),
                 )
             },
+            floatingActionButton = {
+                if (showFab.value) {
+                    FloatingActionButton(onClick = {
+                        scope.backgroundLaunch {
+                            scrollState.animateScrollTo(scrollPosition00.value.toInt())
+                        }
+                    }) {
+                        InfoIcon(
+                            icon = R.drawable.baseline_keyboard_arrow_up_24,
+                            desc = R.string.scroll_to_top_desc
+                        )
+                    }
+                }
+            }
         ) {
-            PaddedColumn {
-                Body("ReporterHelp")//TODO
+            val scrollPosition01 = remember { mutableStateOf(0f) }
+            val scrollPosition02 = remember { mutableStateOf(0f) }
+            val scrollPosition03 = remember { mutableStateOf(0f) }
+            ScrollableColumn(scrollState = scrollState) {
+                HelpCard(R.string.help_page_index, scrollPosition00) {
+                    IndexLink(R.string.help_page_title_01, scope, scrollState, scrollPosition01)
+                }
+
+                HelpCard(R.string.help_page_title_01, scrollPosition01) {
+                    Body(R.string.help_page_section_01_A)
+                }
+
+                HelpCard(R.string.help_page_title_02, scrollPosition02) {
+                    Body(R.string.help_page_section_02_A)
+                }
+
+                HelpCard(R.string.help_page_title_03, scrollPosition03) {
+                    Body(R.string.help_page_section_03_A)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun IndexLink(
+    @StringRes titleRes: Int,
+    scope: CoroutineScope,
+    scrollState: ScrollState,
+    scrollPosition: MutableState<Float>,
+) {
+    ThemedLink(titleRes) {
+        scope.backgroundLaunch {
+            scrollState.animateScrollTo(scrollPosition.value.toInt())
+        }
+    }
+}
+
+@Composable
+private fun HelpCard(
+    @StringRes titleRes: Int,
+    scrollPosition: MutableState<Float>,
+    content: @Composable () -> Unit,
+) {
+    ContentCard(
+        Modifier
+            .contentPadding()
+            .onGloballyPositioned { coordinates ->
+                scrollPosition.value = coordinates.positionInParent().y
+            }) {
+        Column(Modifier.padding(Theme.dimens.content_padding * 2)) {
+            Title(titleRes, Modifier.contentPadding(top = zero_padding))
+            PaddedDivider()
+            Column(Modifier.contentPadding()) {
+                content()
             }
         }
     }

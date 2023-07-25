@@ -16,4 +16,12 @@
     <string name="latest_app_version">Latest application version</string>
     <string name="installation_id">App ID</string>
     <string name="id_copied_to_clipboard">App ID copied to clipboard</string>
+    <string name="help_page_index">Index</string>
+    <string name="scroll_to_top_desc">Scroll to top</string>
+    <string name="help_page_title_01">01. First Title</string>
+    <string name="help_page_section_01_A">First Section</string>
+    <string name="help_page_title_02">02. Second Title</string>
+    <string name="help_page_section_02_A">Second Section</string>
+    <string name="help_page_title_03">03. Third Title</string>
+    <string name="help_page_section_03_A">Third Section</string>
 </resources>

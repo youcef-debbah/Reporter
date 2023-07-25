@@ -11,7 +11,7 @@ import dz.nexatech.reporter.client.R
 @Composable
 fun ThemedLink(
     textRes: Int,
-    @DrawableRes icon: Int = R.drawable.baseline_open_in_browser_24,
+    @DrawableRes icon: Int = R.drawable.baseline_link_24,
     onClick: () -> Unit,
 ) {
     ThemedLink(
@@ -24,7 +24,7 @@ fun ThemedLink(
 @Composable
 fun ThemedLink(
     text: String,
-    @DrawableRes icon: Int = R.drawable.baseline_open_in_browser_24,
+    @DrawableRes icon: Int = R.drawable.baseline_link_24,
     onClick: () -> Unit,
 ) {
     TextButton(
