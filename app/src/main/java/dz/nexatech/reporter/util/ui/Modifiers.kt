@@ -30,6 +30,11 @@ fun Modifier.textPadding() = composed {
 }
 
 @Stable
+fun Modifier.indentedTextPadding() = composed {
+    padding(Theme.dimens.indented_text_padding)
+}
+
+@Stable
 fun Modifier.textPadding(
     start: Dp = Dp.Unspecified,
     top: Dp = Dp.Unspecified,

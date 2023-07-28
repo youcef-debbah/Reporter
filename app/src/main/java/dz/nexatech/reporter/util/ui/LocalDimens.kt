@@ -33,6 +33,8 @@ data class Dimens(
     @Stable
     val text_padding: StaticPadding,
     @Stable
+    val indented_text_padding: StaticPadding,
+    @Stable
     val button_padding: StaticPadding,
     @Stable
     val content_padding: StaticPadding,
@@ -50,6 +52,12 @@ val LocalDimens = staticCompositionLocalOf {
     Dimens(
         text_padding = StaticPadding(
             small_padding,
+            zero_padding,
+            small_padding,
+            zero_padding
+        ),
+        indented_text_padding = StaticPadding(
+            huge_padding,
             zero_padding,
             small_padding,
             zero_padding

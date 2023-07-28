@@ -75,7 +75,7 @@
     <string name="no_entries_found">Aucune entrée trouvée !</string>
     <string name="import_template">Importer</string>
     <string name="download_templates">Télécharger</string>
-    <string name="export_pdf">Exporter en PDF</string>
+    <string name="export_pdf_button_label">Exporter en PDF</string>
     <string name="expand_template_preview_toolbar_desc">Développer la barre d\'outils</string>
     <string name="collapse_template_preview_toolbar_desc">Réduire la barre d\'outils</string>
     <string name="input_too_long">Au maximum %d caractères sont autorisés</string>

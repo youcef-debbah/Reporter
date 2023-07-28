@@ -736,7 +736,7 @@ class TabsContext(
                                         } else {
                                             CircularProgressIndicator(Modifier.size(24.dp))
                                         }
-                                        Body(R.string.export_pdf)
+                                        Body(R.string.export_pdf_button_label)
                                     }
                                     FilledIconButton({ webView.setInitialScale(0) }) {
                                         InfoIcon(

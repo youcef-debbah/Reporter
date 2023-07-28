@@ -75,7 +75,7 @@
     <string name="no_entries_found">لم يتم العثور على أي مدخلات!</string>
     <string name="import_template">استيراد</string>
     <string name="download_templates">تحميل</string>
-    <string name="export_pdf">تصدير كـ PDF</string>
+    <string name="export_pdf_button_label">تصدير كـ PDF</string>
     <string name="expand_template_preview_toolbar_desc">توسيع شريط الأدوات</string>
     <string name="collapse_template_preview_toolbar_desc">طي شريط الأدوات</string>
     <string name="input_too_long">الحد الأقصى هو %d حرف</string>
