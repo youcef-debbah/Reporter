@@ -6,6 +6,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -15,9 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -196,7 +199,9 @@ object ReporterHelpScreen : StaticScreenDestination(
                     HelpSpacer()
                     Body(R.string.help_page_title_04_section_02, textAlign = TextAlign.Start)
                     HelpSpacer()
-                    Body(R.string.help_page_title_04_section_03, textAlign = TextAlign.Start)
+                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                        Body(R.string.help_page_title_04_section_03, Modifier.fillMaxWidth())
+                    }
                     HelpSpacer()
                     Body(R.string.help_page_title_04_section_04, textAlign = TextAlign.Start)
                     HelpSpacer()

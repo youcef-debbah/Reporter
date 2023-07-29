@@ -161,7 +161,7 @@
     <string name="help_page_title_04">4. Page Width and Height</string>
     <string name="help_page_title_04_section_01">You can manually set the page width of your PDF document. The ideal page width value mainly depends on the type of paper you will use for printing your PDF, for example, A4, A3, etc.</string>
     <string name="help_page_title_04_section_02">Here are the recommended values for the common paper types:</string>
-    <string name="help_page_title_04_section_03">A6:\u00A0298, A5:\u00A0420, A4:\u00A0595, A3:\u00A0842, A2:\u00A01190, A1:\u00A01684</string>
+    <string name="help_page_title_04_section_03" translatable="false">A6:\u00A0298, A5:\u00A0420, A4:\u00A0595, A3:\u00A0842, A2:\u00A01190, A1:\u00A01684</string>
     <string name="help_page_title_04_section_04">Advanced users may want to use other page width values. For example, if you set the page width to 500 and then print the generated PDF with the \"Fit to 100% width\" option on an A4 paper, the printed document will be scaled to 119% of its original size.</string>
     <string name="help_page_title_04_section_05">The page height is automatically calculated during PDF generation. Unfortunately, this means that sometimes the estimated page height in the preview may not match the actual height of the PDF page. In such cases, you can easily resolve the issue by updating the \"Preview length-width ratio\" in the \"Layout\" tab. Keep in mind that this variable only affects the preview of the document; it is not used during PDF generation.</string>
 </resources>
