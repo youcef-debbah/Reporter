@@ -1,8 +1,12 @@
 package dz.nexatech.reporter.gradle
 
 object Version {
+    // https://github.com/nomis/slf4j-android
+    const val SLF4J_ANDROID_LOGGER = "2.0.7-0"
+    const val SLF4J = "2.0.7"
+
     // https://github.com/Kotlin/kotlinx.coroutines/releases
-    const val COROUTINES: String = "1.6.4"
+    const val COROUTINES = "1.6.4"
 
     // https://github.com/junit-team/junit4/releases
     const val JUNIT4 = "4.13.2"
@@ -69,7 +73,7 @@ object Version {
     const val PAGING_COMPOSE = "3.2.0-beta01"
 
     // https://developer.android.com/jetpack/androidx/releases/appcompat
-    const val APPCOMPAT = "1.7.0-alpha02"
+    const val APPCOMPAT = "1.6.1"
     // const val APPCOMPAT = "1.6.1"
 
     // https://developer.android.com/jetpack/androidx/releases/lifecycle

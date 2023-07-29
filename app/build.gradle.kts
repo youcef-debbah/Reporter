@@ -78,6 +78,8 @@ dependencies {
     implementation("com.google.accompanist:accompanist-navigation-animation:${Version.COMPOSE_ACCOMPANIST}")
     implementation("com.google.accompanist:accompanist-navigation-material:${Version.COMPOSE_ACCOMPANIST}")
     implementation("androidx.core:core-splashscreen:${Version.SPLASH_SCREEN}")
+    implementation("org.slf4j:slf4j-api:${Version.SLF4J}")
+    implementation("uk.uuid.slf4j:slf4j-android:${Version.SLF4J_ANDROID_LOGGER}")
 
     // active 3rd party libs
     implementation("com.tencent:mmkv:${Version.MMKV}")
