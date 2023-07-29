@@ -116,4 +116,52 @@
     <string name="app_theme_title">Application Theme</string>
     <string name="company_desc_1">App developed by</string>
     <string name="company_desc_2">Where the next generation of\nsoftware solutions is crafted!</string>
+
+    <string name="max_column_width">Max UI width: %d</string>
+    <string name="min_column_width">Min UI width</string>
+    <string name="reporter_help_title">Usage Guide</string>
+    <string name="reporter_about_title">About</string>
+    <string name="contact_us">Contact us</string>
+    <string name="website">Website</string>
+    <string name="source_code">Source Code</string>
+    <string name="app_info_title">App info</string>
+    <string name="app_version_title">Version info</string>
+    <string name="build_time">Build Time</string>
+    <string name="app_version">Current application Version</string>
+    <string name="latest_app_version">Latest application version</string>
+    <string name="installation_id">App ID</string>
+    <string name="id_copied_to_clipboard">App ID copied to clipboard</string>
+    <string name="help_page_index">Index</string>
+    <string name="scroll_to_top_desc">Scroll to top</string>
+
+    <string name="help_page_title_01">1. How to Use This Application</string>
+    <string name="help_page_title_01_section_01">This application can be used to generate invoices, reports, or any other PDF document that can be created by filling in a few pieces of information in a form.</string>
+    <string name="help_page_title_01_section_02">To test the application, you must select a template from the templates list.</string>
+    <string name="help_page_title_01_section_03">If your templates list is empty, follow these steps:</string>
+    <string name="help_page_title_01_section_04">1. Go to the \u22EE menu and select \"%s\"</string>
+    <string name="help_page_title_01_section_05">2. Download at least one template file from the opened Google Drive directory</string>
+    <string name="help_page_title_01_section_06">3. Go back to this application and select \"%s\" from the \u22EE menu</string>
+    <string name="help_page_title_01_section_07">4. In the opened file chooser, choose the file that you have just downloaded</string>
+    <string name="help_page_title_01_section_08">After selecting a template, a tabbed page will load with the primary tab showing a preview of the PDF to be generated upon clicking \"%s\" The other tabs will hold input forms allowing you to update the generated content as needed.</string>
+    <string name="help_page_title_01_section_09">If you wish to use the application, feel free to contact us, and we will provide you with custom templates designed for your specific needs.</string>
+
+    <string name="help_page_title_02">2. Preview Tab</string>
+    <string name="help_page_title_02_section_01">The preview tab allows you to see a real-time preview of your PDF document. The preview updates as you type your input. You can use pinch gestures to zoom in/out, and if you need more space for the preview, you can click on the panel above the preview to minimize it temporarily.</string>
+    <string name="help_page_title_02_section_02">The preview is designed to be as possibly similar to the generated PDF. However, it is still just a preview, so there might be some differences. This is particularly true for page height. Therefore, after any significant changes, such as modifying font size or adding/removing multiple entries in a table, it is advisable to inspect the generated PDF.</string>
+    <string name="help_page_title_02_section_03">You can learn about this in:</string>
+    <string name="help_page_title_03">3. Input Forms</string>
+    <string name="help_page_title_03_section_01">Each template contains multiple variables that you can modify to change the content of the generated PDF. Your modifications are automatically saved as you type, so you can leave the application at any time, and everything will be preserved.</string>
+    <string name="help_page_title_03_section_02">If you find an entry to be ambiguous, you can use the \u24D8 button to show a small description of it. Also, if you are certain that your value is correct, you can ignore syntax warnings, but it is better to contact us whether it\'s due to an ambiguous description, false warnings, or any other inconvenience, so that we can provide you with an updated template or even a new version of the application itself.</string>
+    <string name="help_page_title_03_section_03">If your template includes tables, then you will need to provide their entries. Each table will have a separate tab with a list of entries where you can add, delete, reorder, and modify them. If your table becomes too large, you can adjust the font size, margins, or other similar variables that affect page height to gain extra space. Alternatively, you can contact us to get another template that better suits your needs.</string>
+    <string name="help_page_title_03_section_04">Note about color inputs:</string>
+    <string name="help_page_title_03_section_05">The colors are represented as hexadecimal values (e.g. #FFD9E3). You don\'t need to manually write these values as you can open the default color picker by clicking on the editing button inside the color input.</string>
+    <string name="help_page_title_03_section_06">You can even use an external color picker to choose the right color for you and then simply copy and paste the hexadecimal value in the color input.</string>
+    <string name="help_page_title_03_section_07">see also:</string>
+    <string name="help_page_title_03_section_08">Web Color Picker</string>
+    <string name="help_page_title_04">4. Page Width and Height</string>
+    <string name="help_page_title_04_section_01">You can manually set the page width of your PDF document. The ideal page width value mainly depends on the type of paper you will use for printing your PDF, for example, A4, A3, etc.</string>
+    <string name="help_page_title_04_section_02">Here are the recommended values for the common paper types:</string>
+    <string name="help_page_title_04_section_03">A6:\u00A0298, A5:\u00A0420, A4:\u00A0595, A3:\u00A0842, A2:\u00A01190, A1:\u00A01684</string>
+    <string name="help_page_title_04_section_04">Advanced users may want to use other page width values. For example, if you set the page width to 500 and then print the generated PDF with the \"Fit to 100% width\" option on an A4 paper, the printed document will be scaled to 119% of its original size.</string>
+    <string name="help_page_title_04_section_05">The page height is automatically calculated during PDF generation. Unfortunately, this means that sometimes the estimated page height in the preview may not match the actual height of the PDF page. In such cases, you can easily resolve the issue by updating the \"Preview length-width ratio\" in the \"Layout\" tab. Keep in mind that this variable only affects the preview of the document; it is not used during PDF generation.</string>
 </resources>

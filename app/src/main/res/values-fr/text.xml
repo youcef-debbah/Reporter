@@ -114,4 +114,52 @@
     <string name="app_theme_title">Thème d\'application</string>
     <string name="company_desc_1">Développée par</string>
     <string name="company_desc_2">où la prochaine génération de\nsolutions logicielles est conçue !</string>
+
+    <string name="max_column_width">La largeur maximale de GUI : %d</string>
+    <string name="min_column_width">La largeur minimale de GUI: %d</string>
+    <string name="reporter_help_title">Guide d\'utilisation</string>
+    <string name="reporter_about_title">À propos l\'application</string>
+    <string name="contact_us">Contactez-nous</string>
+    <string name="website">Site web</string>
+    <string name="source_code">Code source</string>
+    <string name="app_info_title">Informations sur l\'application</string>
+    <string name="app_version_title">Informations sur la version</string>
+    <string name="build_time">Date de construction</string>
+    <string name="app_version">Version actuelle de l\'application</string>
+    <string name="latest_app_version">Dernière version de l\'application</string>
+    <string name="installation_id">ID de l\'application</string>
+    <string name="id_copied_to_clipboard">ID de l\'application copié dans le presse-papiers</string>
+    <string name="help_page_index">Index</string>
+    <string name="scroll_to_top_desc">Remonter en haut</string>
+
+    <string name="help_page_title_01">1. Comment Utiliser Cette Application</string>
+    <string name="help_page_title_01_section_01">Cette application peut être utilisée pour générer des factures, des rapports ou tout autre document PDF qui peut être créé en remplissant quelques informations dans un formulaire.</string>
+    <string name="help_page_title_01_section_02">Pour tester l\'application, vous devez sélectionner un modèle dans la liste des modèles.</string>
+    <string name="help_page_title_01_section_03">Si votre liste de modèles est vide, suivez ces étapes :</string>
+    <string name="help_page_title_01_section_04">1. Allez dans le menu \u22EE et sélectionnez \"%s\"</string>
+    <string name="help_page_title_01_section_05">2. Téléchargez au moins un fichier de modèle à partir du répertoire Google Drive ouvert</string>
+    <string name="help_page_title_01_section_06">3. Revenez à cette application et sélectionnez \"%s\" dans le menu \u22EE</string>
+    <string name="help_page_title_01_section_07">4. Dans le sélecteur de fichier ouvert, choisissez le fichier que vous venez de télécharger</string>
+    <string name="help_page_title_01_section_08">Après avoir sélectionné un modèle, une page à onglets sera chargée avec l\'onglet principal affichant un aperçu du PDF à générer en cliquant sur \"%s\". Les autres onglets contiendront des formulaires de saisie vous permettant de mettre à jour le contenu généré selon vos besoins.</string>
+    <string name="help_page_title_01_section_09">Si vous souhaitez utiliser l\'application, n\'hésitez pas à nous contacter, et nous vous fournirons des modèles personnalisés conçus pour vos besoins spécifiques.</string>
+
+    <string name="help_page_title_02">2. Onglet d\'aperçu</string>
+    <string name="help_page_title_02_section_01">L\'onglet d\'aperçu vous permet de voir une prévisualisation en temps réel de votre document PDF. L\'aperçu se met à jour lorsque vous saisissez votre texte. Vous pouvez utiliser des gestes de pincement pour zoomer in/out, et si vous avez besoin de plus d\'espace pour l\'aperçu, vous pouvez cliquer sur le panneau au-dessus de l\'aperçu pour le réduire temporairement.</string>
+    <string name="help_page_title_02_section_02">L\'aperçu est conçu pour être aussi similaire que possible au PDF généré. Cependant, il s\'agit toujours d\'une prévisualisation, il peut donc y avoir quelques différences. C\'est particulièrement vrai pour la hauteur de la page. Par conséquent, après toute modification significative, telle que la modification de la taille de police ou l\'ajout/suppression de plusieurs entrées dans un tableau, il est conseillé d\'inspecter le PDF généré.</string>
+    <string name="help_page_title_02_section_03">Vous pouvez en apprendre davantage à ce sujet dans :</string>
+    <string name="help_page_title_03">3. Formulaires de saisie</string>
+    <string name="help_page_title_03_section_01">Chaque modèle contient plusieurs variables que vous pouvez modifier pour changer le contenu du PDF généré. Vos modifications sont automatiquement enregistrées pendant que vous tapez, donc vous pouvez quitter l\'application à tout moment, et tout sera préservé.</string>
+    <string name="help_page_title_03_section_02">Si vous trouvez une entrée ambiguë, vous pouvez utiliser le bouton \u24D8 pour afficher une petite description. De plus, si vous êtes certain que votre valeur est correcte, vous pouvez ignorer les avertissements de syntaxe, mais il est préférable de nous contacter, que ce soit en raison d\'une description ambiguë, de faux avertissements, ou de tout autre inconvénient, afin que nous puissions vous fournir un modèle mis à jour ou même une nouvelle version de l\'application elle-même.</string>
+    <string name="help_page_title_03_section_03">Si votre modèle inclut des tableaux, vous devrez fournir leurs entrées. Chaque tableau aura un onglet séparé avec une liste d\'entrées où vous pouvez les ajouter, supprimer, réorganiser et les modifier. Si votre tableau devient trop grand, vous pouvez ajuster la taille de police, les marges, ou d\'autres variables similaires qui affectent la hauteur de la page pour gagner de l\'espace supplémentaire. Sinon, vous pouvez nous contacter pour obtenir un autre modèle qui correspond mieux à vos besoins.</string>
+    <string name="help_page_title_03_section_04">Note concernant les entrées de couleur :</string>
+    <string name="help_page_title_03_section_05">Les couleurs sont représentées sous forme de valeurs hexadécimales (par exemple, #FFD9E3). Vous n\'avez pas besoin d\'écrire manuellement ces valeurs car vous pouvez ouvrir le sélecteur de couleur par défaut en cliquant sur le bouton d\'édition à l\'intérieur de l\'entrée de couleur.</string>
+    <string name="help_page_title_03_section_06">Vous pouvez même utiliser un sélecteur de couleur externe pour choisir la bonne couleur pour vous et ensuite simplement copier-coller la valeur hexadécimale dans l\'entrée de couleur.</string>
+    <string name="help_page_title_03_section_07">voir aussi :</string>
+    <string name="help_page_title_03_section_08">Sélecteur de couleur Web</string>
+    <string name="help_page_title_04">4. Largeur et hauteur de la page</string>
+    <string name="help_page_title_04_section_01">Vous pouvez définir manuellement la largeur de la page de votre document PDF. La valeur idéale de la largeur de la page dépend principalement du type de papier que vous utiliserez pour imprimer votre PDF, par exemple, A4, A3, etc.</string>
+    <string name="help_page_title_04_section_02">Voici les valeurs recommandées pour les types de papier courants :</string>
+    <string name="help_page_title_04_section_03">A6:\u00A0298, A5:\u00A0420, A4:\u00A0595, A3:\u00A0842, A2:\u00A01190, A1:\u00A01684</string>
+    <string name="help_page_title_04_section_04">Les utilisateurs avancés peuvent utiliser d\'autres valeurs de largeur de page. Par exemple, si vous définissez la largeur de la page à 500, puis imprimez le PDF généré avec l\'option \"Ajuster à une largeur de 100%\" sur un papier A4, le document imprimé sera mis à l\'échelle à 119% de sa taille d\'origine.</string>
+    <string name="help_page_title_04_section_05">La hauteur de la page est calculée automatiquement lors de la génération du PDF. Malheureusement, cela signifie que parfois la hauteur de page estimée dans l\'aperçu peut ne pas correspondre à la hauteur réelle de la page PDF. Dans de tels cas, vous pouvez résoudre facilement le problème en mettant à jour le \"Rapport longueur-largeur d\'aperçu\" dans l\'onglet \"Page\". Gardez à l\'esprit que cette variable n\'affecte que l\'aperçu du document ; elle n\'est pas utilisée lors de la génération du PDF.</string>
 </resources>

@@ -131,7 +131,7 @@ object ReporterHelpScreen : StaticScreenDestination(
                         textAlign = TextAlign.Start
                     )
                     Body(
-                        R.string.help_page_title_01_section_06,
+                        stringRes(R.string.help_page_title_01_section_06, stringRes(R.string.import_template_menu_item)),
                         Modifier.indentedTextPadding(),
                         textAlign = TextAlign.Start
                     )
@@ -149,6 +149,7 @@ object ReporterHelpScreen : StaticScreenDestination(
                     )
                     HelpSpacer()
                     Body(R.string.help_page_title_01_section_09, textAlign = TextAlign.Start)
+                    ContactUsLink()
                 }
 
                 HelpCard(R.string.help_page_title_02, scrollPosition02) {
@@ -156,7 +157,7 @@ object ReporterHelpScreen : StaticScreenDestination(
                     HelpSpacer()
                     Body(R.string.help_page_title_02_section_02, textAlign = TextAlign.Start)
                     CentredRow(horizontalArrangement = Arrangement.Start) {
-                        Body(R.string.help_page_title_02_section_03)
+                        Body(R.string.help_page_title_02_section_03, textAlign = TextAlign.Start)
                         IndexLink(R.string.help_page_title_04, scope, scrollState, scrollPosition04)
                     }
                 }
