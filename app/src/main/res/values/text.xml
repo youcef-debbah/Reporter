@@ -118,7 +118,7 @@
     <string name="company_desc_2">Where the next generation of\nsoftware solutions is crafted!</string>
 
     <string name="max_column_width">Max UI width: %d</string>
-    <string name="min_column_width">Min UI width</string>
+    <string name="min_column_width">Min UI width: %d</string>
     <string name="reporter_help_title">Usage Guide</string>
     <string name="reporter_about_title">About</string>
     <string name="contact_us">Contact us</string>

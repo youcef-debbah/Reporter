@@ -14,8 +14,23 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep mmkv methods
+-keepclasseswithmembers,includedescriptorclasses class com.tencent.mmkv.** {
+    native <methods>;
+    long nativeHandle;
+    private static *** onMMKVCRCCheckFail(***);
+    private static *** onMMKVFileLengthError(***);
+    private static *** mmkvLogImp(...);
+    private static *** onContentChangedByOuterProcess(***);
+}
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}

@@ -131,7 +131,6 @@ object AppConfig {
             } else {
                 config.fetch()
             }
-
         }
 
         val allRemoteConfigDefaults = ImmutableMap.Builder<String, Any>()
