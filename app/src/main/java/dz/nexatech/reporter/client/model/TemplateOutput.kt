@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.debounce
 class TemplateOutput(
     private val resourcesRepository: ResourcesRepository,
     private val templateState: TemplateState,
-    val htmlContent: MutableState<String>
+    val htmlContent: MutableState<String>,
 ) {
 
     companion object {
@@ -107,8 +107,8 @@ class TemplateOutput(
         return result
     }
 
-    private fun pageWidth(): Float =
-        (templateState.sectionsVariableStates["page_width"]?.state?.value)?.toFloatOrNull() ?: 595f
+    private fun pageWidth(): Float? =
+        (templateState.sectionsVariableStates["page_width"]?.state?.value)?.toFloatOrNull()
 
     fun newExportPdfIntent(): Intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)

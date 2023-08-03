@@ -19,6 +19,9 @@ class PdfConverter(
     val pdfWriterCompressionLevel: Int = CompressionConstants.BEST_COMPRESSION,
     val fontsLoader: suspend () -> Collection<ByteArray>,
 ) {
+    companion object {
+        const val DEFAULT_PAGE_WIDTH = 595f
+    }
 
     private suspend fun loadFontSet() = FontSet().apply {
         fontsLoader.invoke().forEach { resource ->
@@ -34,7 +37,7 @@ class PdfConverter(
         }
 
     suspend fun generatePDF(
-        pageWidth: Float,
+        pageWidth: Float?,
         outputStream: OutputStream,
         html: String,
     ) {
@@ -43,8 +46,9 @@ class PdfConverter(
             setSmartMode(pdfWriterSmartCachingEnabled)
         }
 
+        val width = pageWidth ?: DEFAULT_PAGE_WIDTH
         PdfDocument(pdfWriter).apply {
-            defaultPageSize = PageSize(pageWidth, (pageWidth * silverRatio).toFloat())
+            defaultPageSize = PageSize(width, (width * silverRatio).toFloat())
         }.use { pdfDocument ->
             val document = HtmlConverter.convertToDocument(
                 html,
