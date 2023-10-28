@@ -39,7 +39,7 @@ The app itself has a simple settings page where you can change the Look and feel
 
 The whole app is written in Kotlin using [Jetpack Compose](https://developer.android.com/jetpack/compose) with the modern [Material 3 design](https://m3.material.io/).
 
-Since this project is simple, I wanted to make it standalone and easy to build/fork, so instead of using some private utilities libraries I just copied the needed classes altogether to this repo.
+Since this project is simple, we wanted to make it standalone and easy to build/clone, so instead of using some private utilities libraries we just copied the needed classes altogether.
 
 ## Building the application
 
