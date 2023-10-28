@@ -1,8 +1,9 @@
+
 ## Overview
 
-Reporter is an Android application, a lightweight invoice manager designed exclusively for one specific client, however it is fairly flexible and can be used generate any arbitrary PDF document by just importing the it's template and filling a few input forms.
+Reporter is an Android application designed as a lightweight invoice manager, originally created exclusively for one specific client. However, it is fairly flexible and can be used to generate any arbitrary PDF document by importing its template and filling out a few input forms.
 
-This application is a [Free Software](https://www.gnu.org/philosophy/free-sw.html), we charges for each custom template we create, not per app download/usage. [Creating a custom template](#creating-a-custom-template) should be easy task for anyone with some experience in web development since the template is essentially a zip file that contains a webpage, few resources files (like icons, fonts, etc.) and some template meta data.
+This application is a [Free Software](https://www.gnu.org/philosophy/free-sw.html), we actually charge per each custom template we create, rather than for app downloads or usage. [Creating a custom template](#creating-a-custom-template) should be a straightforward task for anyone with some experience in web development since a template is essentially a zip file that contains a webpage, a few resource files (such as icons, fonts, etc.), and some extra metadata.
 
 ## Application features
 
@@ -46,7 +47,9 @@ To build the app, first create a [firebase](https://firebase.google.com/) projec
 
 ## Creating a custom template
 
-This
+Creating a template file is as easy as writing a webpage using [Pebble Template](https://pebbletemplates.io/), however there are many tips and tricks that you need to be aware of while writing your own template.
+
+If anyone is actually interested, we would gladly write a comprehensive guide about creating custom templates, including a desktop tool that provides a live preview of the template while you are editing it, just [Contact Us](#contact-us).
 
 ## License
 
