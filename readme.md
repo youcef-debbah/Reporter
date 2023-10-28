@@ -11,22 +11,22 @@ When a template is selected the application dynamically generates the necessary 
 This is how an [example template](https://drive.google.com/drive/folders/17v9MWlNCxS1AUNLK7ZxZLpSMLmRxgOyy?usp=drive_link) (simple sales invoice) looks like when imported:
 
 <img src="docs/Bill_preview.jpg" alt="Bill preview" width="50%" height="auto" />
-*The first tab is common to all template, it provides a live preview of the PDF you are generating*
+The first tab is common to all template, it provides a live preview of the PDF you are generating.
 
 <img src="docs/Company_info_form.jpg" alt="Company info form" width="50%" height="auto" />
-*This tab takes input about the seller company, these info grouped together because it rarely changes from one PDF to another*
+This tab takes input about the seller company, these info grouped together because it rarely changes from one PDF to another.
 
 <img src="docs/Bill_info_form.jpg" alt="Bill info form" width="50%" height="auto" />
-*This form contains important information that are likely to change for every bill, like the "bill number", and "billing date", etc.*
+This form contains important information that are likely to change for every bill, like the "bill number", and "billing date", etc.
 
 <img src="docs/Goods_list.jpg" alt="Goods list" width="50%" height="auto" />
-*This is the main input of the invoice, the list of products to be included in the bill*
+This is the main input of the invoice, the list of products to be included in the bill.
 
 <img src="docs/Bill_layout_settings.jpg" alt="Bill layout settings" width="50%" height="auto" />
-*This template have some basic layout settings that can be used to further customise the appearance of the generated PDF*
+This template have some basic layout settings that can be used to further customise the appearance of the generated PDF.
 
 <img src="docs/App_settings.jpg" alt="App settings" width="50%" height="auto" />
-*The app itself has a simple settings page where you can change the Look and feel of the whole app*
+The app itself has a simple settings page where you can change the Look and feel of the whole app.
 
 ## Implementation details
 
