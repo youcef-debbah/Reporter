@@ -18,8 +18,8 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -35,7 +35,7 @@ fun NavigationScaffold(
     startDestination: AbstractDestination,
     modifier: Modifier = Modifier,
     bottomSheetNavigator: BottomSheetNavigator = rememberBottomSheetNavigator(),
-    navController: NavHostController = rememberAnimatedNavController(bottomSheetNavigator),
+    navController: NavHostController = rememberNavController(bottomSheetNavigator),
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {
         DefaultNavigationBar(
@@ -97,7 +97,7 @@ private fun StatelessNavigationScaffold(
             content = { innerPadding ->
                 val destinations =
                     destinationsRegistry.currentDestination(navController).destinationsOrEmpty()
-                AnimatedNavHost(
+                NavHost(
                     navController = navController,
                     startDestination = startDestination.route,
                     modifier = Modifier.padding(innerPadding),
@@ -183,15 +183,15 @@ private fun defaultOutTransition(pop: Boolean): ExitTransition {
     return fadeOut(animationSpec = tween(AppConfig.get(NAVIGATION_ANIMATION_DURATION)))
 }
 
-private fun AnimatedContentScope<NavBackStackEntry>.inTransition(goingDeeper: Boolean): EnterTransition =
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.inTransition(goingDeeper: Boolean): EnterTransition =
     slideIntoContainer(
-        if (goingDeeper) AnimatedContentScope.SlideDirection.Start else AnimatedContentScope.SlideDirection.End,
+        if (goingDeeper) AnimatedContentTransitionScope.SlideDirection.Start else AnimatedContentTransitionScope.SlideDirection.End,
         animationSpec = tween(AppConfig.get(NAVIGATION_ANIMATION_DURATION))
     )
 
-private fun AnimatedContentScope<NavBackStackEntry>.outTransition(goingDeeper: Boolean): ExitTransition =
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.outTransition(goingDeeper: Boolean): ExitTransition =
     slideOutOfContainer(
-        if (goingDeeper) AnimatedContentScope.SlideDirection.End else AnimatedContentScope.SlideDirection.Start,
+        if (goingDeeper) AnimatedContentTransitionScope.SlideDirection.End else AnimatedContentTransitionScope.SlideDirection.Start,
         animationSpec = tween(AppConfig.get(NAVIGATION_ANIMATION_DURATION))
     )
 

@@ -14,7 +14,7 @@ logger.info("core build config...")
 
 description = "a shared library that encapsulates pdf reports generation capabilities."
 group = "dz.nexatech"
-version = "0.9.0-" + System.currentTimeMillis()
+version = "0.9.1-" + System.currentTimeMillis()
 
 val assembleSources by tasks.registering(Jar::class) {
     from(sourceSets.main.get().allSource)
@@ -55,7 +55,7 @@ tasks.withType<KotlinCompile> {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${buildConfig.kotlinVersion}")
     implementation("com.google.guava:guava:${Version.GUAVA_JRE}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Version.COROUTINES}")
 
     addCoroutines()
     addCommonTestDependencies(false)

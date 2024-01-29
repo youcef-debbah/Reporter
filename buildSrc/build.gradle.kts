@@ -29,13 +29,17 @@ repositories {
 }
 
 dependencies {
+    implementation("com.android.tools.build:gradle:8.1.1")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-    implementation("com.android.tools.build:gradle:8.1.0-beta04")
-
-    implementation("com.google.gms:google-services:4.3.15")
-    implementation("com.google.firebase:firebase-crashlytics-gradle:2.9.5")
-    implementation("com.google.firebase:perf-plugin:1.4.2")
-
     implementation("com.google.dagger:hilt-android-gradle-plugin:$hiltVersion")
+
+    // https://github.com/google/secrets-gradle-plugin
     implementation("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
+
+    // https://firebase.google.com/support/release-notes/android
+    // below versions are based on BOM version: 32.7.1
+    // TODO these versions should be read from a config file like hilt version
+    implementation("com.google.gms:google-services:4.4.0")
+    implementation("com.google.firebase:firebase-crashlytics-gradle:2.9.9")
+    implementation("com.google.firebase:perf-plugin:1.4.2")
 }

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +23,7 @@ import androidx.navigation.NavOptions
 import com.alorma.compose.settings.ui.SettingsCheckbox
 import com.alorma.compose.settings.ui.SettingsGroup
 import com.alorma.compose.settings.ui.SettingsSlider
-import com.google.accompanist.navigation.animation.composable
+import androidx.navigation.compose.composable
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.model.MAX_LAYOUT_COLUMN_WIDTH
 import dz.nexatech.reporter.client.model.MIN_LAYOUT_COLUMN_WIDTH

@@ -1,10 +1,9 @@
 package dz.nexatech.reporter.util.ui
 
-import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,7 +32,7 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
-import com.google.accompanist.navigation.animation.composable
+import androidx.navigation.compose.composable
 
 @Composable
 fun ContentCard(
@@ -113,13 +112,13 @@ inline fun PaddedBox(
 fun CentredRow(
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Center,
     maxItemsInEachRow: Int = Int.MAX_VALUE,
     content: @Composable RowScope.() -> Unit,
 ) = FlowRow(
     modifier = modifier,
     horizontalArrangement = horizontalArrangement,
-    verticalAlignment = verticalAlignment,
+    verticalArrangement = verticalArrangement,
     maxItemsInEachRow = maxItemsInEachRow,
     content = content,
 )
@@ -129,13 +128,13 @@ fun CentredRow(
 fun PaddedRow(
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
-    verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Center,
     maxItemsInEachRow: Int = Int.MAX_VALUE,
     content: @Composable RowScope.() -> Unit,
 ) = FlowRow(
     modifier = modifier.contentPadding(),
     horizontalArrangement = horizontalArrangement,
-    verticalAlignment = verticalAlignment,
+    verticalArrangement = verticalArrangement,
     maxItemsInEachRow = maxItemsInEachRow,
     content = content,
 )
@@ -170,19 +169,17 @@ fun SettingsDivider(modifier: Modifier = Modifier) = Divider(
         .fillMaxWidth(),
 )
 
-@OptIn(ExperimentalAnimationApi::class)
+typealias EnterAnimation = AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?
+typealias ExitAnimation = AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?
+
 fun NavGraphBuilder.themedComposable(
     route: String,
     arguments: List<NamedNavArgument> = emptyList(),
     deepLinks: List<NavDeepLink> = emptyList(),
-    enterTransition: (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = null,
-    exitTransition: (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = null,
-    popEnterTransition: (
-    AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?
-    )? = enterTransition,
-    popExitTransition: (
-    AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?
-    )? = exitTransition,
+    enterTransition: EnterAnimation? = null,
+    exitTransition: ExitAnimation? = null,
+    popEnterTransition: EnterAnimation? = enterTransition,
+    popExitTransition: ExitAnimation? = exitTransition,
     content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit,
 ) {
     composable(
