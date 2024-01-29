@@ -14,7 +14,7 @@ logger.info("core build config...")
 
 description = "a shared library that encapsulates pdf reports generation capabilities."
 group = "dz.nexatech"
-version = "0.9.1-" + System.currentTimeMillis()
+version = "0.9.3-" + System.currentTimeMillis()
 
 val assembleSources by tasks.registering(Jar::class) {
     from(sourceSets.main.get().allSource)
@@ -26,15 +26,13 @@ val assembleBinaries by tasks.registering(Jar::class) {
 }
 
 publishing {
-    val artifact = "reporter-core"
     publications {
-        register<MavenPublication>("binaries") {
-            artifactId = artifact
+        register<MavenPublication>("publishReporterCore") {
+            artifactId = "reporter-core"
             artifact(assembleBinaries.get())
-        }
-        register<MavenPublication>("sources") {
-            artifactId = artifact
-            artifact(assembleSources.get())
+            artifact(assembleSources.get()) {
+                this.classifier = "sources"
+            }
         }
     }
 }
@@ -60,8 +58,8 @@ dependencies {
     addCoroutines()
     addCommonTestDependencies(false)
 
-    api("io.pebbletemplates:pebble:3.2.0")
-    api("com.itextpdf:itext7-core:7.2.5")
-    api("com.itextpdf:html2pdf:4.0.5")
-    api(files("libs/typography-3.0.2.jar"))
+    api("io.pebbletemplates:pebble:3.2.2")
+    api("com.itextpdf:itext-core:8.0.2")
+    api("com.itextpdf:html2pdf:5.0.2")
+    api(files("libs/typography-4.0.2.jar"))
 }
