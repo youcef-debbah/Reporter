@@ -80,7 +80,7 @@ fun ThemePicker(
     PaddedColumn {
         header()
         FlowRow(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            for (theme in ThemeColors.values()) {
+            for (theme in ThemeColors.entries) {
                 key(theme.name) {
                     val colorScheme = theme.colorScheme(isDarkColors)
                     val outlineColor = if (selectedTheme == theme.name) {

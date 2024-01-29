@@ -218,7 +218,7 @@ fun InfoTheme(
 @Composable
 fun WarningTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     MaterialTheme(
         colorScheme = ThemeColors.YELLOW.colorScheme(darkTheme),
@@ -229,7 +229,7 @@ fun WarningTheme(
 @Composable
 fun ErrorTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     MaterialTheme(
         colorScheme = ThemeColors.RED.colorScheme(darkTheme),

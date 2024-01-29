@@ -1,13 +1,14 @@
 package dz.nexatech.reporter.util.model
 
-import android.os.Build
 import com.google.common.collect.ImmutableList
 import dz.nexatech.reporter.client.common.AbstractLocalizer
 import dz.nexatech.reporter.client.common.Texts
 import dz.nexatech.reporter.client.common.atomicLazy
 import dz.nexatech.reporter.client.common.splitIntoList
 import dz.nexatech.reporter.util.ui.AbstractApplication
-import java.util.*
+import java.util.Calendar
+import java.util.LinkedList
+import java.util.Locale
 
 class Localizer private constructor(formattingLang: String?) : AbstractLocalizer() {
 
@@ -173,17 +174,9 @@ class Localizer private constructor(formattingLang: String?) : AbstractLocalizer
             val result = LinkedList<String>()
             try {
                 val configuration = AbstractApplication.INSTANCE.resources.configuration
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    val locales = configuration.locales
-                    for (i in 0 until locales.size()) {
-                        val userLang = locales[i].language
-                        for (lang in Texts.SUPPORTED_LANGUAGES)
-                            if (userLang.startsWith(lang))
-                                result.add(lang)
-                    }
-                } else {
-                    @Suppress("DEPRECATION") // only executed on old platforms
-                    val userLang = configuration.locale.language
+                val locales = configuration.locales
+                for (i in 0 until locales.size()) {
+                    val userLang = locales[i].language
                     for (lang in Texts.SUPPORTED_LANGUAGES)
                         if (userLang.startsWith(lang))
                             result.add(lang)

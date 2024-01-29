@@ -538,8 +538,7 @@ open class VariableState protected constructor(
         if (variable.namespace != other.variable.namespace) return false
         if (variable.name != other.variable.name) return false
         if (index != other.index) return false
-        if (version != other.version) return false
-        return true
+        return version == other.version
     }
 
     override fun toString(): String = state.value

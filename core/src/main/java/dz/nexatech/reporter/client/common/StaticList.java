@@ -26,12 +26,13 @@ public class StaticList<E> extends AbstractList<E> implements RandomAccess {
     @SuppressWarnings("unchecked")
     public <T> T[] toArray(T[] a) {
         int size = size();
-        if (a.length < size)
-            return Arrays.copyOf(this.a, size,
-                    (Class<? extends T[]>) a.getClass());
+        if (a.length < size) return Arrays.copyOf(this.a, size, (Class<? extends T[]>) a.getClass());
+
+        //noinspection SuspiciousSystemArraycopy
         System.arraycopy(this.a, 0, a, 0, size);
-        if (a.length > size)
+        if (a.length > size) {
             a[size] = null;
+        }
         return a;
     }
 

@@ -1,5 +1,6 @@
 package dz.nexatech.reporter.util.model
 
+import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil.ItemCallback
 
 interface VisualItem {
@@ -76,23 +77,7 @@ interface VisualItem {
                 secondItem: String,
             ): Boolean = firstItem == secondItem
 
-            override fun getChangePayload(oldItem: String, newItem: String): Any? {
-                return newItem
-            }
-        }
-
-        val NUMBER_DIFF = object : ItemCallback<Number>() {
-            override fun areItemsTheSame(
-                firstItem: Number,
-                secondItem: Number,
-            ): Boolean = firstItem == secondItem
-
-            override fun areContentsTheSame(
-                firstItem: Number,
-                secondItem: Number,
-            ): Boolean = firstItem == secondItem
-
-            override fun getChangePayload(oldItem: Number, newItem: Number): Any {
+            override fun getChangePayload(oldItem: String, newItem: String): Any {
                 return newItem
             }
         }

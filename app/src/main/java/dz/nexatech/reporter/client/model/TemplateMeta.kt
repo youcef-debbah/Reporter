@@ -319,9 +319,7 @@ abstract class Form(
         if (desc_ar != other.desc_ar) return false
         if (desc_fr != other.desc_fr) return false
         if (desc_en != other.desc_en) return false
-        if (variables != other.variables) return false
-
-        return true
+        return variables == other.variables
     }
 
     override fun toString() =
@@ -936,9 +934,7 @@ class Variable internal constructor(
         if (label_en != other.label_en) return false
         if (desc_ar != other.desc_ar) return false
         if (desc_fr != other.desc_fr) return false
-        if (desc_en != other.desc_en) return false
-
-        return true
+        return desc_en == other.desc_en
     }
 
     override fun toString() =

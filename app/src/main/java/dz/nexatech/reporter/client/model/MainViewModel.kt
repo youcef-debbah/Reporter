@@ -1,9 +1,10 @@
 package dz.nexatech.reporter.client.model
 
 import android.net.Uri
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.IntState
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,8 +41,8 @@ class MainViewModel @Inject constructor(
 
     val activeDestinations: DestinationsRegistry = DestinationsRegistry()
 
-    private val _templateImporting: MutableState<Int> = mutableStateOf(0)
-    val templateImporting: State<Int> = _templateImporting
+    private val _templateImporting: MutableIntState = mutableIntStateOf(0)
+    val templateImporting: IntState = _templateImporting
 
     fun navigateToTemplateTabs(
         template: Template,
@@ -80,7 +81,7 @@ class MainViewModel @Inject constructor(
         withIO { templatesRepository.compileTemplateBlocking(templateName) }
 
     fun importTemplate(uri: Uri, navController: NavHostController) {
-        _templateImporting.value++
+        _templateImporting.intValue++
         ioLaunch {
             var pendingJob: Job? = null
             try {
@@ -112,7 +113,7 @@ class MainViewModel @Inject constructor(
             } finally {
                 pendingJob?.join()
                 withMain {
-                    _templateImporting.value--
+                    _templateImporting.intValue--
                 }
             }
         }

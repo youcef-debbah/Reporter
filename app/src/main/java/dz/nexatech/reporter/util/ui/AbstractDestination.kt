@@ -55,10 +55,7 @@ abstract class AbstractDestination(
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is AbstractDestination) return false
-
-        if (route != other.route) return false
-
-        return true
+        return route == other.route
     }
 
     final override fun hashCode(): Int {

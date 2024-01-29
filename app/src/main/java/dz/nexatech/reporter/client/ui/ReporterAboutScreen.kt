@@ -74,7 +74,6 @@ object ReporterAboutScreen : StaticScreenDestination(
         navigate(this@ReporterAboutScreen.route, navOptions)
     }
 
-    @OptIn(ExperimentalAnimationApi::class)
     fun NavGraphBuilder.addReporterAboutScreen(navController: NavController): ReporterAboutScreen {
         themedComposable(this@ReporterAboutScreen.route) {
             ReporterAboutView(navController)

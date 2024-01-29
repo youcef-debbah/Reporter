@@ -60,7 +60,7 @@ inline fun <T : Any> requireNotNull(value: T?, lazyMessage: () -> Any): T {
 /**
  * Throws an [IllegalStateException] if the [value] is false.
  */
-fun check(value: Boolean): Unit {
+fun check(value: Boolean) {
     contract {
         returns() implies value
     }
@@ -70,7 +70,7 @@ fun check(value: Boolean): Unit {
 /**
  * Throws an [IllegalStateException] with the result of calling [lazyMessage] if the [value] is false.
  */
-inline fun check(value: Boolean, lazyMessage: () -> Any): Unit {
+inline fun check(value: Boolean, lazyMessage: () -> Any) {
     contract {
         returns() implies value
     }

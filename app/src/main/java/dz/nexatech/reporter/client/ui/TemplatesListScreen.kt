@@ -1,7 +1,4 @@
-@file:OptIn(
-    ExperimentalAnimationApi::class,
-    ExperimentalMaterial3Api::class,
-)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package dz.nexatech.reporter.client.ui
 
@@ -104,7 +101,7 @@ object TemplatesListScreen : StaticScreenDestination(
                         DropdownMenuTextItem(
                             title = R.string.import_template_menu_item,
                             icon = StaticIcon.baseline_upload_file,
-                            enabled = viewModel.templateImporting.value == 0,
+                            enabled = viewModel.templateImporting.intValue == 0,
                         ) {
                             menuOpened.value = false
                             templateImportLauncher.launch(newOpenTemplateFileIntent())
@@ -170,7 +167,7 @@ object TemplatesListScreen : StaticScreenDestination(
                 val templatesListWidth by rememberLayoutWidth()
                 ContentCard(shape = RoundedCorner.Medium) {
                     CentredColumn(modifier = Modifier.requiredWidth(templatesListWidth)) {
-                        if (viewModel.templateImporting.value > 0) {
+                        if (viewModel.templateImporting.intValue > 0) {
                             LinearProgressIndicator(Modifier.fillMaxWidth())
                         }
                         AnimatedLazyLoading(

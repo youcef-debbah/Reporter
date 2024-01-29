@@ -2,9 +2,6 @@ package dz.nexatech.reporter.client.common
 
 import com.google.common.collect.ImmutableMap
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 const val FILE_PATH_SEPARATOR = "/"
 

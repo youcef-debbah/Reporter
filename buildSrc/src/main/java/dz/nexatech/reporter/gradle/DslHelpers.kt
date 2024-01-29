@@ -118,7 +118,7 @@ fun AnnotationProcessorOptions.roomOptions(
 fun Project.standardAndroidLib(libNameSpace: String, vararg consumerProguardPaths: String) {
     standardProjectConfig()
 
-    getConfigurations().named("androidTestImplementation") {
+    configurations.named("androidTestImplementation") {
         exclude(
             mapOf(
                 "group" to "com.google.firebase",
@@ -166,7 +166,7 @@ fun Project.standardAndroidApp(
             compose = true
         }
 
-        val appVersionName = "0.9." + appVersionCode
+        val appVersionName = "0.9.$appVersionCode"
         defaultConfig {
             applicationId = appNamespace
             versionCode = appVersionCode
@@ -194,6 +194,7 @@ private fun TestedExtension.standardAndroidConfig(
     appVersionName: String?,
     vararg consumerProguardPaths: String,
 ) {
+    @Suppress("UnstableApiUsage")
     composeOptions {
         kotlinCompilerExtensionVersion = Version.Compose.COMPILER
     }

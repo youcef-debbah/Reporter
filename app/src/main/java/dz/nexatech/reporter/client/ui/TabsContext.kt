@@ -628,7 +628,6 @@ class TabsContext(
         }
     }
 
-    @OptIn(ExperimentalAnimationApi::class)
     private fun buildSectionTab(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,

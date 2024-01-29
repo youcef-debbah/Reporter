@@ -11,5 +11,5 @@ class RoomCompilerArgumentProvider(schemaLocation: String) : CommandLineArgument
     @get:OutputDirectory
     val schemaLocationDirectory = File(schemaLocation)
 
-    override fun asArguments(): MutableIterable<String> = mutableListOf<String>(argument)
+    override fun asArguments(): MutableIterable<String> = mutableListOf(argument)
 }

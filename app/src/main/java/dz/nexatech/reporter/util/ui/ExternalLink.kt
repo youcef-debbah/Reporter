@@ -44,7 +44,7 @@ object ExternalLink {
 
     fun openEmailDialer(email: String, context: Context = AbstractApplication.INSTANCE) {
         try {
-            val intent = Intent()
+            val intent = Intent(ACTION_MAILTO)
             intent.data = Uri.parse(PROTOCOL_MAILTO)
             intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
             intent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.default_email_content, AppConfig.get(INSTALLATION_ID)))

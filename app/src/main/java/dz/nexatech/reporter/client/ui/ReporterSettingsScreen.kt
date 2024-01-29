@@ -59,7 +59,6 @@ object ReporterSettingsScreen : StaticScreenDestination(
         navigate(this@ReporterSettingsScreen.route, navOptions)
     }
 
-    @OptIn(ExperimentalAnimationApi::class)
     fun NavGraphBuilder.addSettingsScreen(navController: NavController): ReporterSettingsScreen {
         composable(this@ReporterSettingsScreen.route) {
             AnimatedApplicationTheme {

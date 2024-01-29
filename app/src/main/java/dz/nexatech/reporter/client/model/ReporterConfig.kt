@@ -36,7 +36,6 @@ val TEMPLATE_PREVIEW_DEBOUNCE = LocalConfig.Long("TEMPLATE_PREVIEW_DEBOUNCE", 50
 val MAX_LAYOUT_COLUMN_WIDTH = LocalConfig.Int("MAX_LAYOUT_COLUMN_WIDTH", 500)
 val MIN_LAYOUT_COLUMN_WIDTH = LocalConfig.Int("MIN_LAYOUT_COLUMN_WIDTH", 280)
 
-@Suppress("unused")
 val REPORTER_LOCAL_CONFIGS: ImmutableMap<String, LocalConfig<*>> =
     ImmutableMap.builder<String, LocalConfig<*>>()
         .putLocalConfig(TEMPLATE_PREVIEW_DEBOUNCE)

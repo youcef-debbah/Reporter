@@ -38,7 +38,6 @@ val APPLICATION_THEME = LocalConfig.String("APPLICATION_THEME", ThemeColors.DEFA
 val DYNAMIC_APPLICATION_THEME = LocalConfig.Boolean("DYNAMIC_APPLICATION_THEME", false)
 val INSTALLATION_ID = LocalConfig.String("INSTALLATION_ID", "N/A")
 
-@Suppress("unused")
 val GLOBAL_LOCAL_CONFIGS: ImmutableMap<String, LocalConfig<*>> = ImmutableMap.builder<String, LocalConfig<*>>()
     .putLocalConfig(NO_CONFIG_CACHE)
     .putLocalConfig(APPLICATION_THEME)

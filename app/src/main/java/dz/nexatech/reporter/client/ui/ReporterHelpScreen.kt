@@ -60,7 +60,6 @@ object ReporterHelpScreen : StaticScreenDestination(
         navigate(this@ReporterHelpScreen.route, navOptions)
     }
 
-    @OptIn(ExperimentalAnimationApi::class)
     fun NavGraphBuilder.addReporterHelpScreen(navController: NavController): ReporterHelpScreen {
         themedComposable(this@ReporterHelpScreen.route) {
             ReporterHelpView(navController)

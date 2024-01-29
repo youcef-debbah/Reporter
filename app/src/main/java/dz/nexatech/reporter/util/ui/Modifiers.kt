@@ -2,6 +2,7 @@
 
 package dz.nexatech.reporter.util.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
@@ -60,19 +61,23 @@ fun Modifier.buttonPadding(
 }
 
 @Stable
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
 fun Modifier.minWidth(minWidth: Dp) =
     defaultMinSize(minWidth = minWidth, minHeight = Dp.Unspecified)
 
 @Stable
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
 fun Modifier.minHeight(minHeight: Dp) =
     defaultMinSize(minWidth = Dp.Unspecified, minHeight = minHeight)
 
 @Stable
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
 fun Modifier.roundedComponentTrailing() = composed {
     padding(end = Theme.dimens.rounded_component.start)
 }
 
 @Stable
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
 fun Modifier.roundedComponentLeading() = composed {
     padding(start = Theme.dimens.rounded_component.end)
 }

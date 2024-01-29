@@ -30,7 +30,7 @@ fun LifecycleOwner.whileResumed(block: suspend CoroutineScope.() -> Unit) =
 fun LifecycleOwner.whileCreated(block: suspend CoroutineScope.() -> Unit) =
     whileLifecycle(Lifecycle.State.CREATED, block)
 
-fun onMain(block: () -> Unit): Unit {
+fun onMain(block: () -> Unit) {
     if (Looper.myLooper() == Looper.getMainLooper()) {
         block()
     } else {

@@ -3,9 +3,7 @@ package dz.nexatech.reporter.util.model
 import android.os.Bundle
 import android.util.Log
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.ParametersBuilder
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import dz.nexatech.reporter.util.ui.AbstractApplication
 import dagger.Lazy
 import dz.nexatech.reporter.client.common.AbstractTeller
 import dz.nexatech.reporter.client.common.Chaos
@@ -14,6 +12,7 @@ import dz.nexatech.reporter.client.common.Texts
 import dz.nexatech.reporter.client.common.duration
 import dz.nexatech.reporter.client.common.ioLaunch
 import dz.nexatech.reporter.client.common.isNotNullOrEmpty
+import dz.nexatech.reporter.util.ui.AbstractApplication
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import java.util.concurrent.ConcurrentSkipListSet
@@ -307,13 +306,10 @@ object Teller : AbstractTeller() {
 }
 
 class BundleParamBuilder : ParamBuilder {
-    private val builder = ParametersBuilder()
-    val bundle get() = builder.bundle
-    fun param(key: String, value: Bundle) = builder.param(key, value)
-    fun param(key: String, value: Array<Bundle>) = builder.param(key, value)
-    override fun param(key: String, value: Double) = builder.param(key, value)
-    override fun param(key: String, value: Long) = builder.param(key, value)
-    override fun param(key: String, value: String) = builder.param(key, value)
+    val bundle = Bundle()
+    override fun param(key: String, value: Double) = bundle.putDouble(key, value)
+    override fun param(key: String, value: Long) = bundle.putLong(key, value)
+    override fun param(key: String, value: String) = bundle.putString(key, value)
 }
 
 @OptIn(ExperimentalContracts::class)

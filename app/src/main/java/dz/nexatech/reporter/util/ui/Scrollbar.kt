@@ -24,6 +24,7 @@
 
 package dz.nexatech.reporter.util.ui
 
+import android.annotation.SuppressLint
 import android.view.ViewConfiguration
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -192,6 +193,7 @@ private fun DrawScope.drawScrollbar(
     )
 }
 
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
 private fun Modifier.drawScrollbar(
     orientation: Orientation,
     reverseScrolling: Boolean,

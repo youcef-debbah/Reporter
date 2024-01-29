@@ -1,11 +1,8 @@
 package dz.nexatech.reporter
 
-import com.google.common.collect.ImmutableSet
 import com.google.common.truth.Truth.assertThat
 import dz.nexatech.reporter.util.model.Localizer
 import org.junit.Test
-import java.util.Calendar
-import java.util.Date
 
 class TestDateFormatting {
 

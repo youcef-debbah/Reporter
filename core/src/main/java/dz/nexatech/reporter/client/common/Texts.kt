@@ -36,7 +36,7 @@ object Texts {
     const val ASSETS_PREFIX = "/android_asset/"
     const val FILE_PROTOCOL_ASSETS_PREFIX = "file://$ASSETS_PREFIX"
 
-    const val UTF_8 = "UTF-8";
+    const val UTF_8 = "UTF-8"
 
     val ZEROS: Array<String> = Array(20) { "0".repeat(it) }
     const val MIN_ABS_INT = "2147483648"
