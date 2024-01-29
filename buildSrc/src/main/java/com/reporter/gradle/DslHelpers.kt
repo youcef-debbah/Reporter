@@ -115,7 +115,7 @@ fun AnnotationProcessorOptions.roomOptions(
     compilerArgumentProvider(RoomCompilerArgumentProvider(schemasPath))
 }
 
-fun Project.standardAndroidLib(libSnamespace: String, vararg consumerProguardPaths: String) {
+fun Project.standardAndroidLib(libNameSpace: String, vararg consumerProguardPaths: String) {
     standardProjectConfig()
 
     getConfigurations().named("androidTestImplementation") {
@@ -129,7 +129,7 @@ fun Project.standardAndroidLib(libSnamespace: String, vararg consumerProguardPat
 
     (this as ExtensionAware).extensions.configure(LibraryExtension::class.java) {
 
-        namespace = libSnamespace
+        namespace = libNameSpace
         compileSdk = BuildSettings.TARGET_SDK_LEVEL
 
         buildFeatures {
@@ -142,7 +142,7 @@ fun Project.standardAndroidLib(libSnamespace: String, vararg consumerProguardPat
 
         standardAndroidConfig(
             this@standardAndroidLib,
-            libSnamespace,
+            libNameSpace,
             null,
             *consumerProguardPaths
         )

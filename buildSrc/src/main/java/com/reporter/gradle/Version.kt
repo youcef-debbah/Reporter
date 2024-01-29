@@ -49,8 +49,8 @@ object Version {
     const val JUNIT4 = "4.13.2"
 
     // https://developer.android.com/jetpack/androidx/releases/customview
-    const val CUSTOMVIEW = "1.1.0"
-    const val CUSTOMVIEW_POOLING = "1.0.0"
+    const val CUSTOM_VIEW = "1.1.0"
+    const val CUSTOM_VIEW_POOLING = "1.0.0"
 
     // https://github.com/Tencent/MMKV
     const val MMKV = "1.3.3"
@@ -59,7 +59,7 @@ object Version {
     const val GODADDY_COLOR_PICKER = "0.7.0"
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
-    /* the versions below should get regulare updates becuase they are still under heavy development */
+    /* the versions below should get regular updates because they are still under heavy development */
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     // https://firebase.google.com/support/release-notes/android#latest_sdk_versions

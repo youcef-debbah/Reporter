@@ -210,7 +210,7 @@ object Theme {
 // *
 // * @param items the items received from a [Flow] of [PagingData].
 // * @param key a factory of stable and unique keys representing the item. Using the same key
-// * for multiple items in the list is not allowed. Type of the key should be saveable
+// * for multiple items in the list is not allowed. Type of the key should be savable
 // * via Bundle on Android. If null is passed the position in the list will represent the key.
 // * When you specify the key the scroll position will be maintained based on the key, which
 // * means if you add/remove items before the current visible item the item with the given key

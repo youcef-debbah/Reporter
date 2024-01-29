@@ -39,7 +39,7 @@ fun DependencyHandler.addLifecycle(transient: Boolean = false) {
     add(apiOrImpl(transient), "androidx.lifecycle:lifecycle-process:${Version.LIFECYCLE}")
     add(apiOrImpl(transient, "debug"),"androidx.lifecycle:lifecycle-viewmodel-savedstate:${Version.LIFECYCLE}")
     add(apiOrImpl(transient, "debug"),"androidx.lifecycle:lifecycle-runtime:${Version.LIFECYCLE}")
-    add(apiOrImpl(transient, "debug"), "androidx.customview:customview-poolingcontainer:${Version.CUSTOMVIEW_POOLING}")
+    add(apiOrImpl(transient, "debug"), "androidx.customview:customview-poolingcontainer:${Version.CUSTOM_VIEW_POOLING}")
     add(apiOrImpl(transient, "test"), "androidx.arch.core:core-testing:${Version.CORE_ARCH}")
     add(apiOrImpl(transient, "test"), "androidx.lifecycle:lifecycle-runtime-testing:${Version.LIFECYCLE}")
 }

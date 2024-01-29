@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName")
+
 package dz.nexatech.reporter.client.model
 
 import androidx.compose.foundation.text.KeyboardOptions
@@ -49,9 +51,8 @@ class TemplateMeta private constructor(
 
         if (template != other.template) return false
         if (sections != other.sections) return false
-        if (records != other.records) return false
 
-        return true
+        return records != other.records
     }
 
     override fun toString() =
