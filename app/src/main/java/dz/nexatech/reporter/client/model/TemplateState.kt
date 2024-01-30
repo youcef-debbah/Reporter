@@ -1,9 +1,11 @@
 package dz.nexatech.reporter.client.model
 
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.common.collect.ImmutableList
@@ -54,13 +56,13 @@ class TemplateState private constructor(
         source: ImmutableMap<String, VariableState> = ImmutableMap.of(),
     ) {
         ThreadUtil.ensureMainThread()
-        val index = recordState.maxIndex.value + 1
+        val index = recordState.maxIndex.intValue + 1
         val record = recordState.record
         val variables = record.variables
         val tupleValues = ArrayList<Value>(variables.size)
         val newTuple = newTuple(variables, index, tupleValues, source)
         InputHandler.execute(ValueOperation.SaveAll(tupleValues))
-        recordState.maxIndex.value = index
+        recordState.maxIndex.intValue = index
         recordState.tuples.add(newTuple)
         lastUpdate.tryEmit(record.namespace)
     }
@@ -325,7 +327,7 @@ class TemplateState private constructor(
             loadedTuples: SortedMap<Int, MutableMap<String, AbstractValue>>,
             record: Record,
             tuples: SnapshotStateList<ImmutableMap<String, VariableState>>,
-            maxIndexState: MutableState<Int>,
+            maxIndexState: MutableIntState,
             lastUpdate: MutableSharedFlow<String>,
         ) {
             val draft = ArrayList<ImmutableMap<String, VariableState>>(loadedTuples.size)
@@ -356,7 +358,7 @@ class TemplateState private constructor(
 
             // update the UI
             withMain {
-                maxIndexState.value = maxIndex
+                maxIndexState.intValue = maxIndex
                 tuples.clear()
                 tuples.addAll(draft)
             }
@@ -425,7 +427,7 @@ class TemplateState private constructor(
 
             for (record in declaredRecords.values) {
                 val tuples = SnapshotStateList<ImmutableMap<String, VariableState>>()
-                val maxIndex = mutableStateOf(Value.INDEX_OFFSET)
+                val maxIndex = mutableIntStateOf(Value.INDEX_OFFSET)
                 recordsBuilder.add(
                     RecordState(
                         record,
@@ -527,7 +529,10 @@ open class VariableState protected constructor(
         }
     }
 
-    val hash = version.hashCode().addHash(index).addHash(variable.name).addHash(variable.namespace)
+    private val hash = version.hashCode()
+        .addHash(index)
+        .addHash(variable.name)
+        .addHash(variable.namespace)
 
     final override fun hashCode() = hash
 
@@ -561,7 +566,7 @@ class LinesVariableState(
 class RecordState(
     val record: Record,
     val tuples: SnapshotStateList<ImmutableMap<String, VariableState>>,
-    val maxIndex: MutableState<Int>,
+    val maxIndex: MutableIntState,
     val badgeText: State<String>,
 ) {
     override fun toString(): String {

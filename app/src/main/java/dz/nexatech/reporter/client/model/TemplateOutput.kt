@@ -6,8 +6,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
+import androidx.compose.runtime.IntState
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import dz.nexatech.reporter.client.R
 import dz.nexatech.reporter.client.common.FilesExtension
@@ -38,8 +40,8 @@ class TemplateOutput(
 
         private val latestUri = mutableStateOf<Uri>(Uri.EMPTY)
 
-        private val _pdfGenerating: MutableState<Int> = mutableStateOf(0)
-        val pdfGenerating: State<Int> = _pdfGenerating
+        private val _pdfGenerating: MutableIntState = mutableIntStateOf(0)
+        val pdfGenerating: IntState = _pdfGenerating
 
         fun from(
             tabsContext: TabsContext,
@@ -76,7 +78,7 @@ class TemplateOutput(
 
     fun exportTemplateAsPDF(uri: Uri): Boolean {
         var result = false
-        _pdfGenerating.value++
+        _pdfGenerating.intValue++
         ioLaunch {
             try {
                 context.useOutputStream(uri) { outputStream ->
@@ -99,7 +101,7 @@ class TemplateOutput(
                 }
             } finally {
                 withMain {
-                    _pdfGenerating.value--
+                    _pdfGenerating.intValue--
                 }
             }
         }

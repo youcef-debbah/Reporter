@@ -726,11 +726,11 @@ class TabsContext(
                                     modifier = Modifier.fillMaxWidth(),
                                 ) {
                                     Button(
-                                        enabled = TemplateOutput.pdfGenerating.value == 0,
+                                        enabled = TemplateOutput.pdfGenerating.intValue == 0,
                                         onClick = {
                                             pdfExportingLauncher.launch(templateOutput.newExportPdfIntent())
                                         }) {
-                                        if (TemplateOutput.pdfGenerating.value == 0) {
+                                        if (TemplateOutput.pdfGenerating.intValue == 0) {
                                             DecorativeIcon(icon = R.drawable.baseline_picture_as_pdf_24)
                                         } else {
                                             CircularProgressIndicator(Modifier.size(24.dp))

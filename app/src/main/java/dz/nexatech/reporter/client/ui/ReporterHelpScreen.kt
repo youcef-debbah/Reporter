@@ -1,7 +1,6 @@
 package dz.nexatech.reporter.client.ui
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
@@ -71,7 +77,7 @@ object ReporterHelpScreen : StaticScreenDestination(
     private fun ReporterHelpView(navController: NavController) {
         val scope = rememberCoroutineScope()
         val scrollState = rememberScrollState()
-        val scrollPosition00 = remember { mutableStateOf(0f) }
+        val scrollPosition00 = remember { mutableIntStateOf(0) }
 
         val screenHeightDp = LocalConfiguration.current.screenHeightDp
         val showFab = remember(screenHeightDp) {
@@ -91,7 +97,7 @@ object ReporterHelpScreen : StaticScreenDestination(
                 if (showFab.value) {
                     FloatingActionButton(onClick = {
                         scope.backgroundLaunch {
-                            scrollState.animateScrollTo(scrollPosition00.value.toInt())
+                            scrollState.animateScrollTo(scrollPosition00.intValue)
                         }
                     }) {
                         InfoIcon(
@@ -102,10 +108,10 @@ object ReporterHelpScreen : StaticScreenDestination(
                 }
             }
         ) {
-            val scrollPosition01 = remember { mutableStateOf(0f) }
-            val scrollPosition02 = remember { mutableStateOf(0f) }
-            val scrollPosition03 = remember { mutableStateOf(0f) }
-            val scrollPosition04 = remember { mutableStateOf(0f) }
+            val scrollPosition01 = remember { mutableIntStateOf(0) }
+            val scrollPosition02 = remember { mutableIntStateOf(0) }
+            val scrollPosition03 = remember { mutableIntStateOf(0) }
+            val scrollPosition04 = remember { mutableIntStateOf(0) }
             ScrollableColumn(scrollState = scrollState) {
                 HelpCard(R.string.help_page_index, scrollPosition00) {
                     IndexLink(R.string.help_page_title_01, scope, scrollState, scrollPosition01)
@@ -133,7 +139,10 @@ object ReporterHelpScreen : StaticScreenDestination(
                         textAlign = TextAlign.Start
                     )
                     Body(
-                        stringRes(R.string.help_page_title_01_section_06, stringRes(R.string.import_template_menu_item)),
+                        stringRes(
+                            R.string.help_page_title_01_section_06,
+                            stringRes(R.string.import_template_menu_item)
+                        ),
                         Modifier.indentedTextPadding(),
                         textAlign = TextAlign.Start
                     )
@@ -225,11 +234,11 @@ private fun IndexLink(
     @StringRes titleRes: Int,
     scope: CoroutineScope,
     scrollState: ScrollState,
-    scrollPosition: MutableState<Float>,
+    scrollPosition: MutableIntState
 ) {
     ThemedLink(titleRes) {
         scope.backgroundLaunch {
-            scrollState.animateScrollTo(scrollPosition.value.toInt())
+            scrollState.animateScrollTo(scrollPosition.intValue)
         }
     }
 }
@@ -237,14 +246,14 @@ private fun IndexLink(
 @Composable
 private fun HelpCard(
     @StringRes titleRes: Int,
-    scrollPosition: MutableState<Float>,
+    scrollPosition: MutableIntState,
     content: @Composable () -> Unit,
 ) {
     ContentCard(
         Modifier
             .contentPadding()
             .onGloballyPositioned { coordinates ->
-                scrollPosition.value = coordinates.positionInParent().y
+                scrollPosition.intValue = coordinates.positionInParent().y.toInt()
             }) {
         Column(Modifier.contentPadding()) {
             Title(
