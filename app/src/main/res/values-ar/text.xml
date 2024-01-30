@@ -69,7 +69,6 @@
     <string name="input_stream_io_failure">تعذر تعديل الملف المطلوب!</string>
     <string name="zoom_in_preview_desc">تكبير</string>
     <string name="zoom_out_preview_desc">تصغير</string>
-    <string name="templates_updated_successfully">تم تحديث %d قالب بنجاح</string>
     <string name="templates_importing_failed">فشل استيراد القوالب!</string>
     <string name="no_templates_found">لم يتم العثور على قوالب!</string>
     <string name="no_entries_found">لم يتم العثور على أي مدخلات!</string>
@@ -161,4 +160,13 @@
     <string name="help_page_title_04_section_02">إليك القيم الموصى بها لبعض أنواع الورق الشائعة:</string>
     <string name="help_page_title_04_section_04" formatted="false">قد يرغب بعض المستخدمون المتقدمون في استخدام قيم أخرى لعرض الصفحة. على سبيل المثال، إذا قمت بإستخدام عرض صفحة بقيمة 500 ثم قمت بطباعة الملف مع تفعيل خيار الطباعة \"تناسب العرض 100%\" على ورقة A4، سيتم تكبير المستند المطبوع إلى 119% من حجمه الأصلي.</string>
     <string name="help_page_title_04_section_05">يتم حساب ارتفاع الصفحة تلقائيًا أثناء إنشاء الف الـ PDF. للأسف، يعني ذلك أن ارتفاع الصفحة المقدر في المعاينة قد لا يتطابق مع ارتفاع الصفحة الفعلي للملف النهائي. في مثل هذه الحالات، يمكنك حل المشكلة بسهولة عن طريق تعديل قيمة المتغير \"نسبة الطول إلى العرض المعاينة\" المحتوى في علامة التبويب \"الصفحة\". هذا المتغير فريد من ناحية أنه يؤثر فقط على المعاينة حيث أنه لايُأخذ بعين الإعتبار أثناء إنشاء الملف النهائي.</string>
+
+    <plurals name="templates_updated_successfully">
+        <item quantity="zero">لم يتم تحديث أي قالب</item>
+        <item quantity="one">تم تحديث قالب واحد بنجاح</item>
+        <item quantity="two">تم تحديث إثنين من القوالب بنجاح</item>
+        <item quantity="few">تم تحديث %d قوالب بنجاح</item>
+        <item quantity="many">تم تحديث %d قالباً بنجاح</item>
+        <item quantity="other">تم تحديث %d قالب بنجاح</item>
+    </plurals>
 </resources>

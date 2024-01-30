@@ -91,7 +91,8 @@ class MainViewModel @Inject constructor(
 
                     val templates = loaded.first.map(Template::from)
                     val resources = loaded.second.map(Resource::from)
-                    if (templates.isEmpty()) {
+                    val size = templates.size
+                    if (size == 0) {
                         Toasts.launchLong(R.string.no_templates_found, context)
                     } else {
                         pendingJob = mainLaunch {
@@ -100,10 +101,8 @@ class MainViewModel @Inject constructor(
                         }
                         templatesRepository.updateTemplates(templates, resources)
                         Toasts.launchShort(
-                            context.getString(
-                                R.string.templates_updated_successfully,
-                                templates.size
-                            ), context
+                            context.resources.getQuantityString(R.plurals.templates_updated_successfully, size, size),
+                            context
                         )
                     }
                 }
