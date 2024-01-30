@@ -1,13 +1,16 @@
 package dz.nexatech.reporter.client.ui
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
@@ -27,6 +30,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -81,10 +85,9 @@ object ReporterHelpScreen : StaticScreenDestination(
 
         val screenHeightDp = LocalConfiguration.current.screenHeightDp
         val showFab = remember(screenHeightDp) {
-            val threshold = screenHeightDp.toPixels(defaultDensity * 1.75f)
+            val threshold = screenHeightDp.toPixels(defaultDensity * 0.75f)
             derivedStateOf(structuralEqualityPolicy()) { scrollState.value > threshold }
         }
-
         SimpleScaffold(
             topBar = {
                 StandardAppBar(
@@ -94,16 +97,18 @@ object ReporterHelpScreen : StaticScreenDestination(
                 )
             },
             floatingActionButton = {
-                if (showFab.value) {
-                    FloatingActionButton(onClick = {
-                        scope.backgroundLaunch {
-                            scrollState.animateScrollTo(scrollPosition00.intValue)
+                Box(Modifier.size(56.dp)) {
+                    AnimatedVisibility(showFab.value) {
+                        FloatingActionButton(onClick = {
+                            scope.backgroundLaunch {
+                                scrollState.animateScrollTo(scrollPosition00.intValue)
+                            }
+                        }) {
+                            InfoIcon(
+                                icon = R.drawable.baseline_keyboard_arrow_up_24,
+                                desc = R.string.scroll_to_top_desc
+                            )
                         }
-                    }) {
-                        InfoIcon(
-                            icon = R.drawable.baseline_keyboard_arrow_up_24,
-                            desc = R.string.scroll_to_top_desc
-                        )
                     }
                 }
             }
