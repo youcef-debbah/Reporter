@@ -36,3 +36,5 @@
 }
 
 -keepnames class com.itextpdf.**
+-dontwarn com.itextpdf.bouncycastle.BouncyCastleFactory
+-dontwarn com.itextpdf.bouncycastlefips.BouncyCastleFipsFactory
