@@ -79,46 +79,21 @@ val iconsAssetsResources: ImmutableMap<String, AbstractPrintableIconResource> = 
     .putValue(StaticPrintableIconResource("baseline_close_24", R.drawable.baseline_close_24))
     .putValue(StaticPrintableIconResource("baseline_color_lens_24", R.drawable.baseline_color_lens_24))
     .putValue(StaticPrintableIconResource("baseline_comment_24", R.drawable.baseline_comment_24))
-    .putValue(
-        StaticPrintableIconResource(
-            "baseline_contact_emergency_24",
-            R.drawable.baseline_contact_emergency_24
-        )
-    )
+    .putValue(StaticPrintableIconResource("baseline_contact_emergency_24", R.drawable.baseline_contact_emergency_24))
     .putValue(StaticPrintableIconResource("baseline_contact_mail_24", R.drawable.baseline_contact_mail_24))
-    .putValue(
-        StaticPrintableIconResource(
-            "baseline_contact_phone_24",
-            R.drawable.baseline_contact_phone_24
-        )
-    )
-    .putValue(
-        StaticPrintableIconResource(
-            "baseline_corporate_fare_24",
-            R.drawable.baseline_corporate_fare_24
-        )
-    )
+    .putValue(StaticPrintableIconResource("baseline_contact_phone_24", R.drawable.baseline_contact_phone_24))
+    .putValue(StaticPrintableIconResource("baseline_corporate_fare_24", R.drawable.baseline_corporate_fare_24))
     .putValue(StaticPrintableIconResource("baseline_credit_card_24", R.drawable.baseline_credit_card_24))
     .putValue(StaticPrintableIconResource("baseline_dialpad_24", R.drawable.baseline_dialpad_24))
     .putValue(StaticPrintableIconResource("baseline_discount_24", R.drawable.baseline_discount_24))
-    .putValue(
-        StaticPrintableIconResource(
-            "baseline_display_settings_24",
-            R.drawable.baseline_display_settings_24
-        )
-    )
+    .putValue(StaticPrintableIconResource("baseline_display_settings_24", R.drawable.baseline_display_settings_24))
     .putValue(StaticPrintableIconResource("baseline_done_24", R.drawable.baseline_done_24))
     .putValue(StaticPrintableIconResource("baseline_edit_24", R.drawable.baseline_edit_24))
     .putValue(StaticPrintableIconResource("baseline_email_24", R.drawable.baseline_email_24))
     .putValue(StaticPrintableIconResource("baseline_emergency_24", R.drawable.baseline_emergency_24))
     .putValue(StaticPrintableIconResource("baseline_euro_24", R.drawable.baseline_euro_24))
     .putValue(StaticPrintableIconResource("baseline_event_24", R.drawable.baseline_event_24))
-    .putValue(
-        StaticPrintableIconResource(
-            "baseline_event_available_24",
-            R.drawable.baseline_event_available_24
-        )
-    )
+    .putValue(StaticPrintableIconResource("baseline_event_available_24", R.drawable.baseline_event_available_24))
     .putValue(StaticPrintableIconResource("baseline_event_busy_24", R.drawable.baseline_event_busy_24))
     .putValue(StaticPrintableIconResource("baseline_exposure_24", R.drawable.baseline_exposure_24))
     .putValue(StaticPrintableIconResource("baseline_grade_24", R.drawable.baseline_grade_24))
