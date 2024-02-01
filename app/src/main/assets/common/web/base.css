@@ -10,3 +10,14 @@ p {
 	padding: 0;
 	margin: 0;
 }
+
+ul {
+    list-style: none;
+    margin-left: 1em;
+}
+
+ul > li:before {
+    display: inline-block;
+    content: "-";
+    width: 1em;
+}
