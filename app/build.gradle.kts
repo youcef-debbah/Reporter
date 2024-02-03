@@ -89,4 +89,10 @@ dependencies {
     implementation("com.godaddy.android.colorpicker:compose-color-picker-android:${Version.GODADDY_COLOR_PICKER}")
 
     implementation(project(":core"))
+    implementation("com.itextpdf:typography:4.0.2") {
+        exclude(group = "com.itextpdf", module = "io")
+        exclude(group = "com.itextpdf", module = "kernel")
+        exclude(group = "com.itextpdf", module = "layout")
+        exclude(group = "com.itextpdf", module = "commons")
+    }
 }

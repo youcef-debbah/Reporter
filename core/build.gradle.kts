@@ -14,7 +14,7 @@ logger.info("core build config...")
 
 description = "a shared library that encapsulates pdf reports generation capabilities."
 group = "dz.nexatech"
-version = "0.9.4-" + System.currentTimeMillis()
+version = "0.9.7-" + System.currentTimeMillis()
 
 val assembleSources by tasks.registering(Jar::class) {
     from(sourceSets.main.get().allSource)
@@ -65,11 +65,5 @@ dependencies {
         exclude(group = "com.itextpdf", module = "forms")
         exclude(group = "com.itextpdf", module = "layout")
         exclude(group = "com.itextpdf", module = "svg")
-    }
-    implementation("com.itextpdf:typography:4.0.2") {
-        exclude(group = "com.itextpdf", module = "io")
-        exclude(group = "com.itextpdf", module = "kernel")
-        exclude(group = "com.itextpdf", module = "layout")
-        exclude(group = "com.itextpdf", module = "commons")
     }
 }
