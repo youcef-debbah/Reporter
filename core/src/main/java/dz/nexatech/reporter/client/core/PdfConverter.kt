@@ -9,19 +9,21 @@ import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.layout.font.FontProvider
 import com.itextpdf.layout.font.FontSet
-import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
 import dz.nexatech.reporter.client.common.silverRatio
 import java.io.OutputStream
 
 class PdfConverter(
-    val resourceLoader: IResourceRetriever,
+    resourceLoader: IResourceLoader,
     val pdfWriterSmartCachingEnabled: Boolean = false,
-    val pdfWriterCompressionLevel: Int = CompressionConstants.BEST_COMPRESSION,
+    val pdfWriterCompressionLevel: Int = DEFAULT_COMPRESSION_LEVEL,
     val fontsLoader: suspend () -> Collection<ByteArray>,
 ) {
     companion object {
         const val DEFAULT_PAGE_WIDTH = 595f
+        const val DEFAULT_COMPRESSION_LEVEL = CompressionConstants.BEST_COMPRESSION
     }
+
+    val pdfResourcesRetriever = ResourceRetrieverAdapter(resourceLoader)
 
     private suspend fun loadFontSet() = FontSet().apply {
         fontsLoader.invoke().forEach { resource ->
@@ -31,7 +33,7 @@ class PdfConverter(
 
     private suspend fun buildConverterProperties(): ConverterProperties =
         ConverterProperties().apply {
-            resourceRetriever = resourceLoader
+            resourceRetriever = pdfResourcesRetriever
             isImmediateFlush = false
             fontProvider = FontProvider(loadFontSet(), "Helvetica")
         }

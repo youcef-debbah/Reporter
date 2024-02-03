@@ -1,7 +1,7 @@
 package dz.nexatech.reporter.client.model
 
 import com.google.common.collect.ImmutableMap
-import com.itextpdf.kernel.pdf.CompressionConstants
+import dz.nexatech.reporter.client.core.PdfConverter
 import dz.nexatech.reporter.util.model.LocalConfig
 import dz.nexatech.reporter.util.model.RemoteConfig
 import dz.nexatech.reporter.util.model.putLocalConfig
@@ -10,8 +10,7 @@ import dz.nexatech.reporter.util.model.putRemoteConfigDefault
 val TEMPLATES_LIST_LOADING_ANIMATION_ENABLED =
     RemoteConfig.Boolean("TEMPLATES_LIST_LOADING_ANIMATION_ENABLED", true)
 val PDF_RESOURCES_CACHING_ENABLED = RemoteConfig.Boolean("PDF_RESOURCES_CACHING_ENABLED", false)
-val PDF_COMPRESSION_LEVEL =
-    RemoteConfig.Int("PDF_COMPRESSION_LEVEL", CompressionConstants.BEST_COMPRESSION)
+val PDF_COMPRESSION_LEVEL = RemoteConfig.Int("PDF_COMPRESSION_LEVEL", PdfConverter.DEFAULT_COMPRESSION_LEVEL)
 val COLOR_PICKER_SIZE = RemoteConfig.Int("COLOR_PICKER_SIZE", 220)
 val OUTLINED_FIELD_DROP_MENU_OFFSET = RemoteConfig.Int("OUTLINED_FIELD_DROP_MENU_OFFSET", -21)
 val CONTACT_EMAIL = RemoteConfig.String("CONTACT_EMAIL", "contact@nexatech.dz")

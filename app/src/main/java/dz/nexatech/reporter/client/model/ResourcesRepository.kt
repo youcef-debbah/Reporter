@@ -3,7 +3,6 @@ package dz.nexatech.reporter.client.model
 import android.content.Context
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
-import com.itextpdf.styledxmlparser.resolver.resource.IResourceRetriever
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dz.nexatech.reporter.client.common.AsyncConfig
@@ -14,6 +13,7 @@ import dz.nexatech.reporter.client.common.putValue
 import dz.nexatech.reporter.client.common.withIO
 import dz.nexatech.reporter.client.core.AbstractBinaryResource
 import dz.nexatech.reporter.client.core.CachedResource
+import dz.nexatech.reporter.client.core.IResourceLoader
 import dz.nexatech.reporter.util.model.SimpleCache
 import dz.nexatech.reporter.util.model.Teller
 import dz.nexatech.reporter.util.ui.ICON_RESOURCE_PREFIX
@@ -39,7 +39,7 @@ class ResourcesRepository @Inject constructor(
     @ApplicationContext
     private val context: Context,
     private val resourcesDAO: Lazy<ResourcesDAO>,
-) : IResourceRetriever {
+) : IResourceLoader {
 
     companion object {
         private val cache = SimpleCache<AbstractBinaryResource>()
@@ -113,16 +113,17 @@ class ResourcesRepository @Inject constructor(
         return null
     }
 
-    fun loadBlocking(path: String?): AbstractBinaryResource? =
+    fun loadBlocking(path: String?): AbstractBinaryResource? = path?.let {
         runBlocking(AsyncConfig.ioDispatcher) {
             load(path)
         }
+    }
 
-    override fun getInputStreamByUrl(url: URL): InputStream? =
-        loadBlocking(url.path)?.asInputStream()
+    override fun getInputStreamByUrl(url: URL?): InputStream? =
+        loadBlocking(url?.path)?.asInputStream()
 
-    override fun getByteArrayByUrl(url: URL): ByteArray? =
-        loadBlocking(url.path)?.asByteArray()
+    override fun getByteArrayByUrl(url: URL?): ByteArray? =
+        loadBlocking(url?.path)?.asByteArray()
 
     suspend fun updateResources(resources: List<Resource>?) {
         resources?.let { resourcesDAO.get().replaceAll(it) }

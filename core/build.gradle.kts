@@ -14,7 +14,7 @@ logger.info("core build config...")
 
 description = "a shared library that encapsulates pdf reports generation capabilities."
 group = "dz.nexatech"
-version = "0.9.3-" + System.currentTimeMillis()
+version = "0.9.4-" + System.currentTimeMillis()
 
 val assembleSources by tasks.registering(Jar::class) {
     from(sourceSets.main.get().allSource)
@@ -59,7 +59,17 @@ dependencies {
     addCommonTestDependencies(false)
 
     api("io.pebbletemplates:pebble:3.2.2")
-    api("com.itextpdf:itext-core:8.0.2")
-    api("com.itextpdf:html2pdf:5.0.2")
-    api(files("libs/typography-4.0.2.jar"))
+
+    implementation("com.itextpdf.android:itext-core-android:8.0.2")
+    implementation("com.itextpdf:html2pdf:5.0.2") {
+        exclude(group = "com.itextpdf", module = "forms")
+        exclude(group = "com.itextpdf", module = "layout")
+        exclude(group = "com.itextpdf", module = "svg")
+    }
+    implementation("com.itextpdf:typography:4.0.2") {
+        exclude(group = "com.itextpdf", module = "io")
+        exclude(group = "com.itextpdf", module = "kernel")
+        exclude(group = "com.itextpdf", module = "layout")
+        exclude(group = "com.itextpdf", module = "commons")
+    }
 }

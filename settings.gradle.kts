@@ -34,6 +34,7 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     @Suppress("UnstableApiUsage")
     repositories {
+        maven("https://repo.itextsupport.com/releases")
         google()
         mavenCentral()
     }
