@@ -36,5 +36,8 @@
     public static void registerForLayout();
 }
 
-# supress warning about bouncycastle (an unused PDF signing/encrypting lib)
+-keepnames class * extends com.itextpdf.commons.actions.AbstractITextEvent
+
 -dontwarn com.itextpdf.bouncycastle.BouncyCastleFactory
+-dontwarn java.beans.ConstructorProperties
+-dontwarn java.beans.Transient
