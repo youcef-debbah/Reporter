@@ -26,7 +26,7 @@ plugins {
 
 logger.info("app build config...")
 
-standardAndroidApp("dz.nexatech.reporter.client", 25, "proguard-rules.pro")
+standardAndroidApp("dz.nexatech.reporter.client", 26, "proguard-rules.pro")
 
 dependencies {
     addCommonTestDependencies()
