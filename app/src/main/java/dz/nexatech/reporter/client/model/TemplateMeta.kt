@@ -24,6 +24,7 @@ import dz.nexatech.reporter.util.ui.StaticIcon
 import dz.nexatech.reporter.util.ui.iconPath
 import org.json.JSONObject
 import java.util.Locale
+import kotlin.math.max
 import kotlin.math.min
 
 @Immutable
@@ -489,12 +490,13 @@ class Variable internal constructor(
             val keyboardOptions = KeyboardOptions()
 
             val checker = ErrorMessageChecker { variable, value ->
-                val linebreaks = value.count { it == '\n' }
+                val maxLines = max(100, variable.max.toInt() + 1)
+                val linesCount = value.split('\n', limit = maxLines).size
                 if (variable.required && value.isEmpty()) {
                     inputRequiredMessage
-                } else if (linebreaks > variable.max) {
+                } else if (linesCount >= maxLines) {
                     variable.tooManyLinesMessage
-                } else if (linebreaks < variable.min) {
+                } else if (linesCount <= variable.min.toInt()) {
                     variable.tooFewLinesMessage
                 } else {
                     null
