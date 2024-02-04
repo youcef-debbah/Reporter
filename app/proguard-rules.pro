@@ -26,7 +26,7 @@
 }
 
 # fix a reflection access bug
--keepclassmembers enum * {
+-keepclassmembers enum ** {
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
@@ -36,8 +36,25 @@
     public static void registerForLayout();
 }
 
--keepnames class * extends com.itextpdf.commons.actions.AbstractITextEvent
+-keepnames class ** extends com.itextpdf.commons.actions.AbstractITextEvent
+-keepnames class ** extends com.itextpdf.commons.actions.contexts.IMetaInfo
+-keepnames class ** extends com.itextpdf.html2pdf.attach.ITagWorker
+-keepnames class ** extends com.itextpdf.io.source.IRandomAccessSource
+-keepnames class ** extends com.itextpdf.forms.fields.merging.OnDuplicateFormFieldNameStrategy
+-keepnames class ** extends com.itextpdf.kernel.pdf.canvas.parser.clipper.IClipper
+-keepnames class com.itextpdf.signatures.CertificateVerifier
+-keepnames class com.itextpdf.kernel.pdf.canvas.parser.clipper.Edge
+
+-keep class com.itextpdf.forms.util.RegisterDefaultDiContainer { *; }
+-keep class **.DictionaryData { *; }
+-keep class sun.misc.Unsafe { *; }
+-keepnames class ** extends java.lang.Throwable
+-keepnames class ** extends com.itextpdf.kernel.pdf.PdfObject
+-keepnames class ** extends com.itextpdf.layout.renderer.BlockRenderer
+-keepnames class ** extends com.itextpdf.styledxmlparser.jsoup.parser.Token
+
+-keep class ** extends java.lang.ref.PhantomReference { *; }
+-keep class ** extends java.nio.Buffer { *; }
+-keep class com.itextpdf.kernel.pdf.PdfName { *; }
 
 -dontwarn com.itextpdf.bouncycastle.BouncyCastleFactory
--dontwarn java.beans.ConstructorProperties
--dontwarn java.beans.Transient
