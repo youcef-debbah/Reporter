@@ -20,7 +20,7 @@ val CONFIG_SCREEN_NAVIGATION_ANIMATION_ENABLED = RemoteConfig.Boolean("NAVIGATIO
 val TEMPLATES_DOWNLOADING_LINK = RemoteConfig.String("TEMPLATES_DOWNLOADING_LINK", "https://drive.google.com/drive/folders/17v9MWlNCxS1AUNLK7ZxZLpSMLmRxgOyy?usp=share_link")
 val DEFAULT_LINE_ELEMENT_WIDTH_LIMIT = RemoteConfig.Int("DEFAULT_LINE_ELEMENT_WIDTH_LIMIT", 380)
 val LATEST_VERSION_NAME = RemoteConfig.String("LATEST_VERSION_NAME", AbstractApplication.INSTANCE.config.versionName)
-val APP_DOWNLOAD_LINK = RemoteConfig.String("APP_DOWNLOAD_LINK", "https://drive.google.com/drive/folders/1V9dfUh2OQfcoE30Y8lNI8-QpwYLbVlj-?usp=sharing")
+val APP_DOWNLOAD_LINK = RemoteConfig.String("APP_DOWNLOAD_LINK", "https://play.google.com/store/apps/details?id=dz.nexatech.reporter.client")
 
 val GLOBAL_REMOTE_CONFIG_DEFAULTS: ImmutableMap<String, Any> = ImmutableMap.builder<String, Any>()
     .putRemoteConfigDefault(UNRECORDED_EXCEPTIONS)
