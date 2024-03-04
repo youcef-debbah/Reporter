@@ -15,6 +15,12 @@
 # this rule hide the original source file name (use in case the line number information is kept)
 #-renamesourcefileattribute SourceFile
 
+# a fix to Firebase installation crashs
+-keepattributes AutoValue
+-keep class com.google.firebase.installations.** {
+  *;
+}
+
 # Keep mmkv methods
 -keepclasseswithmembers,includedescriptorclasses class com.tencent.mmkv.** {
     native <methods>;
