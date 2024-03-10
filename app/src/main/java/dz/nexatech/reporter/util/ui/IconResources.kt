@@ -102,6 +102,7 @@ val iconsAssetsResources: ImmutableMap<String, AbstractPrintableIconResource> = 
     .putValue(StaticPrintableIconResource("baseline_input_24", R.drawable.baseline_input_24))
     .putValue(StaticPrintableIconResource("baseline_keyboard_24", R.drawable.baseline_keyboard_24))
     .putValue(StaticPrintableIconResource("baseline_list_24", R.drawable.baseline_list_24))
+    .putValue(StaticPrintableIconResource("baseline_security_24", R.drawable.baseline_security_24))
     .putValue(StaticPrintableIconResource("baseline_percent_24", R.drawable.baseline_percent_24))
     .putValue(StaticPrintableIconResource("baseline_place_24", R.drawable.baseline_place_24))
     .putValue(StaticPrintableIconResource("baseline_text_fields_24", R.drawable.baseline_text_fields_24))

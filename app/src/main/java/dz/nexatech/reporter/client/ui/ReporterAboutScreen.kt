@@ -1,10 +1,12 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package dz.nexatech.reporter.client.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.annotation.StringRes
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -14,15 +16,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -32,6 +37,7 @@ import dz.nexatech.reporter.client.model.COMPANY_WEBSITE
 import dz.nexatech.reporter.client.model.CONTACT_EMAIL
 import dz.nexatech.reporter.client.model.MAX_LAYOUT_COLUMN_WIDTH
 import dz.nexatech.reporter.client.model.MIN_LAYOUT_COLUMN_WIDTH
+import dz.nexatech.reporter.client.model.PRIVACY_POLICY_URL
 import dz.nexatech.reporter.client.model.SOURCE_CODE_URL
 import dz.nexatech.reporter.util.model.APP_DOWNLOAD_LINK
 import dz.nexatech.reporter.util.model.AppConfig
@@ -61,6 +67,8 @@ import dz.nexatech.reporter.util.ui.stringRes
 import dz.nexatech.reporter.util.ui.textPadding
 import dz.nexatech.reporter.util.ui.themedComposable
 
+private const val ATTACHED_URL_TAG = "url"
+
 val clipboardManager by lazy {
     AbstractApplication.INSTANCE.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 }
@@ -70,6 +78,8 @@ object ReporterAboutScreen : StaticScreenDestination(
     icon = StaticIcon.baseline_info,
     titleRes = R.string.reporter_about_title,
 ) {
+    private val centredTextStyle = TextStyle(textAlign = TextAlign.Center)
+
     fun NavController.toReporterAboutScreen(navOptions: NavOptions? = null) {
         navigate(this@ReporterAboutScreen.route, navOptions)
     }
@@ -105,21 +115,28 @@ object ReporterAboutScreen : StaticScreenDestination(
                                 .size(80.dp),
                             tint = Theme.colorScheme.primary
                         )
-                        val text = rememberCompanyDesc()
-                        Text(
+                        val text: AnnotatedString = rememberCompanyDesc()
+                        ClickableText(
                             text = text,
+                            style = centredTextStyle,
                             modifier = Modifier
                                 .textPadding()
                                 .padding(end = Theme.dimens.content_padding.end * 2),
-                            textAlign = TextAlign.Center
+                            onHover = {},
+                            onClick = { offset ->
+                                text.getStringAnnotations(ATTACHED_URL_TAG, offset, offset).firstOrNull()
+                                    ?.let {
+                                        ExternalLink.openLink(it.item)
+                                    }
+                            },
                         )
                     }
                     VerticalSpacer()
 
                     CentredRow {
                         ContactUsLink()
-                        ThemedLink(R.string.website, R.drawable.baseline_language_24) {
-                            ExternalLink.openLink(AppConfig.get(COMPANY_WEBSITE))
+                        ThemedLink(R.string.privacy_policy, R.drawable.baseline_security_24) {
+                            ExternalLink.openLink(AppConfig.get(PRIVACY_POLICY_URL))
                         }
                         ThemedLink(R.string.source_code, R.drawable.baseline_code_24) {
                             ExternalLink.openLink(AppConfig.get(SOURCE_CODE_URL))
@@ -203,19 +220,21 @@ private fun VerticalSpacer(scale: Float = 1f) {
     Spacer(modifier = Modifier.height(height * scale))
 }
 
-val companyNameStyle = SpanStyle(fontWeight = FontWeight.Bold)
-
 @Composable
 private fun rememberCompanyDesc(): AnnotatedString {
     val desc1 = stringRes(R.string.company_desc_1)
     val companyName = stringRes(R.string.company_name)
     val desc2 = stringRes(R.string.company_desc_2)
+    val primaryColor = Theme.colorScheme.primary
     val text = remember(desc1, companyName, desc2) {
         AnnotatedString.Builder(128).apply {
             append(desc1)
             append(' ')
-            append(companyName)
-            addStyle(companyNameStyle, desc1.length + 1, this.length)
+            pushStringAnnotation(tag = ATTACHED_URL_TAG, annotation = AppConfig.get(COMPANY_WEBSITE))
+            withStyle(SpanStyle(color = primaryColor, fontWeight = FontWeight.Bold)) {
+                append(companyName)
+            }
+            pop()
             append('\n')
             append(desc2)
         }.toAnnotatedString()

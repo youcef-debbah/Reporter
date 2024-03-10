@@ -17,6 +17,7 @@ val CONTACT_EMAIL = RemoteConfig.String("CONTACT_EMAIL", "contact@nexatech.dz")
 val COMPANY_WEBSITE = RemoteConfig.String("COMPANY_WEBSITE", "https://nexatech.dz/")
 val SOURCE_CODE_URL = RemoteConfig.String("GITHUB_REPO_URL", "https://github.com/jprogramer/Reporter.git")
 val WEB_COLOR_PICKER_URL = RemoteConfig.String("WEB_COLOR_PICKER_URL", "https://www.webfx.com/web-design/color-picker/")
+val PRIVACY_POLICY_URL = RemoteConfig.String("PRIVACY_POLICY_URL", "https://nexatech.dz/reporter-privacy-policy/")
 
 val REPORTER_REMOTE_CONFIGS_DEFAULTS: ImmutableMap<String, Any> =
     ImmutableMap.builder<String, Any>()
@@ -29,6 +30,7 @@ val REPORTER_REMOTE_CONFIGS_DEFAULTS: ImmutableMap<String, Any> =
         .putRemoteConfigDefault(COMPANY_WEBSITE)
         .putRemoteConfigDefault(SOURCE_CODE_URL)
         .putRemoteConfigDefault(WEB_COLOR_PICKER_URL)
+        .putRemoteConfigDefault(PRIVACY_POLICY_URL)
         .build()
 
 val TEMPLATE_PREVIEW_DEBOUNCE = LocalConfig.Long("TEMPLATE_PREVIEW_DEBOUNCE", 500L)
