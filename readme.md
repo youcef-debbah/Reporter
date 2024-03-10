@@ -7,7 +7,7 @@ This application is a [Free Software](https://www.gnu.org/philosophy/free-sw.htm
 
 ## Application features
 
-When a template is selected, the application dynamically generates the necessary input from the UI. Templates vary in complexity, with some offering great flexibility and a multitude of input options, while others are simple and designed for a specific use case.
+When a template is selected, the application dynamically generates it's UI. Templates vary in complexity, with some offering great flexibility and a multitude of input options, while others are simple and designed for a specific use case.
 
 This is how an [example template](https://drive.google.com/drive/folders/17v9MWlNCxS1AUNLK7ZxZLpSMLmRxgOyy?usp=drive_link) (simple sales invoice) looks like when imported:
 
