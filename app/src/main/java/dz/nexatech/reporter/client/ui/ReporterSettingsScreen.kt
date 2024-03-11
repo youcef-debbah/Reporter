@@ -1,7 +1,6 @@
 package dz.nexatech.reporter.client.ui
 
 import android.os.Build
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row

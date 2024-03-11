@@ -47,6 +47,24 @@
     <string name="enable">Activer</string>
     <string name="disable">Désactiver</string>
 
+    <string name="empty_templates_hint">On dirait que votre liste de modèles est vide. Voici ce que vous devez faire :</string>
+
+    <string name="download_hint_prefix">- D\'abord</string>
+    <string name="download_hint_label">télécharger</string>
+    <string name="download_hint_suffix">un modèle de test sur votre stockage de téléphone</string>
+
+    <string name="import_hint_prefix">- Ensuite, vous pouvez</string>
+    <string name="import_hint_label">importer</string>
+    <string name="import_hint_suffix">le fichier téléchargé</string>
+
+    <string name="more_help_hint_prefix">- Pour plus de détails, consulter le</string>
+    // reporter_help_title
+    <string name="more_help_hint_suffix" />
+
+    <string name="buy_hint_prefix">- Si vous avez trouvé cette application utile</string>
+    <string name="buy_hint_label">contactez-nous</string>
+    <string name="buy_hint_suffix">pour commander votre modèle !</string>
+
     <string name="import_template_menu_item">Importer le modèle</string>
     <string name="download_template_menu_item">Télécharger le modèle</string>
     <string name="delete_templates_menu_item">Supprimer tous</string>
@@ -111,8 +129,8 @@
     <string name="dynamic_app_theme_title">Utilisez le thème du système</string>
     <string name="dynamic_app_theme_subtitle">Le thème du système est basé sur votre fond d\'écran actuel</string>
     <string name="app_theme_title">Thème d\'application</string>
-    <string name="company_desc_1">Développée par</string>
-    <string name="company_desc_2">où la prochaine génération de\nsolutions logicielles est conçue !</string>
+    <string name="company_desc_prefix">Développée par</string>
+    <string name="company_desc_suffix">où la prochaine génération de\nsolutions logicielles est conçue !</string>
 
     <string name="max_column_width">La largeur maximale de GUI : %d</string>
     <string name="min_column_width">La largeur minimale de GUI: %d</string>

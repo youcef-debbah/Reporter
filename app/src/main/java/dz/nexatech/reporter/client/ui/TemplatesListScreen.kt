@@ -5,10 +5,10 @@ package dz.nexatech.reporter.client.ui
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -36,11 +37,10 @@ import dz.nexatech.reporter.util.model.rememberLayoutWidth
 import dz.nexatech.reporter.util.ui.AnimatedLazyLoading
 import dz.nexatech.reporter.util.ui.Body
 import dz.nexatech.reporter.util.ui.CentredColumn
-import dz.nexatech.reporter.util.ui.CentredRow
 import dz.nexatech.reporter.util.ui.ContentCard
-import dz.nexatech.reporter.util.ui.DecorativeIcon
 import dz.nexatech.reporter.util.ui.DropdownMenuTextItem
 import dz.nexatech.reporter.util.ui.ExternalLink
+import dz.nexatech.reporter.util.ui.PaddedColumn
 import dz.nexatech.reporter.util.ui.PaddedDivider
 import dz.nexatech.reporter.util.ui.PaddedRow
 import dz.nexatech.reporter.util.ui.RoundedCorner
@@ -51,8 +51,13 @@ import dz.nexatech.reporter.util.ui.StandardAppBarDropdownMenu
 import dz.nexatech.reporter.util.ui.StandardAppbarIcon
 import dz.nexatech.reporter.util.ui.StaticIcon
 import dz.nexatech.reporter.util.ui.StaticScreenDestination
+import dz.nexatech.reporter.util.ui.SurroundedLink
+import dz.nexatech.reporter.util.ui.Theme
 import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.contentPadding
+import dz.nexatech.reporter.util.ui.navigate
+import dz.nexatech.reporter.util.ui.rememberTextWithLink
+import dz.nexatech.reporter.util.ui.small_padding
 import dz.nexatech.reporter.util.ui.themedComposable
 
 object TemplatesListScreen : StaticScreenDestination(
@@ -97,7 +102,10 @@ object TemplatesListScreen : StaticScreenDestination(
                     title = this@TemplatesListScreen.titleRes,
                     navigationIcon = { StandardAppbarIcon(this@TemplatesListScreen.icon) },
                 ) {
-                    StandardAppBarDropdownMenu(this@TemplatesListScreen.route, navController) { menuOpened ->
+                    StandardAppBarDropdownMenu(
+                        this@TemplatesListScreen.route,
+                        navController
+                    ) { menuOpened ->
                         DropdownMenuTextItem(
                             title = R.string.import_template_menu_item,
                             icon = StaticIcon.baseline_upload_file,
@@ -171,48 +179,87 @@ object TemplatesListScreen : StaticScreenDestination(
                             LinearProgressIndicator(Modifier.fillMaxWidth())
                         }
                         AnimatedLazyLoading(
-                            modifier = Modifier.requiredWidth(templatesListWidth),
+                            modifier = Modifier.fillMaxWidth(),
                             animationEnabled = TEMPLATES_LIST_LOADING_ANIMATION_ENABLED,
                             data = templates
                         ) {
                             val items = templates?.values
-                            if (items != null) {
-                                if (items.isEmpty()) {
-                                    Title(R.string.no_templates_found, Modifier.contentPadding())
-                                    PaddedDivider()
-                                    CentredRow(Modifier.fillMaxWidth()) {
-                                        Button(
-                                            modifier = Modifier.contentPadding(),
-                                            onClick = {
-                                                templateImportLauncher.launch(
-                                                    newOpenTemplateFileIntent()
-                                                )
-                                            }) {
-                                            DecorativeIcon(icon = R.drawable.baseline_upload_file_24)
-                                            Body(textRes = R.string.import_template)
-                                        }
-                                        Button(modifier = Modifier.contentPadding(),
-                                            onClick = {
-                                                ExternalLink.openLink(
-                                                    AppConfig.get(TEMPLATES_DOWNLOADING_LINK)
-                                                )
-                                            }) {
-                                            DecorativeIcon(icon = R.drawable.baseline_open_in_browser_24)
-                                            Body(textRes = R.string.download_templates)
-                                        }
+                            if (items.isNullOrEmpty()) {
+                                PaddedColumn(
+                                    horizontalAlignment = Alignment.Start,
+                                    modifier = Modifier.contentPadding()
+                                ) {
+                                    Body(
+                                        textRes = R.string.empty_templates_hint,
+                                        modifier = Modifier.padding(bottom = small_padding * 4),
+                                        fontSize = Theme.typography.bodyLarge.fontSize,
+                                    )
+                                    val downloadHint = rememberTextWithLink(
+                                        prefix = R.string.download_hint_prefix,
+                                        label = R.string.download_hint_label,
+                                        suffix = R.string.download_hint_suffix
+                                    )
+                                    SurroundedLink(downloadHint) {
+                                        ExternalLink.openLink(
+                                            AppConfig.get(TEMPLATES_DOWNLOADING_LINK)
+                                        )
                                     }
-                                } else {
-                                    items.forEach { item ->
-                                        key(item.name) {
-                                            TemplateCard(navController, item, viewModel)
-                                        }
+                                    val importHint = rememberTextWithLink(
+                                        prefix = R.string.import_hint_prefix,
+                                        label = R.string.import_hint_label,
+                                        suffix = R.string.import_hint_suffix
+                                    )
+                                    SurroundedLink(importHint) {
+                                        templateImportLauncher.launch(
+                                            newOpenTemplateFileIntent()
+                                        )
                                     }
+                                    HelpHint(navController)
+                                    BuyHint(navController)
+                                }
+                            } else {
+                                items.forEach { item ->
+                                    key(item.name) {
+                                        TemplateCard(navController, item, viewModel)
+                                    }
+                                }
+                                PaddedDivider()
+                                PaddedColumn(
+                                    horizontalAlignment = Alignment.Start,
+                                    modifier = Modifier.contentPadding().fillMaxWidth()
+                                ) {
+                                    HelpHint(navController)
+                                    BuyHint(navController)
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun BuyHint(navController: NavHostController) {
+        val buyHint = rememberTextWithLink(
+            prefix = R.string.buy_hint_prefix,
+            label = R.string.buy_hint_label,
+            suffix = R.string.buy_hint_suffix
+        )
+        SurroundedLink(buyHint) {
+            navController.navigate(ReporterHelpScreen)
+        }
+    }
+
+    @Composable
+    private fun HelpHint(navController: NavHostController) {
+        val downloadHint = rememberTextWithLink(
+            prefix = R.string.more_help_hint_prefix,
+            label = R.string.reporter_help_title,
+            suffix = R.string.more_help_hint_suffix
+        )
+        SurroundedLink(downloadHint) {
+            navController.navigate(ReporterHelpScreen)
         }
     }
 

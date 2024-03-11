@@ -47,6 +47,23 @@
     <string name="enable">تمكين</string>
     <string name="disable">تعطيل</string>
 
+    <string name="empty_templates_hint">يبدو أن قائمة القوالب فارغة، إليك ما تحتاج إلى القيام به:</string>
+
+    <string name="download_hint_prefix">- أولاً</string>
+    <string name="download_hint_label">قم بتنزيل</string>
+    <string name="download_hint_suffix">أحد القوالب التجريبية إلى هاتفك</string>
+
+    <string name="import_hint_prefix">- بعد ذلك يمكنك</string>
+    <string name="import_hint_label">استيراد</string>
+    <string name="import_hint_suffix">الملف الذي قمت بتنزيله</string>
+
+    <string name="more_help_hint_prefix">- لمزيد من التفاصيل يرجى الرجوع إلى</string>
+    <string name="more_help_hint_suffix" />
+
+    <string name="buy_hint_prefix">- إذا أعجبك التطبيق</string>
+    <string name="buy_hint_label">إتصل بنا</string>
+    <string name="buy_hint_suffix">لطلب القالب الخاص بك!</string>
+
     <string name="import_template_menu_item">استيراد قالب</string>
     <string name="download_template_menu_item">تحميل قوالب</string>
     <string name="delete_templates_menu_item">حذف جميع القوالب</string>
@@ -111,8 +128,8 @@
     <string name="dynamic_app_theme_title">استخدم ألوان النظام</string>
     <string name="dynamic_app_theme_subtitle">ألوان النظام مستنبطة من خلفية الشاشة الحالية</string>
     <string name="app_theme_title">لون واجهة المستخدم</string>
-    <string name="company_desc_1">تم تطوير هذا التطبيق من طرف</string>
-    <string name="company_desc_2">حيث يصنع الجيل القادم من الحلول الرقمية!</string>
+    <string name="company_desc_prefix">تم تطوير هذا التطبيق من طرف</string>
+    <string name="company_desc_suffix">حيث نطور الجيل القادم من الحلول الرقمية!</string>
 
     <string name="max_column_width">العرض الأقصى لواجهة المستخدم %d</string>
     <string name="min_column_width">العرض الأدنى لواجهة المستخدم %d</string>

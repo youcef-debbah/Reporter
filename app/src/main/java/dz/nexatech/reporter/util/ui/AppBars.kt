@@ -147,10 +147,7 @@ private fun ScreenMenuItem(
             destinationScreen.icon
         ) {
             menuExpanded.value = false
-            navController.navigate(destinationScreen.route) {
-                launchSingleTop = true
-                restoreState = true
-            }
+            navController.navigate(destinationScreen)
         }
     }
 }

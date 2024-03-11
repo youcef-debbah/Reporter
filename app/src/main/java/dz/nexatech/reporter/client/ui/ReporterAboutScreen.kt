@@ -16,18 +16,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -46,6 +43,7 @@ import dz.nexatech.reporter.util.model.LATEST_VERSION_NAME
 import dz.nexatech.reporter.util.model.Localizer
 import dz.nexatech.reporter.util.ui.AbstractApplication
 import dz.nexatech.reporter.util.ui.Body
+import dz.nexatech.reporter.util.ui.SurroundedLink
 import dz.nexatech.reporter.util.ui.CentredRow
 import dz.nexatech.reporter.util.ui.ContentCard
 import dz.nexatech.reporter.util.ui.DecorativeIcon
@@ -63,11 +61,9 @@ import dz.nexatech.reporter.util.ui.ThemedLink
 import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.Toasts
 import dz.nexatech.reporter.util.ui.contentPadding
+import dz.nexatech.reporter.util.ui.rememberTextWithLink
 import dz.nexatech.reporter.util.ui.stringRes
-import dz.nexatech.reporter.util.ui.textPadding
 import dz.nexatech.reporter.util.ui.themedComposable
-
-private const val ATTACHED_URL_TAG = "url"
 
 val clipboardManager by lazy {
     AbstractApplication.INSTANCE.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -115,21 +111,19 @@ object ReporterAboutScreen : StaticScreenDestination(
                                 .size(80.dp),
                             tint = Theme.colorScheme.primary
                         )
-                        val text: AnnotatedString = rememberCompanyDesc()
-                        ClickableText(
-                            text = text,
-                            style = centredTextStyle,
-                            modifier = Modifier
-                                .textPadding()
-                                .padding(end = Theme.dimens.content_padding.end * 2),
-                            onHover = {},
-                            onClick = { offset ->
-                                text.getStringAnnotations(ATTACHED_URL_TAG, offset, offset).firstOrNull()
-                                    ?.let {
-                                        ExternalLink.openLink(it.item)
-                                    }
-                            },
+                        val text: AnnotatedString = rememberTextWithLink(
+                            prefix = R.string.company_desc_prefix,
+                            label = R.string.company_name,
+                            suffix = R.string.company_desc_suffix,
+                            separator2 = '\n',
                         )
+                        SurroundedLink(
+                            text = text,
+                            modifier = Modifier.padding(end = Theme.dimens.content_padding.end * 2),
+                            style = centredTextStyle,
+                        ) {
+                            ExternalLink.openLink(AppConfig.get(COMPANY_WEBSITE))
+                        }
                     }
                     VerticalSpacer()
 
@@ -218,28 +212,6 @@ private fun AboutCard(@StringRes titleRes: Int, content: @Composable ColumnScope
 private fun VerticalSpacer(scale: Float = 1f) {
     val height = Theme.dimens.content_padding.top + Theme.dimens.content_padding.bottom
     Spacer(modifier = Modifier.height(height * scale))
-}
-
-@Composable
-private fun rememberCompanyDesc(): AnnotatedString {
-    val desc1 = stringRes(R.string.company_desc_1)
-    val companyName = stringRes(R.string.company_name)
-    val desc2 = stringRes(R.string.company_desc_2)
-    val primaryColor = Theme.colorScheme.primary
-    val text = remember(desc1, companyName, desc2) {
-        AnnotatedString.Builder(128).apply {
-            append(desc1)
-            append(' ')
-            pushStringAnnotation(tag = ATTACHED_URL_TAG, annotation = AppConfig.get(COMPANY_WEBSITE))
-            withStyle(SpanStyle(color = primaryColor, fontWeight = FontWeight.Bold)) {
-                append(companyName)
-            }
-            pop()
-            append('\n')
-            append(desc2)
-        }.toAnnotatedString()
-    }
-    return text
 }
 
 @Composable

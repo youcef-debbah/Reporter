@@ -48,7 +48,24 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
 
-    // app strings
+    <string name="empty_templates_hint">It looks like your templates list is empty, here is what you need to do to test the application:</string>
+
+    <string name="download_hint_prefix">- First</string>
+    <string name="download_hint_label">download</string>
+    <string name="download_hint_suffix">a test template to your phone storage</string>
+
+    <string name="import_hint_prefix">- And then you can</string>
+    <string name="import_hint_label">import</string>
+    <string name="import_hint_suffix">the downloaded .temp file</string>
+
+    <string name="more_help_hint_prefix">- For more details please refer to the</string>
+    // reporter_help_title
+    <string name="more_help_hint_suffix" />
+
+    <string name="buy_hint_prefix">- If you like the app</string>
+    <string name="buy_hint_label">contact us</string>
+    <string name="buy_hint_suffix">to order your template!</string>
+
     <string name="import_template_menu_item">Import Template</string>
     <string name="download_template_menu_item">Download Template</string>
     <string name="delete_templates_menu_item">Delete All Templates</string>
@@ -113,8 +130,8 @@
     <string name="dynamic_app_theme_title">Use System Theme</string>
     <string name="dynamic_app_theme_subtitle">The system theme is based on your current wallpaper</string>
     <string name="app_theme_title">Application Theme</string>
-    <string name="company_desc_1">App developed by</string>
-    <string name="company_desc_2">Where the next generation of\nsoftware solutions is crafted!</string>
+    <string name="company_desc_prefix">App developed by </string>
+    <string name="company_desc_suffix"> Where the next generation of\nsoftware solutions is crafted!</string>
 
     <string name="max_column_width">Max UI width: %d</string>
     <string name="min_column_width">Min UI width: %d</string>
@@ -135,8 +152,8 @@
 
     <string name="help_page_title_01">1. How to Use This Application</string>
     <string name="help_page_title_01_section_01">This application can be used to generate invoices, reports, or any other PDF document that can be created by filling in a few pieces of information in a form.</string>
-    <string name="help_page_title_01_section_02">To test the application, you must select a template from the templates list.</string>
-    <string name="help_page_title_01_section_03">If your templates list is empty, follow these steps:</string>
+    <string name="help_page_title_01_section_02">To test the application, you must first select a template from the templates list.</string>
+    <string name="help_page_title_01_section_03">To add a new template to your templates list, follow these steps:</string>
     <string name="help_page_title_01_section_04">1. Go to the \u22EE menu and select \"%s\"</string>
     <string name="help_page_title_01_section_05">2. Download at least one template file from the opened Google Drive directory</string>
     <string name="help_page_title_01_section_06">3. Go back to this application and select \"%s\" from the \u22EE menu</string>

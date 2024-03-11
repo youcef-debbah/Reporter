@@ -7,6 +7,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 
 /**
  * a destination can be a screen or a graph of screens
@@ -85,3 +86,10 @@ open class StaticScreenDestination(
 
 fun AbstractDestination?.destinationsOrEmpty(): List<AbstractDestination> =
     this?.destinations ?: emptyList()
+
+fun NavController.navigate(destinationScreen: AbstractDestination) {
+    navigate(destinationScreen.route) {
+        launchSingleTop = true
+        restoreState = true
+    }
+}
