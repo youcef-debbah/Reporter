@@ -5,35 +5,11 @@ Reporter is an Android application designed as a lightweight invoice manager, or
 
 This application is a [Free Software](https://www.gnu.org/philosophy/free-sw.html). We actually charge per each custom template we create rather than for app downloads or usage. [Creating a custom template](#creating-a-custom-template) should be a straightforward task for anyone with some experience in web development since a template is essentially a zip file that contains a webpage, a few resource files (such as icons, fonts, etc.), and some extra metadata.
 
+[![Get on Google Play](https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/GooglePlayIcon.png)](https://play.google.com/store/apps/details?id=dz.nexatech.reporter.client)
+
 ## Application features
 
-When a template is selected, the application dynamically generates it's UI. Templates vary in complexity, with some offering great flexibility and a multitude of input options, while others are simple and designed for a specific use case.
-
-This is how an [example template](https://drive.google.com/drive/folders/17v9MWlNCxS1AUNLK7ZxZLpSMLmRxgOyy?usp=drive_link) (simple sales invoice) looks like when imported:
-
-The first tab is common to all templates. It provides a live preview of the PDF you are generating.
-
-<img src="docs/Bill_preview.jpg" alt="Bill preview" width="50%" height="auto" />
-
-This tab takes input about the seller's company. This info is grouped together because it rarely changes from one PDF to another.
-
-<img src="docs/Company_info_form.jpg" alt="Company info form" width="50%" height="auto" />
-
-This form contains important information that is likely to change for every bill, like the "bill number" and "billing date", etc.
-
-<img src="docs/Bill_info_form.jpg" alt="Bill info form" width="50%" height="auto" />
-
-This is the main input of the invoice, the list of products to be included in the bill.
-
-<img src="docs/Goods_list.jpg" alt="Goods list" width="50%" height="auto" />
-
-This template has some basic layout settings that can be used to customize the appearance of the generated PDF.
-
-<img src="docs/Bill_layout_settings.jpg" alt="Bill layout settings" width="50%" height="auto" />
-
-The app itself has a simple settings page where you can change the Look and feel of the whole app.
-
-<img src="docs/App_settings.jpg" alt="App settings" width="50%" height="auto" />
+//TODO
 
 ## Implementation details
 
