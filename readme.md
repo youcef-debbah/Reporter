@@ -5,9 +5,9 @@ Reporter is an Android application designed as a lightweight invoice manager, or
 
 This application is a [Free Software](https://www.gnu.org/philosophy/free-sw.html). We actually charge per each custom template we create rather than for app downloads or usage. [Creating a custom template](#creating-a-custom-template) should be a straightforward task for anyone with some experience in web development since a template is essentially a zip file that contains a webpage, a few resource files (such as icons, fonts, etc.), and some extra metadata.
 
-[![Get on Google Play](https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/GooglePlayIcon.png)](https://play.google.com/store/apps/details?id=dz.nexatech.reporter.client)
+[![Get on Google Play](https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/GooglePlayButton.png)](https://play.google.com/store/apps/details?id=dz.nexatech.reporter.client)
 
-## Application features
+## Application features!
 
 //TODO
 
