@@ -7,9 +7,39 @@ This application is a [Free Software](https://www.gnu.org/philosophy/free-sw.htm
 
 [![Get on Google Play](https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/GooglePlayButton.png)](https://play.google.com/store/apps/details?id=dz.nexatech.reporter.client)
 
-## Application features!
+## Application features
 
-//TODO
+**Offline PDF Generation:** The app prioritizes user privacy and data security by allowing PDF generation entirely on the device, without requiring an internet connection.
+
+<img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/01.png" alt="PDF invoice" width="50%" height="auto" />
+
+**Live PDF Preview:** Streamlined editing is achieved with a live preview that reflects changes made to the input data in real-time.
+
+<img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/02.png" alt="PDF preview tab" width="50%" height="auto" />
+
+**Pre-designed Templates:** A collection of hand-crafted templates provides a quick and easy starting point for various PDF types.
+
+<img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/03.png" alt="Templates list" width="50%" height="auto" />
+
+**Intuitive User Interface:** Rich input elements and a user-friendly design make data entry and customization effortless.
+
+<img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/04.png" alt="Date picker" width="50%" height="auto" />
+
+**Soft Input Validation:** The app offers helpful warnings and suggestions while users fill in information, ensuring data accuracy.
+
+<img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/05.png" alt="Illegal date format warning" width="50%" height="auto" />
+
+**Informative UI:** Many input fields include tooltip buttons for detailed explanations, complementing the labels. A comprehensive help page provides more info about how to use the app itself, all this is available in English, French, and Arabic.
+
+<img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/06.png" alt="Help page" width="50%" height="auto" />
+
+**Responsive Design:** The UI adapts seamlessly across various devices and screen configurations for a consistent user experience.
+
+<img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/07a.png" alt="An input form in Landscape orientation" width="50%" height="auto" />
+
+**Themable Interface:** Users can personalize both the generated PDFs and the app UI itself to match their preferences.
+
+<img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/07b.png" alt="Same UI with different colors" width="50%" height="auto" />
 
 ## Implementation details
 
