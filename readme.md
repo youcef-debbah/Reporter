@@ -17,7 +17,7 @@ This application is a [Free Software](https://www.gnu.org/philosophy/free-sw.htm
 
 <img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/02.png" alt="PDF preview tab" width="50%" height="auto" />
 
-**Pre-designed Templates:** A collection of hand-crafted templates provides a quick and easy starting point for various PDF types.
+**Hand-crafted Templates:** At Nexatech, we serve a focused group of clients. While this app isn't their core purchase, some of them find it a valuable addition to their experience. We developed it specifically to enhance client satisfaction, which is why we provide custom-made templates tailored to each user.
 
 <img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/03.png" alt="Templates list" width="50%" height="auto" />
 
@@ -25,7 +25,7 @@ This application is a [Free Software](https://www.gnu.org/philosophy/free-sw.htm
 
 <img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/04.png" alt="Date picker" width="50%" height="auto" />
 
-**Soft Input Validation:** The app offers helpful warnings and suggestions while users fill in information, ensuring data accuracy.
+**Soft Input Validation:** The app offers helpful warnings and suggestions, contrary to most other alternative apps, users are free to ignore these warnings to customize their document further.
 
 <img src="https://raw.githubusercontent.com/youcef-debbah/Reporter/main/docs/05.png" alt="Illegal date format warning" width="50%" height="auto" />
 
