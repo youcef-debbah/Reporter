@@ -1,7 +1,7 @@
 
 ## Overview
 
-Reporter is an Android application designed as a lightweight invoice manager, originally created exclusively for one specific client. However, it is fairly flexible and can be used to generate any arbitrary PDF document by importing its template and filling out a few input forms.
+Reporter is an Android application designed as a lightweight PDF generator, originally created exclusively for one specific client. However, it is fairly flexible and can be used to generate any arbitrary PDF document by importing premade templates and filling out any missing information.
 
 This application is a [Free Software](https://www.gnu.org/philosophy/free-sw.html). We actually charge per each custom template we create rather than for app downloads or usage. [Creating a custom template](#creating-a-custom-template) should be a straightforward task for anyone with some experience in web development since a template is essentially a zip file that contains a webpage, a few resource files (such as icons, fonts, etc.), and some extra metadata.
 
