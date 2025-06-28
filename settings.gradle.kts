@@ -16,6 +16,8 @@ pluginManagement {
 
     plugins {
         id("org.jetbrains.kotlin.android") version kotlinVersion
+        id("org.jetbrains.kotlin.plugin.compose") version kotlinVersion
+        id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion
         id("org.jetbrains.kotlin.kapt") version kaptVersion
         id("org.jetbrains.kotlin.jvm") version kotlinVersion
 //        id("com.google.devtools.ksp") version kspVersion

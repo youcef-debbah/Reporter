@@ -64,14 +64,16 @@ import dz.nexatech.reporter.util.ui.contentPadding
 import dz.nexatech.reporter.util.ui.rememberTextWithLink
 import dz.nexatech.reporter.util.ui.stringRes
 import dz.nexatech.reporter.util.ui.themedComposable
+import kotlinx.serialization.Serializable
 
 val clipboardManager by lazy {
     AbstractApplication.INSTANCE.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 }
 
+@Serializable
 object ReporterAboutScreen : StaticScreenDestination(
-    route = "reporter_about",
-    icon = StaticIcon.baseline_info,
+    screenRoute = "reporter_about",
+    screenIcon = StaticIcon.baseline_info,
     titleRes = R.string.reporter_about_title,
 ) {
     private val centredTextStyle = TextStyle(textAlign = TextAlign.Center)

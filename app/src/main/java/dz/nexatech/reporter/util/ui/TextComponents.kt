@@ -77,7 +77,6 @@ fun SurroundedLink(
         overflow = overflow,
         maxLines = maxLines,
         onTextLayout = onTextLayout,
-        onHover = {},
         onClick = { offset ->
             if (text.hasStringAnnotations(ATTACHED_URL_TAG, offset, offset)) {
                 onClick()

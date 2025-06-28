@@ -47,11 +47,13 @@ import dz.nexatech.reporter.util.ui.Title
 import dz.nexatech.reporter.util.ui.contentPadding
 import dz.nexatech.reporter.util.ui.small_padding
 import dz.nexatech.reporter.util.ui.stringRes
+import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalLayoutApi::class)
+@Serializable
 object ReporterSettingsScreen : StaticScreenDestination(
-    route = "settings",
-    icon = StaticIcon.baseline_settings,
+    screenRoute = "settings",
+    screenIcon = StaticIcon.baseline_settings,
     titleRes = R.string.settings,
 ) {
     fun NavController.toSettingsScreen(navOptions: NavOptions? = null) {

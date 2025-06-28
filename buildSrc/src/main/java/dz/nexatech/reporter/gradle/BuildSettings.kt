@@ -1,7 +1,7 @@
 package dz.nexatech.reporter.gradle
 
 object BuildSettings {
-    const val TARGET_SDK_LEVEL = 34
+    const val TARGET_SDK_LEVEL = 36
     const val MIN_SDK_LEVEL = 24
     const val DEFAULT_LOCALHOST = "192.168.1.2"
     const val DEBUG_BUILD_TYPE = "debug"

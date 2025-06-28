@@ -11,7 +11,8 @@ import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.File
 import java.net.Inet4Address
@@ -55,6 +56,10 @@ data class Config(
     val javaVersionName: String = javaVersion.toString(),
     val javaLanguageVersion: JavaLanguageVersion = JavaLanguageVersion.of(javaVersionName),
     val kotlinCompatibility: String = kotlinVersion.substring(0..2),
+
+    // TODO these versions should be read from a config file
+    val jvmTarget: JvmTarget = JvmTarget.JVM_17,
+    val kotlinTarget: KotlinVersion = KotlinVersion.KOTLIN_2_2,
 )
 
 fun TestedExtension.addStandardAppBuildTypes(versionName: String) {
@@ -217,13 +222,6 @@ private fun TestedExtension.standardAndroidConfig(
         targetCompatibility = project.buildConfig.javaVersion
     }
 
-    (this as ExtensionAware).extensions.configure(KotlinJvmOptions::class.java) {
-        jvmTarget = project.buildConfig.javaVersionName
-        apiVersion = project.buildConfig.kotlinCompatibility
-        languageVersion = project.buildConfig.kotlinCompatibility
-        //freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    }
-
     if (appVersionName != null)
         addStandardAppBuildTypes(appVersionName)
     else
@@ -237,10 +235,10 @@ private fun Project.standardProjectConfig() {
     }
 
     tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = buildConfig.javaVersionName
-            apiVersion = buildConfig.kotlinCompatibility
-            languageVersion = buildConfig.kotlinCompatibility
+        compilerOptions {
+            jvmTarget.set(buildConfig.jvmTarget)
+            apiVersion.set(buildConfig.kotlinTarget)
+            languageVersion.set(buildConfig.kotlinTarget)
         }
     }
 }

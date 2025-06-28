@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableSet
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
-inline fun <T, reified R> Iterable<T>.mapToArray(
+inline fun <T: Any, reified R> Iterable<T>.mapToArray(
     nullValue: R,
     arraySize: Int = if (this is Collection) this.size else 1,
     mapper: (T) -> R,
@@ -21,7 +21,7 @@ inline fun <T, reified R> Iterable<T>.mapToArray(
     return result
 }
 
-fun <T> Iterator<T>.indexDiff(filter1: (T) -> Boolean, filter2: (T) -> Boolean): Int? {
+fun <T: Any> Iterator<T>.indexDiff(filter1: (T) -> Boolean, filter2: (T) -> Boolean): Int? {
     var index1 = -1
     var index2 = -1
     var i = -1
@@ -41,7 +41,7 @@ fun <T> Iterator<T>.indexDiff(filter1: (T) -> Boolean, filter2: (T) -> Boolean):
     return null
 }
 
-inline fun <T> MutableIterator<T>.removeIf(
+inline fun <T: Any> MutableIterator<T>.removeIf(
     preRemove: (T) -> Unit = {},
     postRemove: (T) -> Unit = {},
     filter: (T) -> Boolean
@@ -92,7 +92,7 @@ fun <T: Any> Iterable<T>.slice(count: Int = 2): ImmutableList<ImmutableList<T>> 
     return result.build()
 }
 
-fun <T, R> Iterable<T>.mapToSet(mapper: (T) -> R): ImmutableSet<R> {
+fun <T: Any, R : Any> Iterable<T>.mapToSet(mapper: (T) -> R): ImmutableSet<R> {
     val builder = ImmutableSet.builder<R>()
     val iterator = iterator()
     while (iterator.hasNext()) {

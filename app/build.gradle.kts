@@ -12,6 +12,8 @@ import dz.nexatech.reporter.gradle.standardAndroidApp
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.kotlin.plugin.serialization")
 
     kotlin("kapt")
 //    id("com.google.devtools.ksp")
@@ -26,7 +28,7 @@ plugins {
 
 logger.info("app build config...")
 
-standardAndroidApp("dz.nexatech.reporter.client", 27, "proguard-rules.pro")
+standardAndroidApp("dz.nexatech.reporter.client", 28, "proguard-rules.pro")
 
 dependencies {
     addCommonTestDependencies()
@@ -89,7 +91,7 @@ dependencies {
     implementation("com.godaddy.android.colorpicker:compose-color-picker-android:${Version.GODADDY_COLOR_PICKER}")
 
     implementation(project(":core"))
-    implementation("com.itextpdf:typography:4.0.2") {
+    implementation("com.itextpdf:typography:5.0.2") {
         exclude(group = "com.itextpdf", module = "io")
         exclude(group = "com.itextpdf", module = "kernel")
         exclude(group = "com.itextpdf", module = "layout")

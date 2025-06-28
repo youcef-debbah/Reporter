@@ -500,7 +500,7 @@ private fun VariableDatePicker(
         }) else null,
         state = datePickerState,
         modifier = Modifier.contentPadding(),
-        dateValidator = { it <= variable.max && it >= variable.min },
+//        dateValidator = { it <= variable.max && it >= variable.min }, //TOFIX migrate this check
         showModeToggle = false,
     )
 }

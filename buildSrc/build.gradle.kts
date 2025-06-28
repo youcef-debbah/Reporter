@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -16,10 +18,11 @@ java {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = javaVersionName
-        apiVersion = kotlinCompatibility
-        languageVersion = kotlinCompatibility
+    compilerOptions {
+        // TODO these versions should be read from a config file
+        jvmTarget.set(JvmTarget.JVM_17)
+        apiVersion.set(KotlinVersion.KOTLIN_2_2)
+        languageVersion.set(KotlinVersion.KOTLIN_2_2)
     }
 }
 
@@ -29,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.android.tools.build:gradle:8.1.1")
+    implementation("com.android.tools.build:gradle:8.11.0")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("com.google.dagger:hilt-android-gradle-plugin:$hiltVersion")
 
@@ -37,9 +40,9 @@ dependencies {
     implementation("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
 
     // https://firebase.google.com/support/release-notes/android
-    // below versions are based on BOM version: 32.7.1
+    // below versions are based on BOM Version.FIREBASE_BOM: 33.16.0
     // TODO these versions should be read from a config file like hilt version
-    implementation("com.google.gms:google-services:4.4.0")
-    implementation("com.google.firebase:firebase-crashlytics-gradle:2.9.9")
+    implementation("com.google.gms:google-services:4.4.3")
+    implementation("com.google.firebase:firebase-crashlytics-gradle:3.0.4")
     implementation("com.google.firebase:perf-plugin:1.4.2")
 }

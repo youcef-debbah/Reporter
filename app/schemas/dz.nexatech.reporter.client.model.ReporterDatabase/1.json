@@ -17,38 +17,32 @@
           {
             "fieldPath": "label_en",
             "columnName": "label_en",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "label_ar",
             "columnName": "label_ar",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "label_fr",
             "columnName": "label_fr",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "desc_en",
             "columnName": "desc_en",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "desc_ar",
             "columnName": "desc_ar",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "desc_fr",
             "columnName": "desc_fr",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "lang",
@@ -68,9 +62,7 @@
           "columnNames": [
             "template_name"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "value",
@@ -114,9 +106,7 @@
             "value_index",
             "value_name"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "logged_event",
@@ -137,8 +127,7 @@
           {
             "fieldPath": "parameters",
             "columnName": "parameters",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -146,9 +135,7 @@
           "columnNames": [
             "logged_event_id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "Resource",
@@ -184,12 +171,9 @@
           "columnNames": [
             "resource_path"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
       "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'db6dd96ce44ba909ae24c8f90763074d')"

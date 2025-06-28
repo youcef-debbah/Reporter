@@ -16,7 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Reporter"
-        tools:targetApi="31">
+        tools:targetApi="36">
         <activity
             android:name="dz.nexatech.reporter.client.ui.MainActivity"
             android:exported="true">

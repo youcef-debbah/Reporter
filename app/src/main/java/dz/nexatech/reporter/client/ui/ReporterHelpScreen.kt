@@ -60,10 +60,12 @@ import dz.nexatech.reporter.util.ui.textPadding
 import dz.nexatech.reporter.util.ui.themedComposable
 import dz.nexatech.reporter.util.ui.toPixels
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.serialization.Serializable
 
+@Serializable
 object ReporterHelpScreen : StaticScreenDestination(
-    route = "reporter_help",
-    icon = StaticIcon.baseline_help,
+    screenRoute = "reporter_help",
+    screenIcon = StaticIcon.baseline_help,
     titleRes = R.string.reporter_help_title,
 ) {
     fun NavController.toReporterHelpScreen(navOptions: NavOptions? = null) {

@@ -3,7 +3,7 @@ package dz.nexatech.reporter.client.common
 import com.google.common.collect.ImmutableSet
 import kotlinx.coroutines.sync.withLock
 
-class ReadWriteHashMap<K, V>(
+class ReadWriteHashMap<K: Any, V: Any>(
     initialCapacity: Int = 16,
     loadFactor: Float = 0.75f,
 ) {

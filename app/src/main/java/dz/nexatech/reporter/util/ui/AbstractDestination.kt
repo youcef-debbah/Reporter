@@ -8,11 +8,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import kotlinx.serialization.Serializable
 
 /**
  * a destination can be a screen or a graph of screens
  */
 @Stable
+@Serializable
 abstract class AbstractDestination(
     /**
      * the destination's unique route
@@ -65,12 +67,13 @@ abstract class AbstractDestination(
 }
 
 @Stable
+@Serializable
 open class StaticScreenDestination(
-    route: String,
-    icon: AbstractIcon?,
+    val screenRoute: String,
+    val screenIcon: AbstractIcon?,
     @StringRes val titleRes: Int,
     @StringRes val labelRes: Int? = null,
-) : AbstractDestination(route, icon) {
+) : AbstractDestination(screenRoute, screenIcon) {
 
     @Composable
     @ReadOnlyComposable

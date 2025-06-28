@@ -43,10 +43,10 @@ java {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = buildConfig.javaVersionName
-        apiVersion = buildConfig.kotlinCompatibility
-        languageVersion = buildConfig.kotlinCompatibility
+    compilerOptions {
+        jvmTarget.set(buildConfig.jvmTarget)
+        apiVersion.set(buildConfig.kotlinTarget)
+        languageVersion.set(buildConfig.kotlinTarget)
     }
 }
 
@@ -58,12 +58,15 @@ dependencies {
     addCoroutines()
     addCommonTestDependencies(false)
 
-    api("io.pebbletemplates:pebble:3.2.2")
+    api("io.pebbletemplates:pebble:3.2.4")
 
-    implementation("com.itextpdf.android:itext-core-android:8.0.2")
-    implementation("com.itextpdf:html2pdf:5.0.2") {
+    implementation("com.itextpdf.android:itext-core-android:9.2.0")
+    implementation("com.itextpdf:html2pdf:6.2.0") {
         exclude(group = "com.itextpdf", module = "forms")
         exclude(group = "com.itextpdf", module = "layout")
         exclude(group = "com.itextpdf", module = "svg")
+        exclude(group = "com.itextpdf", module = "pdfua")
+        exclude(group = "com.itextpdf", module = "pdfa")
+        exclude(group = "com.itextpdf", module = "kernel")
     }
 }

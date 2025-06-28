@@ -59,10 +59,12 @@ import dz.nexatech.reporter.util.ui.navigate
 import dz.nexatech.reporter.util.ui.rememberTextWithLink
 import dz.nexatech.reporter.util.ui.small_padding
 import dz.nexatech.reporter.util.ui.themedComposable
+import kotlinx.serialization.Serializable
 
+@Serializable
 object TemplatesListScreen : StaticScreenDestination(
-    route = "templates_list",
-    icon = StaticIcon.baseline_home,
+    screenRoute = "templates_list",
+    screenIcon = StaticIcon.baseline_home,
     titleRes = R.string.templates_list_title,
     labelRes = R.string.templates_list_label,
 ) {
